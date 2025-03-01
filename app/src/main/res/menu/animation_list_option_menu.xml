@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/anim_btn_set_edi"
+        android:id="@+id/anim_btn_set_edi"/>
+    <item android:title="@string/anim_btn_set_uni"
+        android:id="@+id/anim_btn_set_uni"/>
+    <item android:title="@string/anim_btn_set_prev"
+        android:id="@+id/anim_btn_set_prev" />
+    <item android:title="@string/anim_btn_delete"
+        android:id="@+id/anim_btn_delete" />
+</menu>

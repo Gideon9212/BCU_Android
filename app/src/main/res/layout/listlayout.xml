@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/unitID" />
 
-    <com.mandarin.bcu.androidutil.supports.AutoMarquee
+    <com.g2.bcu.androidutil.supports.AutoMarquee
         android:id="@+id/unitID"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         app:layout_constraintStart_toEndOf="@+id/uniticon"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.mandarin.bcu.androidutil.supports.AutoMarquee
+    <com.g2.bcu.androidutil.supports.AutoMarquee
         android:id="@+id/unitname"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

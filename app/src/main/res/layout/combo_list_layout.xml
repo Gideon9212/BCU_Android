@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.mandarin.bcu.androidutil.supports.AutoMarquee
+    <com.g2.bcu.androidutil.supports.AutoMarquee
         android:id="@+id/comboname"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

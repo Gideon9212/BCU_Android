@@ -7,7 +7,7 @@
     android:background="?attr/backgroundPrimary"
     android:theme="?attr/TILtheme">
 
-    <com.mandarin.bcu.androidutil.supports.ColorPickerView
+    <com.g2.bcu.androidutil.supports.ColorPickerView
         android:id="@+id/picker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

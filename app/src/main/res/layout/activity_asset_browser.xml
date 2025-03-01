@@ -57,7 +57,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/back_button" />
 
-    <com.mandarin.bcu.androidutil.supports.AutoMarquee
+    <com.g2.bcu.androidutil.supports.AutoMarquee
         android:id="@+id/assetpath"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/mapart_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/cell_shape"
+            android:ems="10"
+            android:inputType="numberSigned" />
+
+        <EditText
+            android:id="@+id/mapart_mod"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/cell_shape"
+            android:ems="10"
+            android:inputType="numberSigned" />
+
+        <Spinner
+            android:id="@+id/mapart_ease"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/cell_spinner" />
+
+        <EditText
+            android:id="@+id/mapart_param"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/cell_shape"
+            android:ems="10"
+            android:inputType="numberSigned" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/mapart_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:tint="@color/iconPrimaryN"
+            app:backgroundTint="@color/colorAccent"
+            app:srcCompat="@drawable/ic_baseline_delete_24" />
+    </TableRow>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

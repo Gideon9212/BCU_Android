@@ -5,6 +5,7 @@
     <attr name="stageSelect" format="color"/>
     <attr name="colorAccent" format="color"/>
     <attr name="unitinfButton" format="color"/>
+    <attr name="unitinfButtonDisabled" format="color"/>
     <attr name="backgroundPrimary" format="color"/>
     <attr name="ButtonPrimary" format="color"/>
     <attr name="TextPrimary" format="color"/>
@@ -19,5 +20,6 @@
     <attr name="SemiBackgroundPrimary" format="color"/>
     <attr name="BorderPrimary" format="color"/>
     <attr name="SemiWarningPrimary" format="color"/>
+    <attr name="SemiWarningSecondary" format="color"/>
     <attr name="SemiCautionPrimary" format="color"/>
 </resources>

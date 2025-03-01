@@ -8,12 +8,15 @@
         "BURROW_UP": "burrow up",
         "BURROW_MOVE": "burrow move",
         "IDLE": "idle",
-        "HB": "hit back",
+        "KB": "hit back",
         "BURROW_DOWN": "burrow down",
-        "ENTER": "enter",
-        "ATK": "attack",
+        "ENTRY": "enter",
+        "ATTACK": "attack",
         "WALK": "walk",
-        "SOUL": "soul"
+        "SOUL": "soul",
+        "RETREAT": "retreat",
+        "FOREGROUND": "foreground",
+        "BACKGROUND": "background"
     },
     "VolcEff": {
         "DURING": "on",
@@ -55,7 +58,7 @@
     "ZombieEff": {
         "DOWN": "knock down",
         "REVIVE": "revive",
-        "BACK" : "back"
+        "BACK": "back"
     },
     "SniperEff": {
         "IDLE": "idle",
@@ -65,18 +68,42 @@
         "DEF": "default"
     },
     "ShieldEff": {
-        "FULL" : "full",
-        "HALF" : "half",
-        "BROKEN" : "broken",
-        "BREAKER" : "breaker",
-        "REGENERATION" : "regeneration"
+        "FULL": "full",
+        "HALF": "half",
+        "BROKEN": "broken",
+        "BREAKER": "breaker",
+        "REGENERATION": "regeneration"
     },
     "DmgCap": {
-        "FAIL" : "fail",
-        "SUCCESS" : "success"
+        "FAIL": "fail",
+        "SUCCESS": "success"
+    },
+    "LethargyEff": {
+        "DOWN": "weaken",
+        "UP": "strengthen"
+    },
+    "RemShieldEff": {
+        "NEAR": "near",
+        "FAR": "far"
+    },
+    "AuraEff": {
+        "ENEDOWN": "Weaken Enemy",
+        "ENEUP": "Strengthen Enemy",
+        "UNIDOWN": "Weaken Ally",
+        "UNIUP": "Strengthen Ally"
+    },
+    "RangeShieldEff": {
+        "SINGLE": "Single Target",
+        "AREA": "Area Attack"
     },
     "GuardEff": {
         "NONE": "default",
         "BREAK": "break"
+    },
+    "BlastEff": {
+        "START": "Start",
+        "EXPLODE": "Explode",
+        "DUMMY": "Dummy",
+        "SINGLE": "Singular"
     }
 }

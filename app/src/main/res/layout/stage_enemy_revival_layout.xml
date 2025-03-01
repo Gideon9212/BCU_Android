@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TableRow
+        android:id="@+id/tableRow9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/strevlisticon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.175"
+            android:background="@drawable/cell_shape"
+            android:contentDescription="@string/def_description"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_castle" />
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5">
+
+            <TextView
+                android:id="@+id/strevlistptype"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:minHeight="48dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/def_minus"
+                android:textColor="?attr/TextPrimary" />
+
+            <TextView
+                android:id="@+id/strevlistmultir"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:minHeight="48dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/def_minus"
+                android:textColor="?attr/TextPrimary" />
+
+            <TextView
+                android:id="@+id/strevlistnumr"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/def_minus"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+        <ImageButton
+            android:id="@+id/strevlistinfo"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.125"
+            android:background="@drawable/cell_shape"
+            android:contentDescription="@string/def_description"
+            android:paddingStart="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_info_outline_black_24dp"
+            app:tint="?attr/iconPrimary" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tablerow10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tableRow9">
+
+        <TextView
+            android:id="@+id/strevlistbgm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/cell_shape"
+            android:gravity="center"
+            android:minHeight="48dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:text="@string/def_minus"
+            android:textColor="?attr/TextPrimary" />
+
+        <TextView
+            android:id="@+id/strevlistsoul"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/cell_shape"
+            android:gravity="center"
+            android:minHeight="48dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:text="@string/def_minus"
+            android:textColor="?attr/TextPrimary" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/nextRevRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tablerow10">
+
+        <TextView
+            android:id="@+id/enemlistrv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:background="@drawable/cell_shape"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@string/eff_revive"
+            android:textColor="?attr/TextPrimary" />
+
+        <ImageButton
+            android:id="@+id/enemlistrev"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"
+            android:background="@drawable/cell_shape"
+            android:contentDescription="@string/def_description"
+            app:srcCompat="@drawable/ic_expand_less_black_24dp"
+            app:tint="?attr/iconPrimary" />
+    </TableRow>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

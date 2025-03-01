@@ -4,4 +4,7 @@
         android:id="@+id/packshare"/>
     <item android:title="@string/pack_manage_remove"
         android:id="@+id/packremove"/>
+    <item
+        android:id="@+id/saveremove"
+        android:title="@string/pack_manage_savedel" />
 </menu>

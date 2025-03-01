@@ -18,6 +18,8 @@
 
             <item android:id="@+id/anim_png_transp"
                 android:title="@string/png_transp"/>
+            <item android:id="@+id/anim_png_sprite"
+                android:title="@string/png_sprite" />
         </menu>
     </item>
 
@@ -37,5 +39,9 @@
     <item
         android:id="@+id/anim_option_gif_finish"
         android:title="@string/anim_option_gifstop"/>
+
+    <item
+        android:id="@+id/anim_copy_anim"
+        android:title="@string/anim_option_copyanim"/>
 
 </menu>

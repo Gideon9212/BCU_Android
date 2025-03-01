@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundPrimary">
+
+    <TableLayout
+        android:id="@+id/packDTab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/packExitB"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/packBanner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="273dp"
+                android:minHeight="143dp" />
+
+            <ScrollView
+                android:id="@+id/scrollDesc"
+                android:layout_width="273dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/cell_shape"
+                android:minHeight="143dp">
+
+                <TextView
+                    android:id="@+id/packDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/backgroundPrimary"
+                    android:textColor="?attr/TextPrimary" />
+            </ScrollView>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.g2.bcu.androidutil.supports.AutoMarquee
+                android:id="@+id/packVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:textColor="?attr/TextPrimary" />
+
+            <com.g2.bcu.androidutil.supports.AutoMarquee
+                android:id="@+id/packBCUver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:textColor="?attr/TextPrimary" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.g2.bcu.androidutil.supports.AutoMarquee
+                android:id="@+id/packCreateD"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:textColor="?attr/TextPrimary" />
+
+            <com.g2.bcu.androidutil.supports.AutoMarquee
+                android:id="@+id/packExportD"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.g2.bcu.androidutil.supports.AutoMarquee
+                android:id="@+id/packSTCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:textColor="?attr/TextPrimary" />
+
+            <com.g2.bcu.androidutil.supports.AutoMarquee
+                android:id="@+id/packCAnim"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+    </TableLayout>
+
+    <Button
+        android:id="@+id/packExitB"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/button"
+        android:text="@string/main_file_ok"
+        android:textColor="?attr/TextPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/packDTab"
+        app:layout_constraintStart_toStartOf="@id/packDTab"
+        app:layout_constraintTop_toBottomOf="@id/packDTab" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

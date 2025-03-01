@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TableRow
+        android:id="@+id/maanim_mainRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/maanim_pid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/cell_shape"
+            android:ems="10"
+            android:inputType="number" />
+
+        <Spinner
+            android:id="@+id/maanim_mod"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/cell_spinner" />
+
+        <EditText
+            android:id="@+id/maanim_lop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/cell_shape"
+            android:ems="10"
+            android:inputType="numberSigned" />
+
+        <EditText
+            android:id="@+id/maanim_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/cell_shape"
+            android:ems="10"
+            android:hint="@string/stg_sch_name"
+            android:inputType="text" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/maanim_part_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:tint="@color/iconPrimaryN"
+            app:backgroundTint="@color/colorAccent"
+            app:srcCompat="@drawable/ic_menu_black_24dp" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/maanim_partRow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/maanim_mainRow"
+        tools:layout_constraintBottom_toTopOf="@id/maanim_part_list">
+
+        <Button
+            android:id="@+id/mapart_ladd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_weight="0.5"
+            android:backgroundTint="?attr/ButtonPrimary"
+            android:text="@string/anim_addpart"
+            android:textAllCaps="false"
+            android:textColor="?attr/TextPrimary"
+            android:visibility="gone"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:id="@+id/mapart_remove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_weight="0.5"
+            android:backgroundTint="?attr/ButtonPrimary"
+            android:text="@string/anim_rempart"
+            android:textAllCaps="false"
+            android:textColor="?attr/TextPrimary"
+            android:visibility="gone"
+            tools:ignore="ButtonStyle" />
+    </TableRow>
+
+    <com.g2.bcu.androidutil.supports.DynamicListView
+        android:id="@+id/maanim_part_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:maxHeight="240dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/maanim_partRow"
+        tools:layout_editor_absoluteX="16dp">
+    </com.g2.bcu.androidutil.supports.DynamicListView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -142,7 +142,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/eneminfexptx" />
 
-                <com.mandarin.bcu.androidutil.supports.MeasureViewPager
+                <com.g2.bcu.androidutil.supports.MeasureViewPager
                     android:id="@+id/eneminfexp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

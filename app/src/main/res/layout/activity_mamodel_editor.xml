@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mamodelroot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundPrimary"
+    android:backgroundTint="?attr/backgroundPrimary">
+
+    <LinearLayout
+        android:id="@+id/mamodellayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/mamodelCfgDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:tint="@color/iconPrimaryN"
+        app:backgroundTint="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_skip_next_black_24dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/mamodelSpriteDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:tint="@color/iconPrimaryN"
+        android:visibility="gone"
+        app:backgroundTint="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_skip_next_black_24dp" />
+
+    <Spinner
+        android:id="@+id/mamodelmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/colorPrimary"
+        android:backgroundTint="?attr/colorPrimary"
+        android:popupBackground="?attr/backgroundPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintTop_toTopOf="parent" />
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/anim_Undo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:tint="@color/iconPrimaryN"
+            android:visibility="gone"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_skip_previous_black_24dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/anim_Redo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:tint="@color/iconPrimaryN"
+            android:visibility="gone"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_skip_next_black_24dp" />
+    </TableRow>
+
+    <RelativeLayout
+        android:id="@+id/mamodelMenu"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:background="?attr/SemiBackgroundPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/mamodelCfgHide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:tint="@color/iconPrimaryN"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_skip_next_black_24dp" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toEndOf="@id/mamodelCfgHide">
+
+            <Button
+                android:id="@+id/mamodelexit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="0.5"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/battle_exit"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                tools:ignore="ButtonStyle" />
+
+            <Button
+                android:id="@+id/mamo_view_anim"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="0.5"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/anim_view"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                tools:ignore="ButtonStyle" />
+
+            <Button
+                android:id="@+id/mamo_imgcut_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="0.5"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/anim_imgcut_btn"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                tools:ignore="ButtonStyle" />
+
+            <Button
+                android:id="@+id/mamo_maanim_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="0.5"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/anim_maanim_btn"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                tools:ignore="ButtonStyle" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/mamodelvalues"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mamodelCfgHide"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="ID"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/mamodel_par"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/mamodel_spr"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/mamodel_z"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.225"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/def_pos"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.225"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/def_piv"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.225"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/def_scale"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/def_rot"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/def_glow"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/stg_sch_name"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <com.g2.bcu.androidutil.supports.DynamicListView
+            android:id="@+id/mamodelvalList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/mamodeltable"
+            android:layout_below="@id/mamodelvalues"
+            android:layout_marginBottom="4dp"
+            android:choiceMode="singleChoice">
+
+        </com.g2.bcu.androidutil.supports.DynamicListView>
+
+        <TableRow
+            android:id="@+id/mamodeltable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="8dp">
+
+            <Button
+                android:id="@+id/mamodelpadd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="0.5"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/anim_addpart"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                tools:ignore="ButtonStyle" />
+
+            <Button
+                android:id="@+id/mamodelimport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="0.5"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/imgcut_import"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                tools:ignore="ButtonStyle" />
+
+            <Button
+                android:id="@+id/mamodelexport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="0.5"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/imgcut_export"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                tools:ignore="ButtonStyle" />
+
+        </TableRow>
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

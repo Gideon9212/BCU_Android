@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/userpackIcon"
+        android:layout_width="67dp"
+        android:layout_height="67dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/pcusname"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.g2.bcu.androidutil.supports.AutoMarquee
+        android:id="@+id/pcusid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="?attr/TextPrimary"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/pcusmore"
+        app:layout_constraintStart_toEndOf="@id/userpackIcon"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/pcusname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:textColor="?attr/TextPrimary"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/pcusOptions"
+        app:layout_constraintEnd_toStartOf="@+id/pcusmore"
+        app:layout_constraintStart_toStartOf="@id/pcusid"
+        app:layout_constraintTop_toBottomOf="@+id/pcusid"
+        tools:textColorHint="?attr/TextPrimary" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/pcusmore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="?attr/backgroundPrimary"
+        android:clickable="true"
+        android:contentDescription="@null"
+        android:focusable="true"
+        app:backgroundTint="?attr/backgroundPrimary"
+        app:borderWidth="0dp"
+        app:elevation="0dp"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/pcusname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/pcusid"
+        app:srcCompat="@drawable/ic_more_horiz_black_24dp" />
+
+    <TableLayout
+        android:id="@+id/pcusOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/pcusname">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/pk_chapterEdit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:gravity="center"
+                android:minHeight="32dip"
+                android:text="@android:string/cancel"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+            <Button
+                android:id="@+id/pk_unitEdit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:gravity="center"
+                android:minHeight="32dip"
+                android:text="@android:string/cancel"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </TableLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

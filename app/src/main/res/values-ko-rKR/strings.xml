@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BCU</string>
+    <string name="app_name">G2 BCU</string>
     <string name="anim_view">애니메이션 뷰어</string>
     <string name="def_schbck">Back to Animation Viewer</string>
     <string name="def_animbck">Back to main page</string>
@@ -702,6 +702,7 @@
     <string name="load_add">UI 데이터 로딩 중…</string>
     <string name="pack_manage_remove">팩 제거</string>
     <string name="pack_manage_share">팩 공유</string>
+    <string name="pack_manage_savedel">Delete SaveData</string>
     <string name="pack_manage_remove_sure">팩 제거</string>
     <string name="pack_manage_remove_msg">정말로 팩을 제거하시겠습니까? 이 작업은 되돌릴 수 없습니다</string>
     <string name="remove">제거</string>
@@ -830,9 +831,11 @@
     <string name="down_need_asset">필수 데이터를 찾을 수 없음</string>
     <string name="eff_heal">치유</string>
     <string name="anim_entry">입장</string>
+    <string name="anim_retreat">후퇴</string>
     <string name="battle_tworow">레이아웃 : 두 줄</string>
     <string name="battle_onerow">레이아웃 : 한 줄</string>
     <string name="config_battle">전투</string>
+    <string name="battle_prog">Simulate Progression</string>
     <string name="datareset_warning">정말로 선택된 데이터를 초기화 하시겠습니까? 해당 작업은 되돌릴 수 없습니다</string>
     <string name="datareset_selected">선택된 데이터 초기화</string>
     <string name="datareset_reset">초기화</string>
@@ -950,6 +953,8 @@
     <string name="config_showres">전투 끝날 때 결과 표시</string>
     <string name="stage_L">바닥 미궁 스테이지</string>
     <string name="stage_ND">레전드 스토리 0</string>
+    <string name="stage_SR">Cat Colosseum</string>
+    <string name="stage_G">Cat Path Test</string>
     <string name="fruit24">자수결정</string>
     <string name="fruit25">홍수결정</string>
     <string name="fruit26">청수결정</string>
@@ -1024,4 +1029,23 @@
     <string name="eff_guar">가드 (더미)</string>
     <string name="eff_meki">메탈 킬러</string>
     <string name="eff_mekie">메탈 킬러 적 측면</string>
+    <string name="sch_abi_stt">Strategist</string>
+    <string name="sch_abi_ltg">Lethargy</string>
+    <string name="sch_abi_rg">Rage</string>
+    <string name="sch_abi_hy">Hypnotize</string>
+    <string name="sch_abi_rms">RangeShield</string>
+    <string name="sch_abi_tps">FocusShield</string>
+    <string name="sch_abi_wlv">Worker Bonus</string>
+    <string name="sch_abi_cdc">Research Break</string>
+    <string name="sch_abi_waur">Weaking Aura</string>
+    <string name="sch_abi_saur">Motivating Aura</string>
+    <string name="sch_abi_imlt">Imu. Lethargy</string>
+    <string name="sch_abi_imr">Rage Immunity</string>
+    <string name="sch_abi_imh">Hypno Immunity</string>
+    <string name="requirement_list">Clear _ to unlock this chapter</string>
+    <string name="list_unlock">You have unlocked:</string>
+    <string name="list_unlock_u">Units: _</string>
+    <string name="list_unlock_c">Chapters: _</string>
+    <string name="limit_rcos">Cost Multipliers</string>
+    <string name="limit_rspn">Deploy Limits</string>
 </resources>

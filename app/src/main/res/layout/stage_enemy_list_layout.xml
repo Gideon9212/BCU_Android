@@ -94,7 +94,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:stretchColumns="*"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/enemlistrevcont"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tableRow5">
@@ -269,7 +269,72 @@
                 android:paddingBottom="8dp"
                 android:text="@string/def_minus"
                 android:textColor="?attr/TextPrimary" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/enemlistedoor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/spawn_door"
+                android:textColor="?attr/TextPrimary" />
+
+            <TextView
+                android:id="@+id/enemlistrv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/eff_revive"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/enemlistevrdr"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/def_minus"
+                android:textColor="?attr/TextPrimary" />
+
+            <ImageButton
+                android:id="@+id/enemlistrev"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:background="@drawable/cell_shape"
+                android:contentDescription="@string/def_description"
+                app:srcCompat="@drawable/ic_expand_less_black_24dp"
+                app:tint="?attr/iconPrimary" />
         </TableRow>
     </TableLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/enemlistrevcont"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

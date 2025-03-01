@@ -1,40 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.mandarin.bcu.androidutil.supports.AutoMarquee
+    <ImageView
+        android:id="@+id/packIcon"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.g2.bcu.androidutil.supports.AutoMarquee
         android:id="@+id/pmanid"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:textColor="?attr/TextPrimary"
         android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@+id/pmanmore"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/packIcon"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.mandarin.bcu.androidutil.supports.AutoMarquee
+    <com.g2.bcu.androidutil.supports.AutoMarquee
         android:id="@+id/pmanname"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:textColor="?attr/TextPrimary"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/pmanmore"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/pmanid"
         app:layout_constraintTop_toBottomOf="@+id/pmanid" />
 
-    <com.mandarin.bcu.androidutil.supports.AutoMarquee
+    <com.g2.bcu.androidutil.supports.AutoMarquee
         android:id="@+id/pmandesc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
@@ -42,7 +50,7 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/pmanmore"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/pmanname"
         app:layout_constraintTop_toBottomOf="@+id/pmanname" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -62,4 +70,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/pmanid"
         app:srcCompat="@drawable/ic_more_horiz_black_24dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

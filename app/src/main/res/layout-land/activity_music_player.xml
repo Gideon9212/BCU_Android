@@ -165,7 +165,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/musicprogress"
                 app:layout_constraintEnd_toEndOf="@+id/constraintLayout3" />
 
-            <com.mandarin.bcu.androidutil.supports.AutoMarquee
+            <com.g2.bcu.androidutil.supports.AutoMarquee
                 android:id="@+id/musicname"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BCU</string>
+    <string name="app_name">G2 BCU</string>
     <string name="anim_view">Animation Viewer</string>
     <string name="stg_inf">Stage Info</string>
     <string name="def_animsch">Open Filter screens</string>
@@ -119,8 +119,8 @@
     <string name="unit_info_post">Post-Atk</string>
     <string name="unit_info_atktime">Atk-Time</string>
     <string name="unit_info_abilT">Use Ability</string>
-    <string name="unit_info_true">True</string>
-    <string name="unit_info_false">False</string>
+    <string name="unit_info_true">Yes</string>
+    <string name="unit_info_false">No</string>
     <string name="abi_rev">Revive</string>
     <string name="abi_stt">Stop Time</string>
     <string name="abi_snk">Sniper KB</string>
@@ -300,8 +300,8 @@
     <string name="stg_info_insa">Insane</string>
     <string name="stg_info_dead">Deadly</string>
     <string name="stg_info_merc">Merciless</string>
-    <string name="stg_info_poss">True</string>
-    <string name="stg_info_impo">False</string>
+    <string name="stg_info_poss">Yes</string>
+    <string name="stg_info_impo">No</string>
     <string name="stg_info_loadic">Loading Icons…</string>
     <string name="stg_info_loadbg">Loading Backgrounds…</string>
     <string name="stg_info_score">Score</string>
@@ -594,7 +594,7 @@
     <string name="talen_poi">Res.Poison</string>
     <string name="talen_sur">Res.Surge Attack</string>
     <string name="lineup_const_curse">Curseblast Level</string>
-    <string name="stage_sol">Story of Legends</string>
+    <string name="stage_sol">Stories of Legend</string>
     <string name="stage_event">Regular Event Stages</string>
     <string name="stage_collabo">Collaboration Stages</string>
     <string name="stage_eoc">Story Chapters</string>
@@ -701,13 +701,14 @@
     <string name="load_add">Loading UI Data…</string>
     <string name="pack_manage_remove">Remove pack</string>
     <string name="pack_manage_share">Share pack</string>
+    <string name="pack_manage_savedel">Delete SaveData</string>
     <string name="pack_manage_remove_sure">Removing Pack</string>
     <string name="pack_manage_remove_msg">Are you sure you want to remove pack? This cannot be undone</string>
     <string name="remove">Remove</string>
     <string name="pack_remove_result">Pack Removed</string>
     <string name="main_packs">Packs</string>
     <string name="pack_share_notfound">Can\'t find pack file</string>
-    <string name="pack_import_invalid">You can import only pack.bcuzip files</string>
+    <string name="pack_import_invalid">You can import only pack.bcuzip or userpack files</string>
     <string name="pack_import_exist">Pack Existing</string>
     <string name="pack_import_exist_msg">This pack file is already existing in your application. Will you replace file?</string>
     <string name="replace">Replace</string>
@@ -829,9 +830,11 @@
     <string name="down_need_asset">Required assets not found</string>
     <string name="eff_heal">Heal</string>
     <string name="anim_entry">Enter</string>
+    <string name="anim_retreat">Retreat</string>
     <string name="battle_tworow">Battle layout : Two rows</string>
     <string name="battle_onerow">Battle layout : One row</string>
     <string name="config_battle">Battle</string>
+    <string name="battle_prog">Simulate Progression</string>
     <string name="datareset_selected">Reset selected data</string>
     <string name="datareset_warning">Are you sure that you want to delete selected data? This cannot be undone</string>
     <string name="datareset_reset">Reset</string>
@@ -949,6 +952,8 @@
     <string name="config_showres">Show battle results upon ends</string>
     <string name="stage_L">Labyrinth Stages</string>
     <string name="stage_ND">Zero Legends</string>
+    <string name="stage_SR">Cat Colosseum</string>
+    <string name="stage_G">Cat Path Test</string>
     <string name="fruit24">Purple Behemoth Crystal</string>
     <string name="fruit25">Red Behemoth Crystal</string>
     <string name="fruit26">Blue Behemoth Crystal</string>
@@ -1023,4 +1028,23 @@
     <string name="eff_guar">Guard (Dummy)</string>
     <string name="eff_meki">Metal Killer</string>
     <string name="eff_mekie">Metal Killer Enemy Side</string>
+    <string name="sch_abi_stt">Strategist</string>
+    <string name="sch_abi_ltg">Lethargy</string>
+    <string name="sch_abi_rg">Rage</string>
+    <string name="sch_abi_hy">Hypnotize</string>
+    <string name="sch_abi_rms">RangeShield</string>
+    <string name="sch_abi_tps">FocusShield</string>
+    <string name="sch_abi_wlv">Worker Bonus</string>
+    <string name="sch_abi_cdc">Research Break</string>
+    <string name="sch_abi_waur">Weaking Aura</string>
+    <string name="sch_abi_saur">Motivating Aura</string>
+    <string name="sch_abi_imlt">Imu. Lethargy</string>
+    <string name="sch_abi_imr">Rage Immunity</string>
+    <string name="sch_abi_imh">Hypno Immunity</string>
+    <string name="requirement_list">Clear _ to unlock this chapter</string>
+    <string name="list_unlock">You have unlocked:</string>
+    <string name="list_unlock_u">Units: _</string>
+    <string name="list_unlock_c">Chapters: _</string>
+    <string name="limit_rcos">Cost Multipliers</string>
+    <string name="limit_rspn">Deploy Limits</string>
 </resources>

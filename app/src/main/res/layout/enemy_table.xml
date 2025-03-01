@@ -49,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tableRow8">
 
         <TableRow
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <Button
@@ -58,17 +58,17 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/button_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
+                android:paddingBottom="12dp"
                 android:text="@string/unit_inf_pack"
                 android:textAllCaps="false"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <com.mandarin.bcu.androidutil.supports.AutoMarquee
+            <com.g2.bcu.androidutil.supports.AutoMarquee
                 android:id="@+id/eneminfpackr"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -100,7 +100,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
@@ -109,10 +109,10 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
+                android:paddingBottom="12dp"
                 android:text="@string/hb"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
@@ -135,10 +135,10 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
+                android:paddingBottom="12dp"
                 android:text="@string/unit_info_id"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
@@ -158,7 +158,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
@@ -167,10 +167,10 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
+                android:paddingBottom="12dp"
                 android:text="@string/unit_info_hp"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
@@ -190,8 +190,8 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:weightSum="7">
 
             <TextView
@@ -200,10 +200,10 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
+                android:paddingBottom="12dp"
                 android:text="@string/enemy_info_multi"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
@@ -263,7 +263,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <Button
@@ -271,12 +271,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/button_shape"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
                 android:text="@string/unit_info_atk"
                 android:textAllCaps="false"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -293,18 +293,18 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <Button
                 android:id="@+id/eneminfatktime"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/button_shape"
-                android:text="@string/unit_info_atktime"
-                android:textAllCaps="false"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
+                android:text="@string/unit_info_atktime"
+                android:textAllCaps="false"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -324,7 +324,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
@@ -333,8 +333,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
                 android:paddingBottom="12dp"
                 android:text="@string/unit_info_abilT"
@@ -356,7 +356,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <Button
@@ -364,10 +364,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/button_shape"
-                android:text="@string/unit_info_pre"
-                android:textAllCaps="false"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
+                android:text="@string/unit_info_pre"
+                android:textAllCaps="false"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -387,7 +387,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <Button
@@ -395,10 +395,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/button_shape"
-                android:text="@string/unit_info_post"
-                android:textAllCaps="false"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
+                android:text="@string/unit_info_post"
+                android:textAllCaps="false"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -419,10 +419,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/button_shape"
-                android:text="@string/unit_info_tba"
-                android:textAllCaps="false"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
+                android:text="@string/unit_info_tba"
+                android:textAllCaps="false"
                 android:textColor="?attr/TextPrimary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -440,8 +440,8 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/eneminftrait"
@@ -449,8 +449,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
                 android:paddingBottom="12dp"
                 android:text="@string/enemy_info_trait"
@@ -458,9 +458,9 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <TextView
+            <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/eneminftraitr"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_span="3"
                 android:background="@drawable/cell_shape"
@@ -468,12 +468,15 @@
                 android:paddingTop="12dp"
                 android:paddingBottom="12dp"
                 android:text="@null"
-                android:textColor="?attr/TextPrimary" />
+                android:textColor="?attr/TextPrimary"
+                app:alignItems="center"
+                app:flexWrap="wrap"
+                app:justifyContent="center" />
 
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
@@ -482,25 +485,21 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
                 android:paddingBottom="12dp"
                 android:text="@string/unit_info_atkt"
-                android:textColor="?attr/TextPrimary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textColor="?attr/TextPrimary" />
 
-            <TextView
+            <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/eneminfatktr"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="12dp"
                 android:paddingBottom="12dp"
-                android:text="@null"
-                android:textColor="?attr/TextPrimary" />
+                app:flexWrap="wrap" />
 
             <TextView
                 android:id="@+id/eneminfdrop"
@@ -508,8 +507,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
                 android:paddingBottom="12dp"
                 android:text="@string/enem_info_drop"
@@ -530,8 +529,8 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/eneminfrange"
@@ -539,8 +538,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
                 android:paddingBottom="12dp"
                 android:text="@string/unit_info_rang"
@@ -563,7 +562,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
@@ -572,8 +571,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
                 android:paddingBottom="12dp"
                 android:text="@string/enem_info_barrier"
@@ -598,8 +597,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
                 android:paddingBottom="12dp"
                 android:text="@string/unit_info_spd"
@@ -620,8 +619,8 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/eneminfabil"
@@ -629,8 +628,8 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
-                android:paddingTop="12dp"
                 android:paddingStart="4dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="4dp"
                 android:paddingBottom="12dp"
                 android:text="@string/unit_info_abil"
@@ -660,6 +659,53 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </TableRow>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btn_prevatk"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/button"
+                android:enabled="true"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@string/info_prev_hit"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/atk_index"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_span="2"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingStart="4dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="12dp"
+                android:text="@string/info_current_hit"
+                android:textColor="?attr/TextPrimary"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_nextatk"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_span="1"
+                android:background="@drawable/button"
+                android:gravity="center"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@string/info_next_hit"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                android:textStyle="bold" />
         </TableRow>
 
     </TableLayout>

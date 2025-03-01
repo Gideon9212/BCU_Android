@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BCU</string>
+    <string name="app_name">G2 BCU</string>
     <string name="anim_view">Animation Viewer</string>
     <string name="stg_inf">Stage Info</string>
     <string name="def_animsch">Open Filter screens</string>
@@ -119,12 +119,14 @@
     <string name="unit_info_post">Post-Atk</string>
     <string name="unit_info_atktime">Atk-Time</string>
     <string name="unit_info_abilT">Use Ability</string>
-    <string name="unit_info_true">True</string>
-    <string name="unit_info_false">False</string>
+    <string name="unit_info_true">Yes</string>
+    <string name="unit_info_false">No</string>
     <string name="abi_rev">Revive</string>
     <string name="abi_stt">Stop Time</string>
     <string name="abi_snk">Sniper KB</string>
     <string name="abi_seal">Seal</string>
+    <string name="abi_drn" translatable="false">Drain</string>
+    <string name="abi_bles" translatable="false">Blessing</string>
     <string name="abi_sum">Summon</string>
     <string name="abi_mvatk">Moving Attack</string>
     <string name="abi_thch">Theme Change</string>
@@ -300,8 +302,8 @@
     <string name="stg_info_insa">Insane</string>
     <string name="stg_info_dead">Deadly</string>
     <string name="stg_info_merc">Merciless</string>
-    <string name="stg_info_poss">True</string>
-    <string name="stg_info_impo">False</string>
+    <string name="stg_info_poss">Yes</string>
+    <string name="stg_info_impo">No</string>
     <string name="stg_info_loadic">Loading Icons…</string>
     <string name="stg_info_loadbg">Loading Backgrounds…</string>
     <string name="stg_info_score">Score</string>
@@ -594,7 +596,7 @@
     <string name="talen_poi">Res.Poison</string>
     <string name="talen_sur">Res.Surge Attack</string>
     <string name="lineup_const_curse">Curseblast Level</string>
-    <string name="stage_sol">Story of Legends</string>
+    <string name="stage_sol">Stories of Legend</string>
     <string name="stage_event">Regular Event Stages</string>
     <string name="stage_collabo">Collaboration Stages</string>
     <string name="stage_eoc">Story Chapters</string>
@@ -649,6 +651,7 @@
     <string name="def_lang_ru">Русский</string>
     <string name="png_normal">Normal</string>
     <string name="png_transp">Transparent BG</string>
+    <string name="png_sprite" translatable="false">Spritesheet</string>
     <string name="def_lang_fr">Français</string>
     <string name="stat_sch_type">"Type : "</string>
     <string name="stat_sch_option">"Option : "</string>
@@ -701,13 +704,14 @@
     <string name="load_add">Loading UI Data…</string>
     <string name="pack_manage_remove">Remove pack</string>
     <string name="pack_manage_share">Share pack</string>
+    <string name="pack_manage_savedel">Delete SaveData</string>
     <string name="pack_manage_remove_sure">Removing Pack</string>
     <string name="pack_manage_remove_msg">Are you sure you want to remove pack? This cannot be undone</string>
     <string name="remove">Remove</string>
     <string name="pack_remove_result">Pack Removed</string>
     <string name="main_packs">Packs</string>
     <string name="pack_share_notfound">Can\'t find pack file</string>
-    <string name="pack_import_invalid">You can import only pack.bcuzip files</string>
+    <string name="pack_import_invalid">You can import only pack.bcuzip or userpack files</string>
     <string name="pack_import_exist">Pack Existing</string>
     <string name="pack_import_exist_msg">This pack file is already existing in your application. Will you replace file?</string>
     <string name="replace">Replace</string>
@@ -720,6 +724,7 @@
     <string name="ui_sound">UI Sound</string>
     <string name="sch_abi_mw">Mini-Wave</string>
     <string name="main_asset">Asset Browser</string>
+    <string name="main_animation" translatable="false">Custom Anim. Browser</string>
     <string name="file_extract">Extract File</string>
     <string name="file_share">Share File</string>
     <string name="file_extract_success">Extracted _ : -</string>
@@ -829,9 +834,11 @@
     <string name="down_need_asset">Required assets not found</string>
     <string name="eff_heal">Heal</string>
     <string name="anim_entry">Enter</string>
+    <string name="anim_retreat">Retreat</string>
     <string name="battle_tworow">Battle layout : Two rows</string>
     <string name="battle_onerow">Battle layout : One row</string>
     <string name="config_battle">Battle</string>
+    <string name="battle_prog">Simulate Progression</string>
     <string name="datareset_selected">Reset selected data</string>
     <string name="datareset_warning">Are you sure that you want to delete selected data? This cannot be undone</string>
     <string name="datareset_reset">Reset</string>
@@ -949,13 +956,15 @@
     <string name="config_showres">Show battle results upon ends</string>
     <string name="stage_L">Labyrinth Stages</string>
     <string name="stage_ND">Zero Legends</string>
+    <string name="stage_SR">Otherworld Colosseum</string>
+    <string name="stage_G">Catclaw Championships</string>
     <string name="fruit24">Purple Behemoth Crystal</string>
     <string name="fruit25">Red Behemoth Crystal</string>
     <string name="fruit26">Blue Behemoth Crystal</string>
     <string name="fruit27">Green Behemoth Crystal</string>
     <string name="fruit28">Yellow Behemoth Crystal</string>
     <string name="fruit29">Epic Behemoth Stone</string>
-    <string name="config_reallv">Perform realistic leveling in battle</string>
+    <string name="config_reallv">Simulate BC leveling</string>
     <string name="lineup_base">Foundation</string>
     <string name="lineup_decoration">Castle Decoration</string>
     <string name="lineup_slfd">Slow Beam Foundation Level</string>
@@ -981,6 +990,8 @@
     <string name="eff_cosu">Counter Surge</string>
     <string name="eff_cosue">Counter Surge Enemy Side</string>
     <string name="sch_abi_cs">Counter Surge</string>
+    <string name="sch_abi_expl" translatable="false">Explosive Wave</string>
+    <string name="sch_abi_iexp" translatable="false">Imu. Explosive Wave</string>
     <string name="unit_info_colo">" (Takes damage 0.7x / Gives damage 1.6x)"</string>
     <string name="stg_info_nocpu">You can\'t use gold CPU in this stage</string>
     <string name="err_title">Error Happened</string>
@@ -1023,4 +1034,86 @@
     <string name="eff_guar">Guard (Dummy)</string>
     <string name="eff_meki">Metal Killer</string>
     <string name="eff_mekie">Metal Killer Enemy Side</string>
+    <string name="sch_abi_stt">Strategist</string>
+    <string name="sch_abi_ltg">Lethargy</string>
+    <string name="sch_abi_rg">Rage</string>
+    <string name="sch_abi_hy">Hypnotize</string>
+    <string name="sch_abi_rms">RangeShield</string>
+    <string name="sch_abi_tps">FocusShield</string>
+    <string name="sch_abi_wlv">Worker Bonus</string>
+    <string name="sch_abi_cdc">Research Break</string>
+    <string name="sch_abi_waur">Weaking Aura</string>
+    <string name="sch_abi_saur">Motivating Aura</string>
+    <string name="sch_abi_imlt">Imu. Lethargy</string>
+    <string name="sch_abi_imr">Rage Immunity</string>
+    <string name="sch_abi_imh">Hypno Immunity</string>
+    <string name="requirement_list">Clear _ to unlock this chapter</string>
+    <string name="list_unlock">You have unlocked:</string>
+    <string name="list_unlock_u">Units: _</string>
+    <string name="list_unlock_c">Chapters: _</string>
+    <string name="info_prev_hit" translatable="false">Previous Atk</string>
+    <string name="info_next_hit" translatable="false">Next Atk</string>
+    <string name="info_current_hit" translatable="false">Attack Pattern #_</string>
+    <string name="limit_bank" translatable="false">Total Bank</string>
+    <string name="limit_spawn" translatable="false">Maximum Deploy Count</string>
+    <string name="limit_uvcd" translatable="false">Cat Cooldown</string>
+    <string name="limit_inicd" translatable="false">Start on Cooldown</string>
+    <string name="limit_banco" translatable="false">Banned CatCombos</string>
+    <string name="limit_unico" translatable="false">Universal Cost</string>
+    <string name="limit_rcos">Cost Multipliers</string>
+    <string name="limit_rcoo" translatable="false">CD Multipliers</string>
+    <string name="limit_rspn">Deploy Limits</string>
+    <string name="story_title" translatable="false">Stage Clear Rewards</string>
+    <string name="story_umap" translatable="false">Unlocked StageMaps:</string>
+    <string name="story_uuni" translatable="false">Unlocked Units:</string>
+    <string name="nodeploy" translatable="false">Can\'t Deploy any more!</string>
+    <string name="presetLu" translatable="false">Preset Lineup</string>
+    <string name="anim_name_hint" translatable="false">Animation Name</string>
+    <string name="anim_imgcut_btn" translatable="false">ImgCut Editor</string>
+    <string name="anim_mamodel_btn" translatable="false">Model Editor</string>
+    <string name="anim_maanim_btn" translatable="false">Anim. Editor</string>
+    <string name="anim_uni_desc" translatable="false">Deploy Icon</string>
+    <string name="anim_edi_desc" translatable="false">Display Icon</string>
+    <string name="anim_prev_desc" translatable="false">StageMap Preview Icon</string>
+    <string name="anim_btn_set_edi" translatable="false">Set Preview Icon</string>
+    <string name="anim_btn_set_uni" translatable="false">Set Deploy Icon</string>
+    <string name="anim_btn_set_prev" translatable="false">Set Map Preview</string>
+    <string name="anim_btn_delete" translatable="false">Delete Animation</string>
+    <string name="image_import_invalid" translatable="false">You can only import png or jpg files</string>
+    <string name="image_import_wrongsize" translatable="false">Wrong Image size (_owx_oh). Has to be (_nwx_nh)</string>
+    <string name="anim_manager_delete" translatable="false">Deleting Animation</string>
+    <string name="anim_manager_deleted" translatable="false">Animation deleted</string>
+    <string name="anim_manager_delwarn" translatable="false">Do you want to delete this animation? This can\'t be undone.</string>
+    <string name="anim_type_default" translatable="false">Unit/Enemy</string>
+    <string name="anim_type_soul" translatable="false">Soul</string>
+    <string name="anim_type_bgeff" translatable="false">BG Effect</string>
+    <string name="anim_type_desc" translatable="false">Choose Animation Type (Cannot be changed later)</string>
+    <string name="imgcut_import" translatable="false">Import Imgcut</string>
+    <string name="sprite_import" translatable="false">Import Sprites</string>
+    <string name="imgcut_export" translatable="false">Export Imgcut</string>
+    <string name="img_anim_spr_exp" translatable="false">Exporting Spritesheet</string>
+    <string name="password_wrong" translatable="false">Incorrect Password</string>
+    <string name="password_hint" translatable="false">Enter Pack\'s Password</string>
+    <string name="anim_addpart" translatable="false">Add Part</string>
+    <string name="anim_rempart" translatable="false">Remove Part</string>
+    <string name="mamodel_par" translatable="false">Parent</string>
+    <string name="mamodel_spr" translatable="false">Sprite</string>
+    <string name="mamodel_z" translatable="false">Z-Order</string>
+    <string name="def_pos" translatable="false">Position</string>
+    <string name="def_piv" translatable="false">Pivot</string>
+    <string name="def_scale" translatable="false">Scale</string>
+    <string name="def_rot" translatable="false">Angle</string>
+    <string name="def_glow" translatable="false">Glow</string>
+    <string name="anim_option_copyanim" translatable="false">Copy Animation</string>
+    <string name="img_anim_spr_cop" translatable="false">Copying Animation</string>
+    <string name="img_anim_spr_suc" translatable="false">Successfully Copied</string>
+    <string name="main_cus_pack" translatable="false">Pack Creator</string>
+    <string name="mapart_pid" translatable="false">Part ID</string>
+    <string name="mapart_mod" translatable="false">Modification</string>
+    <string name="mapart_lop" translatable="false">Loop</string>
+    <string name="mapart_uses" translatable="false">Part is used by:</string>
+    <string name="mapart_remtree" translatable="false">Remove Anyway</string>
+    <string name="mapart_unremovable" translatable="false">This part can\'t be removed</string>
+    <string name="def_part" translatable="false">Part</string>
+    <string name="spawn_door" translatable="false">Everywhere Door</string>
 </resources>

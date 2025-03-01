@@ -4,6 +4,7 @@
     <item name="lineupView" type="id"/>
     <item name="battleView" type="id"/>
     <item name="animationView" type="id"/>
+    <item name="spriteView" type="id"/>
     <item name="unitshowlist" type="id"/>
     <item name="enemyshowlist" type="id"/>
     <item name="enemychip" type="id"/>

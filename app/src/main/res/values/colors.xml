@@ -5,6 +5,7 @@
     <color name="colorAccent">#aed581</color>
     <color name="stageSelect">#D8D8D8</color>
     <color name="unitinfButton">#E9E9E9</color>
+    <color name="unitinfButtonDisabled">#929292</color>
     <color name="backgroundPrimary">#FFFFFF</color>
     <color name="ButtonPrimary">#D8D8D8</color>
     <color name="TextPrimary">#5b5b5b</color>
@@ -15,6 +16,7 @@
     <color name="HintPrimary">#805b5b5b</color>
     <color name="ErrorPrimary">#f44336</color>
     <color name="SemiWarningPrimary">#77f44336</color>
+    <color name="SemiWarningSecondary">#995E1008</color>
     <color name="SemiBackgroundPrimary">#AAFFFFFF</color>
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/UnitinfoName</color>
     <color name="status_notsolved">#d85252</color>

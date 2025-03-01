@@ -5,6 +5,7 @@
     <color name="colorAccentN">#455a64</color>
     <color name="stageSelectN">#cfcfcf</color>
     <color name="unitinfButtonN">#424242</color>
+    <color name="unitinfButtonDisabledN">#1D1D1D</color>
     <color name="backgroundPrimaryN">#363636</color>
     <color name="ButtonPrimaryN">#404040</color>
     <color name="TextPrimaryN">#eeeeee</color>

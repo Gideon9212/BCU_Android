@@ -4,15 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.mandarin.bcu.androidutil.StaticStore;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainBCU {
 
-	public static final int ver = 41009;
+	public static final int ver = 50000;
 
 	public static int FILTER_TYPE = 0;
 	public static final boolean WRITE = !new File("./.project").exists();
@@ -31,7 +29,6 @@ public class MainBCU {
 			String mems = "Required Memory : "+(int)(Opts.MEMORY)+" Current memory : "+(int)(mem >> 20);
 			Toast.makeText(context,mems,Toast.LENGTH_SHORT).show();
 		}
-
 		loaded = true;
 	}
 

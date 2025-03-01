@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/storyTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/story_title"
+        android:textColor="?attr/TextPrimary"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/stageView"
+        app:layout_constraintStart_toStartOf="@id/stageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/stageDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/story_umap"
+        android:textColor="?attr/TextPrimary"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/stageView"
+        app:layout_constraintStart_toStartOf="@id/stageView"
+        app:layout_constraintTop_toBottomOf="@id/storyTitle" />
+
+    <ScrollView
+        android:id="@+id/stageView"
+        android:layout_width="330dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stageDesc">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:id="@+id/stageGroup"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/unitDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/story_uuni"
+        android:textColor="?attr/TextPrimary"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/unitView"
+        app:layout_constraintEnd_toEndOf="@id/unitView"
+        app:layout_constraintStart_toStartOf="@id/unitView"
+        app:layout_constraintTop_toBottomOf="@id/stageView" />
+
+    <ScrollView
+        android:id="@+id/unitView"
+        android:layout_width="330dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/unitDesc">
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/stFormGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap" />
+    </ScrollView>
+
+    <Button
+        android:id="@+id/story_continue"
+        android:layout_width="128dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="?attr/colorAccent"
+        android:text="@string/battle_continue"
+        android:textAllCaps="false"
+        android:textColor="?attr/TextPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/story_cancel"
+        app:layout_constraintTop_toBottomOf="@id/unitView"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/story_cancel"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="88dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button"
+        android:gravity="center"
+        android:minWidth="88dip"
+        android:minHeight="32dip"
+        android:text="@android:string/cancel"
+        android:textAllCaps="false"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="?attr/TextPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/unitView"
+        app:layout_constraintVertical_bias="1.0" />
+</androidx.constraintlayout.widget.ConstraintLayout>

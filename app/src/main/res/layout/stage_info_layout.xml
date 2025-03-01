@@ -51,7 +51,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <com.mandarin.bcu.androidutil.supports.AutoMarquee
+            <com.g2.bcu.androidutil.supports.AutoMarquee
                 android:id="@+id/stginfopackr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

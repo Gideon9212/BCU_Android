@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/anim_name_box"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/anim_uni"
+        app:layout_constraintEnd_toStartOf="@+id/anim_uni"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/anim_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/anim_name_hint"
+            android:minHeight="48dp"
+            android:textColor="?attr/TextPrimary"
+            android:textColorHint="?attr/TextPrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/anim_uni"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/anim_uni_desc"
+        android:minHeight="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/anim_name_box"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
+        android:id="@+id/anim_imgcut_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="?attr/ButtonPrimary"
+        android:text="@string/anim_imgcut_btn"
+        android:textAllCaps="false"
+        android:textColor="?attr/TextPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/anim_icon_set_button"
+        app:layout_constraintEnd_toStartOf="@+id/anim_mamodel_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/anim_name_box" />
+
+    <Button
+        android:id="@+id/anim_mamodel_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="?attr/ButtonPrimary"
+        android:text="@string/anim_mamodel_btn"
+        android:textAllCaps="false"
+        android:textColor="?attr/TextPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/anim_icon_set_button"
+        app:layout_constraintEnd_toStartOf="@+id/anim_maanim_btn"
+        app:layout_constraintStart_toEndOf="@+id/anim_imgcut_btn"
+        app:layout_constraintTop_toBottomOf="@+id/anim_name_box" />
+
+    <Button
+        android:id="@+id/anim_maanim_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="?attr/ButtonPrimary"
+        android:text="@string/anim_maanim_btn"
+        android:textAllCaps="false"
+        android:textColor="?attr/TextPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/anim_icon_set_button"
+        app:layout_constraintEnd_toStartOf="@id/anim_icon_set_button"
+        app:layout_constraintStart_toEndOf="@+id/anim_mamodel_btn"
+        app:layout_constraintTop_toBottomOf="@+id/anim_name_box"
+        tools:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/anim_icon_set_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/anim_name_box"
+        app:srcCompat="@drawable/ic_more_horiz_black_24dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

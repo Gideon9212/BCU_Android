@@ -531,6 +531,17 @@
                 app:layout_constraintStart_toStartOf="@+id/configse"
                 app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/configprog"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/battle_prog"
+                android:textColor="?attr/TextPrimary"
+                app:layout_constraintEnd_toEndOf="@+id/configrow"
+                app:layout_constraintStart_toStartOf="@+id/configrow"
+                app:layout_constraintTop_toBottomOf="@+id/configrow" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/configreset"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -555,9 +566,9 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/config_bgeff"
                 android:textColor="?attr/TextPrimary"
-                app:layout_constraintEnd_toEndOf="@+id/configrow"
-                app:layout_constraintStart_toStartOf="@+id/configrow"
-                app:layout_constraintTop_toBottomOf="@+id/configrow" />
+                app:layout_constraintEnd_toEndOf="@id/configprog"
+                app:layout_constraintStart_toStartOf="@id/configprog"
+                app:layout_constraintTop_toBottomOf="@id/configprog" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/configdelay"
@@ -711,18 +722,6 @@
                 app:layout_constraintStart_toStartOf="@+id/configperf"
                 app:layout_constraintTop_toBottomOf="@+id/configperf" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/configperfbattle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingBottom="24dp"
-                android:text="@string/config_perfbattle"
-                android:textColor="?attr/TextPrimary"
-                app:layout_constraintEnd_toEndOf="@+id/configinfport"
-                app:layout_constraintStart_toStartOf="@+id/configperfanim"
-                app:layout_constraintTop_toBottomOf="@+id/configperfanim" />
-
             <TextView
                 android:id="@+id/configcaution"
                 android:layout_width="0dp"
@@ -734,7 +733,7 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@+id/configperfanim"
                 app:layout_constraintStart_toStartOf="@+id/configperfanim"
-                app:layout_constraintTop_toBottomOf="@+id/configperfbattle" />
+                app:layout_constraintTop_toBottomOf="@id/configperfanim" />
 
             <TextView
                 android:id="@+id/viewcurrentcol"

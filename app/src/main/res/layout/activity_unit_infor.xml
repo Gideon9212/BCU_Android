@@ -23,7 +23,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.mandarin.bcu.androidutil.supports.AutoMarquee
+        <com.g2.bcu.androidutil.supports.AutoMarquee
             android:id="@+id/unitinfrarname"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -197,7 +197,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/view2" />
 
-                    <com.mandarin.bcu.androidutil.supports.MeasureViewPager
+                    <com.g2.bcu.androidutil.supports.MeasureViewPager
                         android:id="@+id/catfruitpager"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
@@ -218,7 +218,7 @@
                         app:layout_constraintStart_toStartOf="@+id/cfinftext"
                         app:layout_constraintTop_toBottomOf="@+id/catfruitpager" />
 
-                    <com.mandarin.bcu.androidutil.supports.MeasureViewPager
+                    <com.g2.bcu.androidutil.supports.MeasureViewPager
                         android:id="@+id/ultraformpager"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

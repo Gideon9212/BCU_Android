@@ -71,6 +71,63 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".AnimationManagement"
+            android:configChanges="locale"
+            android:exported="true">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".png"
+                    android:scheme="file" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".PackCreation" />
+        <activity
+            android:name=".ImgCutEditor"
+            android:configChanges="locale"
+            android:exported="true">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".txt"
+                    android:scheme="file" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MaModelEditor"
+            android:configChanges="locale"
+            android:exported="true">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".txt"
+                    android:scheme="file" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MaAnimEditor"
+            android:configChanges="locale"
+            android:exported="true">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".txt"
+                    android:scheme="file" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".StatSearchFilter"
             android:windowSoftInputMode="adjustPan" />
         <activity
@@ -136,7 +193,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.mandarin.bcu.provider"
+            android:authorities="com.g2.bcu.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -155,10 +212,10 @@
             android:name=".CheckUpdateScreen$ServiceBroadCastReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.mandarin.bcu::Progress-Text" />
-                <action android:name="com.mandarin.bcu::Progress-Progression" />
-                <action android:name="com.mandarin.bcu::Success" />
-                <action android:name="com.mandarin.bcu::Failed" />
+                <action android:name="com.g2.bcu::Progress-Text" />
+                <action android:name="com.g2.bcu::Progress-Progression" />
+                <action android:name="com.g2.bcu::Success" />
+                <action android:name="com.g2.bcu::Failed" />
             </intent-filter>
         </receiver>
     </application>

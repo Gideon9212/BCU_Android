@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BCU</string>
+    <string name="app_name">G2 BCU</string>
     <string name="anim_view">アニメーションビューア</string>
     <string name="stg_inf">ステージ情報</string>
     <string name="def_animsch">フィルタ画面を開く</string>
@@ -701,6 +701,7 @@
     <string name="load_add">UIデータを読み込んでいます…</string>
     <string name="pack_manage_remove">パックを削除</string>
     <string name="pack_manage_share">パックを共有</string>
+    <string name="pack_manage_savedel">Delete SaveData</string>
     <string name="pack_manage_remove_sure">パックを削除しています</string>
     <string name="pack_manage_remove_msg">本当にパックを削除しても大丈夫ですか？ この操作は取り消せません</string>
     <string name="remove">削除</string>
@@ -829,9 +830,11 @@
     <string name="down_need_asset">必要なアセットが見つかりません</string>
     <string name="eff_heal">回復</string>
     <string name="anim_entry">入る</string>
+    <string name="anim_retreat">リトリート</string>
     <string name="battle_tworow">戦闘中レイアウト:二列</string>
     <string name="battle_onerow">戦闘中レイアウト:一列</string>
     <string name="config_battle">戦闘</string>
+    <string name="battle_prog">Simulate Progression</string>
     <string name="datareset_selected">選択したデータを削除</string>
     <string name="datareset_warning">選択したデータを削除しても宜しいですか？ この操作は取り消せません</string>
     <string name="datareset_reset">リセット</string>
@@ -947,8 +950,10 @@
     <string name="config_showst">Show stage name image in battle</string>
     <string name="stg_info_killcount">Kill Count</string>
     <string name="config_showres">Show battle results upon ends</string>
-    <string name="stage_L">Labyrinth Stages</string>
-    <string name="stage_ND">Zero Legends</string>
+    <string name="stage_L">地底迷宮</string>
+    <string name="stage_ND">レジェンドストーリー0</string>
+    <string name="stage_SR">異次元コロシアム</string>
+    <string name="stage_G">にゃんこ道検定</string>
     <string name="fruit24">紫獣結晶</string>
     <string name="fruit25">紅獣結晶</string>
     <string name="fruit26">蒼獣結晶</string>
@@ -1023,4 +1028,23 @@
     <string name="eff_guar">ガード (ダミー)</string>
     <string name="eff_meki">メタルキラー</string>
     <string name="eff_mekie">敵側のメタルキラー</string>
+    <string name="sch_abi_stt">Strategist</string>
+    <string name="sch_abi_ltg">Lethargy</string>
+    <string name="sch_abi_rg">Rage</string>
+    <string name="sch_abi_hy">Hypnotize</string>
+    <string name="sch_abi_rms">RangeShield</string>
+    <string name="sch_abi_tps">FocusShield</string>
+    <string name="sch_abi_wlv">Worker Bonus</string>
+    <string name="sch_abi_cdc">Research Break</string>
+    <string name="sch_abi_waur">Weaking Aura</string>
+    <string name="sch_abi_saur">Motivating Aura</string>
+    <string name="sch_abi_imlt">Imu. Lethargy</string>
+    <string name="sch_abi_imr">Rage Immunity</string>
+    <string name="sch_abi_imh">Hypno Immunity</string>
+    <string name="requirement_list">Clear _ to unlock this chapter</string>
+    <string name="list_unlock">You have unlocked:</string>
+    <string name="list_unlock_u">Units: _</string>
+    <string name="list_unlock_c">Chapters: _</string>
+    <string name="limit_rcos">生産キャラ数制限</string>
+    <string name="limit_rspn">プラスワン 超激レア</string>
 </resources>
