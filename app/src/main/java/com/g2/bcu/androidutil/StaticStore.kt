@@ -527,7 +527,11 @@ object StaticStore {
         var ind : Int
         if (lan == 0) {
             val language: String = Resources.getSystem().configuration.locales[0].language
-            ind = listOf(*lang).indexOf(language) - 1
+            val languages = listOf(*lang)
+            ind = if (languages.contains(language))
+                languages.indexOf(language) - 1
+            else
+                0
             CommonStatic.getConfig().langs[0] = CommonStatic.Lang.Locale.values()[ind]
         } else {
             ind = lan - 1
