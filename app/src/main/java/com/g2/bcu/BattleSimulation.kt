@@ -3,6 +3,7 @@ package com.g2.bcu
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences.Editor
 import android.content.res.Configuration
@@ -22,6 +23,7 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
@@ -37,6 +39,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
+import com.google.gson.JsonParser
 import com.g2.bcu.androidutil.Definer
 import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
@@ -56,12 +59,17 @@ import common.CommonStatic.Lang
 import common.battle.BasisLU
 import common.battle.BasisSet
 import common.battle.SBCtrl
+import common.battle.SBRply
 import common.battle.Treasure
 import common.io.json.JsonDecoder
 import common.io.json.JsonEncoder
 import common.pack.Identifier
+import common.pack.Source.ResourceLocation
+import common.pack.UserProfile
 import common.system.P
+import common.util.anim.AnimCE
 import common.util.lang.MultiLangCont
+import common.util.stage.Replay
 import common.util.stage.Stage
 import common.util.unit.Form
 import kotlinx.coroutines.Dispatchers
@@ -136,7 +144,12 @@ class BattleSimulation : AppCompatActivity() {
             val item = bundle.getInt("item")
             val siz = bundle.getFloat("size", 1f)
             val pos = bundle.getInt("pos", 0)
-            
+
+            val recd : Replay? = if (bundle.containsKey("replay")) {
+                val res = JsonDecoder.decode(JsonParser.parseString(bundle.getString("replay")), ResourceLocation::class.java)
+                res.replay
+            } else null
+
             lifecycleScope.launch {
                 //Prepare
                 val pauseButton= findViewById<FloatingActionButton>(R.id.battlepause)
@@ -158,7 +171,8 @@ class BattleSimulation : AppCompatActivity() {
                 val volumeUI = findViewById<SeekBar>(R.id.seekui)
                 val layout = findViewById<LinearLayout>(R.id.battlelayout)
                 val retry = findViewById<Button>(R.id.battleretry)
-                
+                val replay = findViewById<Button>(R.id.battlereplay)
+
                 pauseButton.hide()
                 fast.hide()
                 slow.hide()
@@ -204,11 +218,14 @@ class BattleSimulation : AppCompatActivity() {
                 if(CommonStatic.getConfig().realLevel)
                     lu.simulateBCLeveling()
                 val prog = if (stg.mc.getSave(false) != null) 1 else 0
-                val ctrl = SBCtrl(AndroidKeys(), stg, star, lu, item, r.nextLong(), prog.toByte())
+                val ctrl = if (recd == null)
+                    SBCtrl(AndroidKeys(), stg, star, lu, item, r.nextLong(), prog.toByte())
+                else
+                    SBRply(recd)
 
                 val axis = shared.getBoolean("Axis", true)
 
-                val battleView = BattleView(this@BattleSimulation, ctrl, 1, axis, this@BattleSimulation, getCutoutWidth(this@BattleSimulation), stgName, fontMod).apply {
+                val battleView = BattleView(this@BattleSimulation, ctrl, axis, this@BattleSimulation, getCutoutWidth(this@BattleSimulation), stgName, fontMod).apply {
                     painter.cutout = getCutoutWidth(this@BattleSimulation)
 
                     initialized = false
@@ -524,6 +541,39 @@ class BattleSimulation : AppCompatActivity() {
                         battleView.painter.bf.sb.release()
 
                         finish()
+                    }
+                }
+
+                replay.setOnClickListener {
+                    if (battleView.painter.bf is SBCtrl) {
+                        val rp = (battleView.painter.bf as SBCtrl).data
+
+                        val dialog = Dialog(this@BattleSimulation)
+                        dialog.setContentView(R.layout.create_setlu_dialog)
+                        val edit = dialog.findViewById<EditText>(R.id.setluedit)
+                        val done = dialog.findViewById<Button>(R.id.setludone)
+                        val cancel = dialog.findViewById<Button>(R.id.setlucancel)
+                        val tbar = dialog.findViewById<TextView>(R.id.setluname)
+                        tbar.setText(R.string.replay_add)
+
+                        edit.hint = "New ${battleView.painter.bf.sb.st} Replay"
+                        val rgb = StaticStore.getRGB(StaticStore.getAttributeColor(this@BattleSimulation, R.attr.TextPrimary))
+                        edit.setHintTextColor(Color.argb(255 / 2, rgb[0], rgb[1], rgb[2]))
+
+                        done.setOnClickListener {
+                            rp.rename(edit.text.ifBlank { edit.hint }.toString())
+                            rp.write()
+                            Replay.getMap()[rp.rl.id] = rp
+
+                            StaticStore.showShortMessage(this@BattleSimulation, getString(R.string.replay_saved))
+                            dialog.dismiss()
+                        }
+                        cancel.setOnClickListener { dialog.dismiss() }
+                        if (!isDestroyed && !isFinishing) {
+                            dialog.show()
+                        }
+                    } else if (battleView.painter.bf is SBCtrl) {
+                        //TODO: Load battle from replay after replay support is added but not my TODO
                     }
                 }
 

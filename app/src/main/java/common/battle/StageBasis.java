@@ -922,9 +922,9 @@ public class StageBasis extends BattleObj {
 	public BattleList<EUnit> getAllOf(int i, int j) {
 		BattleList<EUnit> es = new BattleList<>(le.size());
 		for (Entity e : le)
-			if (e.anim.dead == -1 && e instanceof EUnit) {
+			if (e.anim.dead == -1 && e instanceof EUnit && e.group != -1) {
 				EUnit eu = (EUnit)e;
-				if (eu.index[0] == i && eu.index[1] == j)
+				if (eu.index != null && eu.index[0] == i && eu.index[1] == j)
 					es.add((EUnit) e);
 			}
 		return es;

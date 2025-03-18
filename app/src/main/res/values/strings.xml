@@ -1116,4 +1116,9 @@
     <string name="mapart_unremovable" translatable="false">This part can\'t be removed</string>
     <string name="def_part" translatable="false">Part</string>
     <string name="spawn_door" translatable="false">Everywhere Door</string>
+    <string name="replay_add" translatable="false">Creating Replay</string>
+    <string name="replay_saved" translatable="false">Replay saved successfully</string>
+    <string name="anim_resize" translatable="false">Resize</string>
+    <string name="anim_resizep" translatable="false">Resizing imgcut</string>
+    <string name="replay_create" translatable="false">Create Replay</string>
 </resources>

@@ -105,4 +105,16 @@
 
     </ListView>
 
+     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/stgreplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:contentDescription="@null"
+        android:focusable="true"
+        android:src="@drawable/ic_refresh_black_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+        
 </androidx.constraintlayout.widget.ConstraintLayout>

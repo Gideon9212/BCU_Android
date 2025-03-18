@@ -24,6 +24,7 @@ import common.system.files.VFile
 import common.util.Data
 import common.util.anim.ImgCut
 import common.util.lang.ProcLang
+import common.util.stage.Replay
 import java.io.File
 import java.io.IOException
 import java.util.function.Consumer
@@ -83,6 +84,8 @@ object Definer {
                 }
 
                 handlePacks(context)
+                Replay.getMap().clear()
+                Replay.read()
             }
 
             text.accept(context.getString(R.string.load_add))
@@ -159,9 +162,8 @@ object Definer {
             StaticStore.allMCs.addAll(StaticStore.BCMapCodes)
             val packs = UserProfile.getUserPacks()
             for(p in packs)
-                if(p is PackData.UserPack)
-                    if(p.mc.maps.list.isNotEmpty())
-                        StaticStore.allMCs.add(p.mc.sid)
+                if(p.mc.maps.list.isNotEmpty())
+                    StaticStore.allMCs.add(p.mc.sid)
 
             if(StaticStore.medalnumber == 0) {
                 val vf = VFile.get("./org/page/medal")

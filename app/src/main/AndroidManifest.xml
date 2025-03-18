@@ -188,6 +188,7 @@
         <activity android:name=".UnitInfo" />
         <activity android:name=".SearchFilter" />
         <activity android:name=".MapList" />
+        <activity android:name=".ReplayList" />
         <activity android:name=".AnimationViewer" />
         <activity android:name=".MainActivity" />
 

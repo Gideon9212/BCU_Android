@@ -1,6 +1,10 @@
 package com.g2.bcu
 
 import android.annotation.SuppressLint
+import android.app.Dialog
+import android.text.InputType
+import android.widget.EditText
+import android.widget.TextView
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -286,6 +290,7 @@ class ImgCutEditor : AppCompatActivity() {
             val impr = findViewById<Button>(R.id.imgcutimport)
             val expr = findViewById<Button>(R.id.imgcutexport)
             val spri = findViewById<Button>(R.id.imgcutsprimp)
+            val resi = findViewById<Button>(R.id.imgcutresize)
             addl.setOnClickListener {
                 anim.imgcut.addLine(viewer.sele)
                 adp.add(anim.imgcut.cuts[anim.imgcut.n - 1])
@@ -320,6 +325,34 @@ class ImgCutEditor : AppCompatActivity() {
                     anim.reloImg()
                     viewer.calculateSize(true)
                 })
+            }
+
+            resi.setOnClickListener {
+                val dialog = Dialog(this@ImgCutEditor)
+                dialog.setContentView(R.layout.create_setlu_dialog)
+                val edit = dialog.findViewById<EditText>(R.id.setluedit)
+                val done = dialog.findViewById<Button>(R.id.setludone)
+                val cancel = dialog.findViewById<Button>(R.id.setlucancel)
+                val tbar = dialog.findViewById<TextView>(R.id.setluname)
+                tbar.setText(R.string.anim_resizep)
+                edit.hint = "100.0%"
+                val rgb = StaticStore.getRGB(StaticStore.getAttributeColor(this@ImgCutEditor, R.attr.TextPrimary))
+                edit.setHintTextColor(Color.argb(255 / 2, rgb[0], rgb[1], rgb[2]))
+                edit.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+
+                done.setOnClickListener {
+                    val siz = CommonStatic.parseDoubleN(edit.text.ifBlank { edit.hint }.toString())
+                    if (siz > 0) {
+                        anim.resize(siz / 100)
+                        unSave(anim, "initial")
+                        viewer.invalidate()
+                    }
+                    dialog.dismiss()
+                }
+                cancel.setOnClickListener { dialog.dismiss() }
+                if (!isDestroyed && !isFinishing) {
+                    dialog.show()
+                }
             }
 
             val undo = findViewById<FloatingActionButton>(R.id.anim_Undo)

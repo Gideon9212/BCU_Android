@@ -36,11 +36,7 @@ import common.util.unit.Enemy
 class StEnListRecycle(private val activity: Activity, private val st: Stage, private var multi: Int, private var frse: Boolean) : RecyclerView.Adapter<StEnListRecycle.ViewHolder>() {
 
     init {
-        if (StaticStore.infoOpened == null) {
-            StaticStore.infoOpened = BooleanArray(st.data.datas.size) {
-                false
-            }
-        } else if ((StaticStore.infoOpened?.size ?: 0) < st.data.datas.size) {
+        if ((StaticStore.infoOpened?.size ?: 0) < st.data.datas.size) {
             StaticStore.infoOpened = BooleanArray(st.data.datas.size) {
                 false
             }

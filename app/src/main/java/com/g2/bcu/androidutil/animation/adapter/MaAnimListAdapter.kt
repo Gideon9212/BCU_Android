@@ -18,6 +18,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.g2.bcu.MaAnimEditor
 import com.g2.bcu.R
+import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.animation.AnimationEditView
 import com.g2.bcu.androidutil.supports.DynamicListView
 import com.g2.bcu.androidutil.supports.DynamicListView.StableArrayAdapter
@@ -158,12 +159,9 @@ class MaAnimListAdapter(private val activity: MaAnimEditor, private val a : Anim
     }
 
     private fun setList(list : ListView, p : Part) {
-        val n = if (list.size != 0)
-            list[0].height * p.n
-        else
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, p.n * 60f, activity.resources.displayMetrics).toInt()
+        val h = StaticStore.dptopx(p.n * 60f, context)
         list.adapter = PartListAdapter(activity, a, p)
-        list.layoutParams.height = n
+        list.layoutParams.height = h
     }
 
     private fun addLine(p: Part) {

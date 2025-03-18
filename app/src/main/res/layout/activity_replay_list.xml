@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/backgroundPrimary"
-    tools:context=".MapList">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/stgtool"
+        android:id="@+id/rplytool"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -21,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/stgbck"
+        android:id="@+id/rplybck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -33,55 +30,34 @@
         app:borderWidth="0dp"
         app:elevation="0dp"
         app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="@+id/stgtool"
-        app:layout_constraintStart_toStartOf="@+id/stgtool"
-        app:layout_constraintTop_toTopOf="@+id/stgtool"
+        app:layout_constraintBottom_toBottomOf="@id/rplytool"
+        app:layout_constraintStart_toStartOf="@id/rplytool"
+        app:layout_constraintTop_toTopOf="@id/rplytool"
         app:srcCompat="@drawable/back_button" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/stgfilter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:backgroundTint="?attr/colorPrimary"
-        android:clickable="true"
-        app:backgroundTint="?attr/colorPrimary"
-        app:borderWidth="0dp"
-        app:elevation="0dp"
-        app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="@+id/stgtool"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_filter_list_black_24dp"
-        android:focusable="true"
-        android:contentDescription="@null" />
-
     <Spinner
-        android:id="@+id/stgspin"
+        android:id="@+id/rplyspin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="32dp"
         android:background="@color/stageSelect"
         android:maxWidth="225dp"
         android:minWidth="144dp"
         android:popupBackground="?attr/stageSelect"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toBottomOf="@+id/stgtool"
-        app:layout_constraintEnd_toStartOf="@+id/stgfilter"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintStart_toEndOf="@+id/stgbck"
-        app:layout_constraintTop_toTopOf="@+id/stgtool" />
+        app:layout_constraintBottom_toBottomOf="@id/rplytool"
+        app:layout_constraintEnd_toEndOf="@id/rplytool"
+        app:layout_constraintTop_toTopOf="@id/rplytool" />
 
     <ProgressBar
         android:id="@+id/prog"
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/maplist"
-        app:layout_constraintEnd_toEndOf="@+id/maplist"
-        app:layout_constraintStart_toStartOf="@+id/maplist"
-        app:layout_constraintTop_toTopOf="@+id/maplist" />
+        app:layout_constraintBottom_toBottomOf="@id/rplyList"
+        app:layout_constraintEnd_toEndOf="@id/rplyList"
+        app:layout_constraintStart_toStartOf="@id/rplyList"
+        app:layout_constraintTop_toTopOf="@id/rplyList" />
 
     <TextView
         android:id="@+id/status"
@@ -95,27 +71,12 @@
         app:layout_constraintTop_toBottomOf="@+id/prog" />
 
     <ListView
-        android:id="@+id/maplist"
+        android:id="@+id/rplyList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fastScrollEnabled="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stgtool">
-
-    </ListView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/stgreplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:contentDescription="@null"
-        android:focusable="true"
-        android:src="@drawable/ic_refresh_black_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/rplytool" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

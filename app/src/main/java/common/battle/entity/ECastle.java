@@ -54,6 +54,8 @@ public class ECastle extends AbEntity {
 			CommonStatic.setSE(SE_BARRIER_NON);
 			return;
 		}
+		if (health <= 0)
+			return;
 
 		hit = 2;
 

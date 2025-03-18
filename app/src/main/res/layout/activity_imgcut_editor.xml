@@ -236,6 +236,19 @@
                     android:textColor="?attr/TextPrimary"
                     tools:ignore="ButtonStyle" />
 
+                <Button
+                    android:id="@+id/imgcutresize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="0.5"
+                    android:backgroundTint="?attr/ButtonPrimary"
+                    android:text="@string/anim_resize"
+                    android:textAllCaps="false"
+                    android:textColor="?attr/TextPrimary"
+                    tools:ignore="ButtonStyle" />
+
             </TableRow>
 
             <TableRow

@@ -25,8 +25,18 @@ object FilterEntity {
 
         val result = ArrayList<Identifier<AbUnit>>()
         for (u in p.units.list) {
-            if ((StaticStore.rare.isNotEmpty() && !StaticStore.rare.contains(u.rarity.toString())) || (StaticStore.entityname.isNotEmpty() && !validateName(u.forms[0])))
+            if ((StaticStore.rare.isNotEmpty() && !StaticStore.rare.contains(u.rarity.toString())))
                 continue
+            if (StaticStore.entityname.isNotEmpty()) {
+                var named = false
+                for (f in u.forms)
+                    if (validateName(f)) {
+                        named = true
+                        break
+                    }
+                if (!named)
+                    continue
+            }
 
             for (f in u.forms) {
                 val du = if (StaticStore.talents) f.maxu() else f.du
@@ -57,12 +67,22 @@ object FilterEntity {
     fun setLuFilter(save : SaveData?) : ArrayList<Identifier<AbUnit>> {
         val result = ArrayList<Identifier<AbUnit>>()
         for(info in StaticStore.ludata) {
-            val u = try { Identifier.get(info)
-            } catch (_: Exception) { continue }
-            if(u !is Unit || (StaticStore.rare.isNotEmpty() && !StaticStore.rare.contains(u.rarity.toString())) || (StaticStore.entityname.isNotEmpty() && !validateName(u.forms[0])))
+            val u = try { Identifier.get(info) } catch (_: Exception) { continue }
+            if (u == null || (StaticStore.rare.isNotEmpty() && !StaticStore.rare.contains(u.rarity.toString())))
                 continue
+            if (StaticStore.entityname.isNotEmpty()) {
+                var named = false
+                for (f in u.forms)
+                    if (validateName(f)) {
+                        named = true
+                        break
+                    }
+                if (!named)
+                    continue
+            }
             for(f in u.forms) {
-                if (save?.locked(f) == true) break
+                if (save?.locked(f) == true)
+                    break
                 val du = if(StaticStore.talents) f.maxu() else f.du
                 if (validate(du) && (StatFilterElement.statFilter.isEmpty() || StatFilterElement.performFilter(f, StatFilterElement.orand))) {
                     result.add(u.id)

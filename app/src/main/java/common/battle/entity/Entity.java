@@ -392,32 +392,32 @@ public abstract class Entity extends AbEntity implements Comparable<Entity> {
 		 * update effect icons animation
 		 */
 		private void checkEff() {
-			if (efft == 0)
+			if (efft <= 0)
 				effs[eftp] = null;
-			if (e.status.stop[0] == 0)
+			if (e.status.stop[0] <= 0)
 				effs[A_STOP] = null;
-			if (e.status.slow == 0)
+			if (e.status.slow <= 0)
 				effs[A_SLOW] = null;
 			if (e.status.weaks.isEmpty()) {
 				effs[A_DOWN] = null;
 				effs[A_WEAK_UP] = null;
 			} if (e.status.lethargies.isEmpty())
 				effs[A_LETHARGY] = null;
-			if (e.status.curse == 0)
+			if (e.status.curse <= 0)
 				effs[A_CURSE] = null;
-			if (e.status.inv[0] == 0 && e.status.wild == 0)
+			if (e.status.inv[0] == 0 && e.status.wild <= 0)
 				effs[A_IMUATK] = null;
 			for (int i = 0; i < A_POIS.length; i++)
 				if ((e.status.poison & (1 << i)) == 0)
 					effs[A_POIS[i]] = null;
-			if (e.status.seal == 0)
+			if (e.status.seal <= 0)
 				effs[A_SEAL] = null;
 
 			if (effs[A_SHIELD] != null && effs[A_SHIELD].done())
 				effs[A_SHIELD] = null;
 			if (effs[A_WAVE_INVALID] != null && effs[A_WAVE_INVALID].done())
 				effs[A_WAVE_INVALID] = null;
-			if (e.status.strengthen == 0)
+			if (e.status.strengthen <= 0)
 				effs[A_UP] = null;
 			if (effs[A_B] != null && effs[A_B].done())
 				effs[A_B] = null;
@@ -1273,7 +1273,7 @@ public abstract class Entity extends AbEntity implements Comparable<Entity> {
 			if (seal > 0)
 				seal -= time;
 			if (inv[0] > 0)
-				inv[0] -= time;
+				inv[0] = Math.max(inv[0]-time, 0);
 			else if (inv[1] > 0)
 				inv[1] -= time;
 			if (wild > 0)

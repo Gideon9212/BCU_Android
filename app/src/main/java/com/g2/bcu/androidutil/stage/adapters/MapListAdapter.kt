@@ -17,7 +17,7 @@ import common.util.Data
 import common.util.lang.MultiLangCont
 import common.util.stage.StageMap
 
-class MapListAdapter(private val activity: Activity, private val maps: ArrayList<Identifier<StageMap>>) : ArrayAdapter<Identifier<StageMap>>(activity, R.layout.map_list_layout, maps.toTypedArray()) {
+class MapListAdapter(private val activity: Activity, private val maps: ArrayList<Identifier<StageMap>>) : ArrayAdapter<Identifier<StageMap>>(activity, R.layout.map_list_layout, maps) {
 
     private class ViewHolder constructor(row: View) {
         var name: TextView = row.findViewById(R.id.map_list_name)

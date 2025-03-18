@@ -146,7 +146,7 @@ public abstract class AttackAb extends BattleObj {
 					} else
 						proc.LETHARGY.time *= (100 - imus.IMULETHARGY.block) / 100.0;
 				}
-				if (proc.WARP.time > 0 && imus.IMUWARP.block != 0) {
+				if (proc.WARP.prob > 0 && imus.IMUWARP.block != 0) {
 					if (imus.IMUWARP.block > 0)
 						blocked = true;
 					if (imus.IMUWARP.block == 100) {

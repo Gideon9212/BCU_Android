@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TableRow
+        android:id="@+id/dssdbfsd"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/rplyexpand"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:background="@drawable/cell_shape"
+            android:contentDescription="@string/def_description"
+            app:srcCompat="@drawable/ic_expand_less_black_24dp"
+            app:tint="?attr/iconPrimary" />
+
+        <EditText
+            android:id="@+id/rplyname"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2.25"
+            android:background="@drawable/cell_shape"
+            android:gravity="center"
+            android:minHeight="48dp"
+            android:text="@string/def_minus"
+            android:textColor="?attr/TextPrimary" />
+
+        <Button
+            android:id="@+id/rplystart"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/button_shape"
+            android:gravity="center"
+            android:text="@string/battle_start"
+            android:textAllCaps="false"
+            android:textColor="?attr/TextPrimary"
+            android:textStyle="bold" />
+
+    </TableRow>
+
+    <TableLayout
+        android:id="@+id/rplymoreinfo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dssdbfsd">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/rplystgname"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:minHeight="48dp"
+                android:text="@string/def_minus"
+                android:textColor="?attr/TextPrimary" />
+
+            <Button
+                android:id="@+id/rplydelete"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.363"
+                android:background="@drawable/button_shape"
+                android:gravity="center"
+                android:text="@string/pack_conf_guide_del"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                android:textStyle="bold" />
+        </TableRow>
+    </TableLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

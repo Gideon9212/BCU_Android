@@ -78,6 +78,7 @@ public class ELineUp extends BattleObj {
 		for (EUnit u : sb.getAllOf(i, j)) {
 			EUnit rit = firstDeploy ? spi : ((EForm)sb.b.lu.efs[i][j]).invokeSpirit(sb, spi.index);
 			rit.added(-1, Math.min(Math.max(sb.ebase.pos + rit.data.getRange(), u.lastPosition + SPIRIT_SUMMON_RANGE), sb.ubase.pos));
+			rit.group = -1;
 			sb.le.add(rit);
 			if (!(rit instanceof ESpirit))
 				rit.setSummon(spData[i][j].animType, null);

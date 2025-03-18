@@ -15,8 +15,11 @@ import com.g2.bcu.androidutil.lineup.LineUpView
 import common.battle.BasisSet
 import common.pack.Identifier
 import common.util.stage.Stage
+import common.util.unit.AbForm
 import common.util.unit.AbUnit
 import common.util.unit.Form
+import common.util.unit.UniRand
+import common.util.unit.Unit
 
 class LUUnitList : Fragment() {
     private lateinit var line: LineUpView
@@ -41,9 +44,12 @@ class LUUnitList : Fragment() {
 
             val u = Identifier.get(numbers[position]) ?: return@OnItemClickListener
 
-            val f = u.forms[u.forms.size - 1]
+            val f = if (u is Unit)
+                u.forms[u.forms.size - 1]
+            else
+                u as UniRand
 
-            if (alreadyExist(f))
+            if (alreadyExist(u))
                 return@OnItemClickListener
 
             val posit = StaticStore.getPossiblePosition(BasisSet.current().sele.lu.fs)
@@ -100,8 +106,7 @@ class LUUnitList : Fragment() {
         }
     }
 
-    private fun alreadyExist(form: Form): Boolean {
-        val u = form.unit
+    private fun alreadyExist(u: AbUnit): Boolean {
         for (i in BasisSet.current().sele.lu.fs.indices) {
             for (j in BasisSet.current().sele.lu.fs[i].indices) {
                 if (BasisSet.current().sele.lu.fs[i][j] == null) {

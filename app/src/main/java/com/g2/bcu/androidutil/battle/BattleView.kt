@@ -57,10 +57,10 @@ import kotlin.math.tan
 import kotlin.system.measureTimeMillis
 
 @SuppressLint("ViewConstructor")
-class BattleView(context: Context, field: BattleField?, type: Int, axis: Boolean, private val activity: BattleSimulation, cutout: Float, stageName: String, fontMode: StageBitmapGenerator.FONTMODE) : View(context),
+class BattleView(context: Context, field: BattleField, axis: Boolean, private val activity: BattleSimulation, cutout: Float, stageName: String, fontMode: StageBitmapGenerator.FONTMODE) : View(context),
     BattleBox, OuterBox {
     @JvmField
-    var painter: BBPainter = if (type == 0)
+    var painter: BBPainter = if (field !is SBCtrl)
         BBPainter(this, field, this)
     else
         BBCtrl(
@@ -498,6 +498,8 @@ class BattleView(context: Context, field: BattleField?, type: Int, axis: Boolean
     }
 
     private fun showBattleResult(win: Boolean) {
+        if (painter.bf !is SBCtrl)
+            return
         val st = painter.bf.sb.st
         if (win && st.mc.getSave(false) != null) {
             val spoils = st.mc.getSave(true).validClear(st)
@@ -637,7 +639,6 @@ class BattleView(context: Context, field: BattleField?, type: Int, axis: Boolean
                 if (!activity.isDestroyed && !activity.isFinishing) {
                     dialog.show()
                 }
-
                 return
             }
         }
