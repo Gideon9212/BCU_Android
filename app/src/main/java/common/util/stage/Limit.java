@@ -15,7 +15,7 @@ import common.util.unit.Form;
 
 import java.util.LinkedList;
 
-@JsonClass
+@JsonClass(noTag = JsonClass.NoTag.LOAD)
 public class Limit extends Data implements BattleStatic {
 
 	public static class DefLimit extends Limit {
@@ -42,23 +42,45 @@ public class Limit extends Data implements BattleStatic {
 
 	}
 
-	@JsonClass
+	@JsonClass(noTag = JsonClass.NoTag.LOAD)
 	public static class PackLimit extends Limit {
 
-		@JsonField(defval = "isEmpty")
 		public String name = "";
-
 		public PackLimit() {
+		}
+
+		public PackLimit(Limit l) {
+			fa = l.fa;
+			star = l.star;
+			rare = l.rare;
+			num = l.num;
+			line = l.line;
+			min = l.min;
+			max = l.max;
+			group = l.group;
+			lvr = l.lvr;
+			stageLimit = l.stageLimit != null ? l.stageLimit.clone() : null;
+		}
+
+		@Override
+		public Limit clone() {
+			return new PackLimit(this);
+		}
+
+		@Override
+		public String toString() {
+			if (name.isEmpty())
+				return super.toString();
+			return name;
 		}
 	}
 
-	@JsonField(defval = "0")
 	public int rare, num, line, min, max;
-	@JsonField(backCompat = JsonField.CompatType.FORK, defval = "0")
+	@JsonField(backCompat = JsonField.CompatType.FORK)
 	public int star = 0, fa; //last var could be named forceAmount, but that'd take too much json space
-	@JsonField(alias = Identifier.class, defval = "null")
+	@JsonField(alias = Identifier.class)
 	public CharaGroup group;
-	@JsonField(alias = Identifier.class, defval = "null")
+	@JsonField(alias = Identifier.class)
 	public LvRestrict lvr;
 	@JsonField(defval = "null||isBlank")
 	public StageLimit stageLimit;
@@ -136,10 +158,9 @@ public class Limit extends Data implements BattleStatic {
 	public boolean valid(LineUp lu) {
 		if (group != null && group.type % 2 != 0) {
 			SortedPackSet<Form> fSet = getValid(lu);
-			if ((group.type == 1 && fSet.size() < fa) || (group.type == 3 && fSet.size() > fa))
-				return false;
+            return (group.type != 1 || fSet.size() >= fa) && (group.type != 3 || fSet.size() <= fa);
 		}
-		return lvr == null || lvr.isValid(lu);
+		return true;
 	}
 
 	public SortedPackSet<Form> getValid(LineUp lu) {
@@ -182,6 +203,10 @@ public class Limit extends Data implements BattleStatic {
 
 	@Override
 	public String toString() {
+		return starString();
+	}
+
+	public String starString() {
 		if (star == 0)
 			return "all stars";
 		LinkedList<Integer> stars = formatStar(star);

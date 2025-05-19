@@ -1,6 +1,5 @@
 package com.g2.bcu.androidutil.filter
 
-import android.content.Context
 import android.util.SparseArray
 import androidx.core.util.isNotEmpty
 import com.g2.bcu.androidutil.StaticStore
@@ -9,11 +8,13 @@ import common.pack.Identifier
 import common.util.Data
 import common.util.lang.MultiLangCont
 import common.util.stage.MapColc
+import common.util.stage.MapColc.PackMapColc
 import common.util.stage.Stage
 import common.util.unit.AbEnemy
 
 object FilterStage {
-    fun setFilter(name: String, stmname: String, enemies: ArrayList<Identifier<AbEnemy>>, enemorand: Boolean, music: String, bg: String, star: Int, bh: Int, bhop: Int, contin: Int, boss: Int, c: Context) : Map<String, SparseArray<ArrayList<Int>>> {
+    fun setFilter(name: String, stmname: String, enemies: ArrayList<Identifier<AbEnemy>>, enemOrOp: Boolean,
+        music: String, bg: String, star: Int, bh: Int, bhop: Int, contin: Int, boss: Int) : Map<String, SparseArray<ArrayList<Int>>> {
         val result = HashMap<String, SparseArray<ArrayList<Int>>>()
 
         println("Filtered enemy : $enemies")
@@ -22,6 +23,9 @@ object FilterStage {
             val i = StaticStore.allMCs[n]
             val m = MapColc.get(i) ?: continue
             val stresult = SparseArray<ArrayList<Int>>()
+
+            if (noPointSearching(m, enemies, enemOrOp, music, bg))
+                continue
 
             for(j in m.maps.list.indices) {
                 val stm = m.maps.list[j] ?: continue
@@ -49,7 +53,7 @@ object FilterStage {
                         if(!es.contains(e))
                             es.add(e)
                     }
-                    if (!containEnemy(enemies, es, enemorand))
+                    if (!containEnemy(enemies, es, enemOrOp))
                         continue
 
                     var mus = music.isEmpty()
@@ -90,8 +94,8 @@ object FilterStage {
                     if (!cont) continue
                     val bos = when(boss) {
                         -1 -> true
-                        0 -> hasBoss(s, c)
-                        1 -> !hasBoss(s, c)
+                        0 -> hasBoss(s)
+                        1 -> !hasBoss(s)
                         else -> false
                     }
                     if(bos)
@@ -107,7 +111,35 @@ object FilterStage {
         return result
     }
 
-    private fun containEnemy(src: ArrayList<Identifier<AbEnemy>>, target: List<Identifier<AbEnemy>>, orand: Boolean) : Boolean {
+    private fun noPointSearching(m : MapColc, enemies: ArrayList<Identifier<AbEnemy>>, enemOrOp: Boolean, music: String, bg: String) : Boolean {
+        val id = if (m is MapColc.DefMapColc) Identifier.DEF else m.sid
+        var cont = enemies.isNotEmpty() && enemOrOp
+        for (e in enemies) {
+            if (enemOrOp) {
+                if (e.pack == id || (m is PackMapColc && (id == e.pack || m.pack.desc.dependency.contains(e.pack)))) {
+                    cont = false
+                    break
+                }
+            } else if (id != e.pack && (m !is PackMapColc || m.pack.desc.dependency.contains(e.pack)))
+                return true
+        }
+        if (cont)//It'll be false for all so who care
+            return true
+
+        if (music.isNotEmpty()) {
+            val m2 = music.substring(0, music.indexOf(" - "))
+            if (m2 != id && (m !is PackMapColc || m.pack.desc.dependency.contains(id)))
+                return true
+        }
+        if (bg.isNotEmpty()) {
+            val b2 = bg.substring(0, bg.indexOf(" - "))
+            if (b2 != id && (m !is PackMapColc || m.pack.desc.dependency.contains(id)))
+                return true
+        }
+        return false
+    }
+
+    private fun containEnemy(src: ArrayList<Identifier<AbEnemy>>, target: List<Identifier<AbEnemy>>, orOp: Boolean) : Boolean {
         if(src.isEmpty()) return true
 
         if(target.isEmpty()) return false
@@ -122,19 +154,17 @@ object FilterStage {
 
         //True for Or search
 
-        if(orand) {
-            for(i in src) {
+        if(orOp) {
+            for(i in src)
                 if(contains(i, targetID))
                     return true
-            }
-
             return false
         } else {
             return containsAll(src, targetID)
         }
     }
 
-    private fun hasBoss(st: Stage, c: Context) : Boolean {
+    private fun hasBoss(st: Stage) : Boolean {
         try {
             val def = st.data ?: return false
 

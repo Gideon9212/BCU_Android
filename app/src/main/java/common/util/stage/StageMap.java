@@ -98,7 +98,7 @@ public class StageMap extends Data implements BasedCopable<StageMap, MapColc>,
 	@JsonField
 	@JsonClass.JCIdentifier
 	public final Identifier<StageMap> id;
-	@JsonField(generic = Limit.class, defval = "isEmpty")
+	@JsonField(generic = Limit.PackLimit.class, defval = "isEmpty")
 	public final ArrayList<Limit> lim = new ArrayList<>();
 	public StageMapInfo info;
 
@@ -215,15 +215,27 @@ public class StageMap extends Data implements BasedCopable<StageMap, MapColc>,
 					st.lim.combine(l);
 				l.sid = -1;
 				lim.remove(i--);
-			}
-
+			} else if (!(lim.get(i) instanceof Limit.PackLimit))
+				lim.set(i, new Limit.PackLimit(lim.get(i)));
 		if (jobj.has("stageLimit")) {
 			StageLimit lim = new localDecoder(jobj.get("stageLimit"), StageLimit.class, this).decode();
 			if (lim == null || lim.isBlank())
 				return;
-			Limit nlim = new Limit();
+			Limit.PackLimit nlim = new Limit.PackLimit();
 			nlim.stageLimit = lim;
 			this.lim.add(nlim);
+		}
+
+		MapColc.PackMapColc mc = (MapColc.PackMapColc)getCont();
+		if (mc.pack.desc.FORK_VERSION < 11) {
+			if (UserProfile.isOlderPack(mc.pack, "0.7.8.2"))
+				for (Limit l : lim) {
+					if (l.stageLimit == null)
+						continue;
+					l.stageLimit.coolStart = l.stageLimit.globalCooldown > 0 || l.stageLimit.maxMoney > 0;
+				}
+			for (Limit l : lim)
+				l.setStar(l.star); //Convert star limit to bitmask. There's only 4 stars anyway
 		}
 	}
 

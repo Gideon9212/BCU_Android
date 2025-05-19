@@ -312,8 +312,8 @@ public class Treasure extends Data {
 	}
 
 	public float getDEF(double mult, SortedPackSet<Trait> eTraits, SortedPackSet<Trait> traits, Orb orb, Level level, int comboInc) {
-		final int ORB_LV = mult < 600 && mult > 100 ? mult < 400 ? ORB_STRONG : ORB_RESISTANT : -1;
-		final byte[] ORB_MULTIS = ORB_LV == -1 ? new byte[0] : ORB_LV == ORB_STRONG ? ORB_STR_DEF_MULTI : ORB_RESISTANT_MULTI;
+		final byte ORB_LV = mult < 600 && mult > 100 ? mult < 400 ? ORB_STRONG : ORB_RESISTANT : -1;
+		final Map<Byte,int[]> ORB_MULTIS = ORB_LV == -1 ? null : Orb.EFFECT.get(ORB_LV);
 
 		float ini = 1;
 		if (!traits.isEmpty()) {
@@ -323,14 +323,14 @@ public class Treasure extends Data {
 			else if (mult >= 600)
 				ini = ini - 1f / 126 * getFruit(traits);
 		}
-		if(orb != null && level.getOrbs() != null) {
+		if(ORB_MULTIS != null && orb != null && level.getOrbs() != null) {
 			int[][] orbs = level.getOrbs();
 			for (int[] ints : orbs)
 				if (ints.length == ORB_TOT && ints[ORB_TYPE] == ORB_LV) {
 					List<Trait> orbType = Trait.convertOrb(ints[ORB_TRAIT]);
 					for (Trait trait : orbType)
 						if (eTraits.contains(trait)) {
-							ini *= 1 - ORB_MULTIS[ints[ORB_GRADE]] / 100.0;
+							ini *= 1 - ORB_MULTIS.get((byte)ints[ORB_GRADE])[ORB_LV == ORB_STRONG ? 1 : 0] / 100f;
 							break;
 						}
 				}

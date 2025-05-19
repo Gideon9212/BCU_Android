@@ -3,7 +3,6 @@ package common.util.stage;
 import common.battle.StageBasis;
 import common.io.json.JsonClass;
 import common.io.json.JsonClass.JCConstructor;
-import common.io.json.JsonClass.NoTag;
 import common.io.json.JsonField;
 import common.io.json.JsonField.GenType;
 import common.pack.FixIndexList;
@@ -18,29 +17,31 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-@JsonClass
+@JsonClass(noTag = JsonClass.NoTag.LOAD)
 public class SCDef implements Copable<SCDef> {
 
-	@JsonClass
+	@JsonClass(noTag = JsonClass.NoTag.LOAD)
 	public static class Line implements Cloneable {
-		@JsonField(defval = "null")
 		public Identifier<AbEnemy> enemy;
 		@JsonField(defval = "1")
 		public int number = 1;
-		@JsonField(defval = "0")
-		public int boss, group, spawn_0, spawn_1, respawn_0, respawn_1, castle_1, layer_0, kill_count;
+		public int boss, group, spawn_0, spawn_1, respawn_0, respawn_1, castle_1, layer_0, kill_count, doordis_0, doordis_1;
 		@JsonField(defval = "100")
 		public int multiple = 100, mult_atk = 100, castle_0 = 100;
 		@JsonField(defval = "9")
 		public int layer_1 = 9;
 
-		@JsonField(backCompat = JsonField.CompatType.FORK, defval = "0")
-		public byte doorchance, doordis_0, doordis_1;
-		@JsonField(backCompat = JsonField.CompatType.FORK, defval = "null")
+		@JsonField(backCompat = JsonField.CompatType.FORK)
+		public byte doorchance;
+		@JsonField(backCompat = JsonField.CompatType.FORK)
 		public Revival rev;
 
 		@JCConstructor
 		public Line() {
+		}
+
+		public Line(Identifier<AbEnemy> e) {
+			enemy = e;
 		}
 
 		public Line(int[] arr) {
@@ -48,14 +49,11 @@ public class SCDef implements Copable<SCDef> {
 			number = arr[N];
 			boss = arr[B];
 			multiple = arr[M];
-			group = arr[G];
 			spawn_0 = arr[S0];
 			respawn_0 = arr[R0];
-			castle_0 = arr[C0];
+			castle_0 = castle_1 = arr[C0];
 			layer_0 = arr[L0];
-			spawn_1 = arr[S1];
 			respawn_1 = arr[R1];
-			castle_1 = arr[C1];
 			layer_1 = arr[L1];
 			mult_atk = arr[M1];
 			kill_count = arr[KC];
@@ -72,8 +70,7 @@ public class SCDef implements Copable<SCDef> {
 		}
 	}
 
-	public static final int SIZE = 15, E = 0, N = 1, S0 = 2, R0 = 3, R1 = 4, C0 = 5, L0 = 6, L1 = 7, B = 8, M = 9,
-			S1 = 10, C1 = 11, G = 12, M1 = 13, KC = 14;
+	public static final int SIZE = 12, E = 0, N = 1, S0 = 2, R0 = 3, R1 = 4, C0 = 5, L0 = 6, L1 = 7, B = 8, M = 9, M1 = 10, KC = 11;
 
 	@JsonField(defval = "isEmpty")
 	public Line[] datas;
@@ -81,11 +78,11 @@ public class SCDef implements Copable<SCDef> {
 	public final FixIndexList<SCGroup> sub = new FixIndexList<>(SCGroup.class);
 	@JsonField(generic = { Identifier.class, Integer.class }, defval = "isEmpty")
 	public final TreeMap<Identifier<AbEnemy>, Integer> smap = new TreeMap<>();
-	@JsonField(defval = "0")
 	public int sdef = 0;
 
 	@JCConstructor
 	public SCDef() {
+		datas = new Line[0];
 	}
 
 	public SCDef(int s) {
@@ -198,7 +195,7 @@ public class SCDef implements Copable<SCDef> {
 			if (e != null)
 				pre.addAll(e.getPossible());
 		}
-		while (pre.size() > 0) {
+		while (!pre.isEmpty()) {
 			for (Enemy e : pre)
 				temp.addAll(e.de.getSummon());
 			ans.addAll(temp);
@@ -220,6 +217,6 @@ public class SCDef implements Copable<SCDef> {
 	}
 
 	public boolean empty() {
-		return datas.length + sdef == 0 && smap.isEmpty() && sub.size() == 0;
+		return datas.length + sdef == 0 && smap.isEmpty() && sub.isEmpty();
 	}
 }

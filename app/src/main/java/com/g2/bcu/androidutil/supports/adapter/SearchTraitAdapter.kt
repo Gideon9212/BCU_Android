@@ -14,13 +14,13 @@ import com.g2.bcu.R
 import com.g2.bcu.androidutil.StaticStore
 import common.CommonStatic
 import common.pack.Identifier
-import common.system.files.VFile
 import common.util.unit.Trait
 import kotlin.math.ceil
 
-class SearchTraitAdapter(private val context: Context, private val tool: Array<String>, private val colors: Array<Identifier<Trait>>) : RecyclerView.Adapter<SearchTraitAdapter.ViewHolder>() {
+class SearchTraitAdapter(private val context: Context, private val colors: Array<Identifier<Trait>>) : RecyclerView.Adapter<SearchTraitAdapter.ViewHolder>() {
 
     private val up = ArrayList<Int>()
+    private val toolID = intArrayOf(R.string.sch_red, R.string.sch_fl, R.string.sch_bla, R.string.sch_me, R.string.sch_an, R.string.sch_al, R.string.sch_zo, R.string.sch_de, R.string.sch_re, R.string.sch_wh, R.string.esch_eva, R.string.esch_witch, R.string.sch_bar, R.string.sch_bst, R.string.sch_ssg, R.string.sch_ba)
 
     inner class ViewHolder(row: View) : RecyclerView.ViewHolder(row) {
         val abil = if(isLandscape()) {
@@ -62,12 +62,14 @@ class SearchTraitAdapter(private val context: Context, private val tool: Array<S
             ch.isChecked = StaticStore.tg.contains(colors[i])
 
             val trait = Identifier.get(colors[i]) ?: continue
-
             val icon = getIcon(trait)
 
             ch.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null)
             ch.setOnLongClickListener {
-                StaticStore.showShortMessage(context, tool[i])
+                val msg = if (colors[i].pack == Identifier.DEF)
+                    context.getText(toolID[i]).toString()
+                else trait.name
+                StaticStore.showShortMessage(context, msg)
                 true
             }
             if(isLandscape()) ch.compoundDrawablePadding = StaticStore.dptopx(16f, context)

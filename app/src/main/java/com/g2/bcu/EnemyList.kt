@@ -3,8 +3,6 @@ package com.g2.bcu
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences.Editor
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -32,6 +30,7 @@ import com.g2.bcu.androidutil.enemy.adapters.EnemyListPager
 import com.g2.bcu.androidutil.fakeandroid.BMBuilder
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import common.CommonStatic
@@ -42,7 +41,6 @@ import common.system.fake.ImageBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 open class EnemyList : AppCompatActivity() {
     enum class Mode {
@@ -51,14 +49,14 @@ open class EnemyList : AppCompatActivity() {
     }
 
     private var mode = Mode.INFO
+    private var pack : PackData.UserPack? = null
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 supportFragmentManager.fragments.forEach {
-                    if (it is EnemyListPager) {
+                    if (it is EnemyListPager)
                         it.validate()
-                    }
                 }
             }
         }
@@ -90,14 +88,14 @@ open class EnemyList : AppCompatActivity() {
         AContext.check()
 
         (CommonStatic.ctx as AContext).updateActivity(this)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_enemy_list)
 
         ImageBuilder.builder = BMBuilder()
 
         val extra = intent.extras
-
         if(extra != null) {
+            pack = UserProfile.getUserPack(extra.getString("pack", ""))
             mode = Mode.valueOf(extra.getString("mode", "INFO"))
         }
 
@@ -149,19 +147,17 @@ open class EnemyList : AppCompatActivity() {
             pager.isSaveFromParentEnabled = false
 
             pager.adapter = EnemyListTab()
-            pager.offscreenPageLimit = UserProfile.getAllPacks().size
 
             val keys = getExistingPack()
+            pager.offscreenPageLimit = keys.size
 
             TabLayoutMediator(tab, pager) { t, position ->
                 t.text = if(position == 0) {
                     getString(R.string.pack_default)
                 } else {
                     val pack = UserProfile.getPack(keys[position])
-
-                    if(pack == null) {
+                    if(pack == null)
                         keys[position]
-                    }
 
                     val name = when (pack) {
                         is PackData.DefPack -> {
@@ -192,6 +188,8 @@ open class EnemyList : AppCompatActivity() {
             search.setOnClickListener(object : SingleClick() {
                 override fun onSingleClick(v: View?) {
                     val intent = Intent(this@EnemyList, EnemySearchFilter::class.java)
+                    if (pack != null)
+                        intent.putExtra("pack", pack!!.sid)
 
                     resultLauncher.launch(intent)
                 }
@@ -206,15 +204,13 @@ open class EnemyList : AppCompatActivity() {
                 }
             )
 
-            if(getEnemyPackNumber() > 1) {
+            if(keys.size > 1) {
                 tab.visibility = View.VISIBLE
             } else {
                 val collapse = findViewById<CollapsingToolbarLayout>(R.id.enemcollapse)
-
                 val param = collapse.layoutParams as AppBarLayout.LayoutParams
 
                 param.scrollFlags = 0
-
                 collapse.layoutParams = param
             }
 
@@ -226,26 +222,9 @@ open class EnemyList : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 
@@ -264,34 +243,22 @@ open class EnemyList : AppCompatActivity() {
     }
 
     private fun getExistingPack() : ArrayList<String> {
-        val packs = UserProfile.getAllPacks()
-
         val res = ArrayList<String>()
+        res.add(Identifier.DEF)
 
-        for(p in packs) {
-            if(p.enemies.list.isNotEmpty()) {
-                if(p is PackData.DefPack) {
-                    res.add(Identifier.DEF)
-                } else if(p is PackData.UserPack) {
+        if (pack != null) {
+            if (!pack!!.enemies.isEmpty)
+                res.add(pack!!.sid)
+
+            for(str in pack!!.desc.dependency)
+                if(!UserProfile.getUserPack(str).enemies.isEmpty)
+                    res.add(str)
+        } else {
+            val packs = UserProfile.getUserPacks()
+            for(p in packs)
+                if(!p.enemies.isEmpty)
                     res.add(p.desc.id)
-                }
-            }
         }
-
-        return res
-    }
-
-    private fun getEnemyPackNumber() : Int {
-        val packs = UserProfile.getAllPacks()
-
-        var res = 0
-
-        for(p in packs) {
-            if(p.enemies.list.isNotEmpty()) {
-                res++
-            }
-        }
-
         return res
     }
 

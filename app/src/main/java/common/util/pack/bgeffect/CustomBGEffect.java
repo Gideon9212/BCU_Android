@@ -21,7 +21,7 @@ public class CustomBGEffect extends BackgroundEffect {
     private static final P origin = new P(0, 0);
     private static int sw = 0;
     @JsonField
-    public String name;
+    public String name = "";
     @JsonField
     public int spacer = 0, fspacer = 0; //Redraw the background for each dist specified by this, unless it's -1;
     private boolean loaded = false;

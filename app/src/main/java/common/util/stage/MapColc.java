@@ -22,6 +22,7 @@ import common.util.unit.Unit;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @JsonClass(read = RType.FILL)
 public abstract class MapColc extends Data implements IndexContainer.SingleIC<StageMap> {
@@ -46,7 +47,7 @@ public abstract class MapColc extends Data implements IndexContainer.SingleIC<St
 					.get(Data.hex(UserProfile.getRegister(REG_IDMAP, int.class).get(id)));
 		}
 
-		public static void read() {
+		public static void read(Consumer<Double> bar) {
 			final Map<String, Integer> idmap = UserProfile.getRegister(REG_IDMAP);
 			idmap.put("CH", 3);
 			idmap.put("M", 12);
@@ -92,7 +93,9 @@ public abstract class MapColc extends Data implements IndexContainer.SingleIC<St
 				return vff.compareTo(vf);
 			});
 			new DefMapColc();
+			double load = 0.0;
 			for (VFile fi : sortedFiles) {
+				bar.accept(++load / idmap.size());
 				List<VFile> list = new ArrayList<>(fi.list());
 				VFile map = list.get(0);
 				List<VFile> stage = new ArrayList<>();
@@ -494,6 +497,43 @@ public abstract class MapColc extends Data implements IndexContainer.SingleIC<St
 										slim.deployDuplicationTimes[index] = deployTimes;
 										slim.deployDuplicationDelay[index] = deployDelay;
 									}
+								}
+								break;
+							case 9:
+								if (!parameter.isEmpty()) {
+									if (parameter.size() > 1) {
+										System.out.printf(
+												"W/MapColc::read - Unexpected parameter size for map %d : Size = %d\n",
+												mapID,
+												parameter.size()
+										);
+									}
+									int cannonMultiplier = parameter.get(0).getAsInt();
+
+									if (map.lim.isEmpty() || map.lim.get(map.lim.size() - 1).stageLimit == null)
+										map.lim.add(new Limit(new StageLimit()));
+									map.lim.get(map.lim.size() - 1).stageLimit.cannonMultiplier = cannonMultiplier;
+								}
+								break;
+							case 10:
+								if (!parameter.isEmpty()) {
+									if (parameter.size() < 4) {
+										System.out.printf(
+												"W/MapColc::read - Unexpected parameter size for map %d : Size = %d\n",
+												mapID,
+												parameter.size()
+										);
+									}
+									int unitActivate = parameter.get(0).getAsInt();
+									int enemyActivate = parameter.get(2).getAsInt();
+
+									if (map.lim.isEmpty() || map.lim.get(map.lim.size() - 1).stageLimit == null)
+										map.lim.add(new Limit(new StageLimit()));
+									StageLimit slim = map.lim.get(map.lim.size() - 1).stageLimit;
+									if (unitActivate > 0)
+										slim.unitSpeedLimit = parameter.get(1).getAsInt();
+									if (enemyActivate > 0)
+										slim.enemySpeedLimit = parameter.get(3).getAsInt();
 								}
 								break;
 						}
@@ -1075,26 +1115,18 @@ public abstract class MapColc extends Data implements IndexContainer.SingleIC<St
 		}
 
 		@JsonDecoder.OnInjected
-		public void onInjected() {
-			if (pack.desc.FORK_VERSION < 11)
-				for (StageMap smaps : maps) {
-					for (Limit lim : smaps.lim)
-						lim.setStar(lim.star); //Convert star limit to bitmask. There's only 4 stars anyway
-
-					for (Stage st : smaps.list) {
-						if (st.lim != null)
-							st.lim.setStar(st.lim.star); //All star will have to be 0 coz 1 << 0 is 1 though
-						if (pack.desc.FORK_VERSION < 5 && st.timeLimit > 0)
-							st.timeLimit *= 60;
-					}
-				}
-			if (UserProfile.isOlderPack(pack, "0.7.8.2"))
-				for (StageMap sm : maps)
-					for (Stage st : sm.list) {
-						if (st.lim.stageLimit == null)
-							continue;
-						st.lim.stageLimit.coolStart = st.lim.stageLimit.globalCooldown > 0 || st.lim.stageLimit.maxMoney > 0;
-					}
+		public void onInjected() {//For useless leftovers from old packs
+			si.removeIf(ci -> ci.st == null || ci.st.info != ci || ci.useless());
+			si.sort((sti, ssti) -> {
+				StageMap map = sti.st.getCont(), omap = ssti.st.getCont();
+				if (map == omap)
+					return sti.st.compareTo(ssti.st);
+				if (map.unlockReq.contains(omap))
+					return -1;
+				else if (omap.unlockReq.contains(map))
+					return 1;
+				return 0;
+			});
 		}
 	}
 

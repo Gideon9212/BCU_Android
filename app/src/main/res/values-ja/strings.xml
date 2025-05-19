@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">G2 BCU</string>
+    <string name="app_name">BC Unlimited</string>
     <string name="anim_view">アニメーションビューア</string>
     <string name="stg_inf">ステージ情報</string>
     <string name="def_animsch">フィルタ画面を開く</string>
@@ -501,18 +501,7 @@
     <string name="battle_sure_go">戦闘を終了しますか?</string>
     <string name="battle_do_not_show">この警告を再度表示しない</string>
     <string name="battle_exit">戦闘終了</string>
-    <string name="main_err_upload">アプリのクラッシュが検出されたので、サーバーにログがアップロードされました</string>
-    <string name="main_err_detect">アプリのクラッシュが検出されました</string>
-    <string name="main_err_ask">エラーログファイルが生成されました。これらのエラーログファイルをサーバーにアップロードしますか?</string>
-    <string name="main_err_yes">する</string>
-    <string name="main_err_no">しない</string>
-    <string name="main_err_notshow">このダイアログを再度表示しない</string>
-    <string name="main_err_always">常にエラーログをサーバに送信する</string>
-    <string name="main_err_start">ログファイルのアップロードを開始中…</string>
-    <string name="config_send_err">常にエラーログをサーバに送信する</string>
     <string name="down_state_music">音楽をダウンロードしています… : %1$s</string>
-    <string name="err_send_log">ログの送信中… : -/_</string>
-    <string name="err_send_result">送信完了 | 成功 : - / 失敗 : _</string>
     <string name="config_sound">音</string>
     <string name="config_music">音楽</string>
     <string name="config_se">効果音</string>

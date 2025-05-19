@@ -22,12 +22,14 @@ import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import com.g2.bcu.androidutil.supports.adapter.BGListPager
 import common.CommonStatic
 import common.pack.Identifier
 import common.pack.PackData
+import common.pack.PackData.UserPack
 import common.pack.UserProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,6 +38,9 @@ import java.util.Locale
 import kotlin.math.max
 
 class BackgroundList : AppCompatActivity() {
+
+    var pack : UserPack? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,8 +70,9 @@ class BackgroundList : AppCompatActivity() {
         AContext.check()
 
         (CommonStatic.ctx as AContext).updateActivity(this)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_background_list)
+        pack = UserProfile.getUserPack(intent.extras?.getString("pack") ?: "")
 
         lifecycleScope.launch {
             val tab = findViewById<TabLayout>(R.id.bglisttab)
@@ -80,11 +86,9 @@ class BackgroundList : AppCompatActivity() {
             withContext(Dispatchers.IO) {
                 Definer.define(this@BackgroundList, { _ -> }, { t -> runOnUiThread { status.text = t }})
             }
-
-            pager.adapter = BGListTab()
-            pager.offscreenPageLimit = getExistingBGPack()
-
             val keys = getExistingPack()
+            pager.adapter = BGListTab()
+            pager.offscreenPageLimit = keys.size
 
             TabLayoutMediator(tab, pager) { t, position ->
                 t.text = if (position == 0) {
@@ -104,7 +108,7 @@ class BackgroundList : AppCompatActivity() {
                 }
             }.attach()
 
-            if(getExistingBGPack() == 1) {
+            if(keys.size == 1) {
                 tab.visibility = View.GONE
 
                 val collapse = findViewById<CollapsingToolbarLayout>(R.id.bgcollapse)
@@ -128,26 +132,9 @@ class BackgroundList : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 
@@ -165,30 +152,23 @@ class BackgroundList : AppCompatActivity() {
         super.onResume()
     }
 
-    private fun getExistingBGPack() : Int {
-        var res = 0
-
-        for(p in UserProfile.getAllPacks()) {
-            if(p.bgs.list.isNotEmpty())
-                res++
-        }
-
-        return max(1, res)
-    }
-
     private fun getExistingPack(): ArrayList<String> {
-        val list = UserProfile.getAllPacks()
-
         val res = ArrayList<String>()
+        res.add(Identifier.DEF)
 
-        for(k in list) {
-            if(k is PackData.DefPack) {
-                res.add(Identifier.DEF)
-            } else if(k is PackData.UserPack && k.bgs.size() != 0) {
-                res.add(k.desc.id)
-            }
+        if (pack != null) {
+            if (!pack!!.bgs.isEmpty)
+                res.add(pack!!.sid)
+
+            for(str in pack!!.desc.dependency)
+                if(!UserProfile.getUserPack(str).bgs.isEmpty)
+                    res.add(str)
+        } else {
+            val packs = UserProfile.getUserPacks()
+            for(p in packs)
+                if(!p.bgs.isEmpty)
+                    res.add(p.desc.id)
         }
-
         return res
     }
 
@@ -200,7 +180,7 @@ class BackgroundList : AppCompatActivity() {
         }
 
         override fun createFragment(position: Int): Fragment {
-            return BGListPager.newInstance(keys[position])
+            return BGListPager.newInstance(keys[position], pack != null)
         }
     }
 }

@@ -13,7 +13,7 @@ import common.util.Data;
 public interface FakeImage {
 
 	enum Marker {
-		BG, EDI, UNI, RECOLOR, RECOLORED
+		BG, EDI, UNI, ICO, RECOLOR, RECOLORED
 	}
 
 	static FakeImage read(byte[] bs) {

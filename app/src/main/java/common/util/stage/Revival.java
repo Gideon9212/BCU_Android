@@ -13,23 +13,17 @@ import common.util.Data;
 import common.util.pack.EffAnim;
 import common.util.pack.Soul;
 import common.util.unit.AbEnemy;
-import common.util.unit.Enemy;
 
-@JsonClass
+@JsonClass(noTag = JsonClass.NoTag.LOAD)
 public class Revival extends Data {
-    @JsonField(defval = "null")
     public Identifier<AbEnemy> enemy;
-    @JsonField(defval = "null")
     public Identifier<Music> bgm;
-    @JsonField(defval = "null")
     public Identifier<Soul> soul;
     @JsonField(defval = "100")
     public int mhp = 100, matk = 100;
-    @JsonField(defval = "0")
     public byte boss;
-    @JsonField(defval = "null")
     public Revival rev;
-
+    @JsonField(block = true)
     public Revival par; //Connects revivals as nodes for easier traveling. Do not edit
 
     @JsonClass.JCConstructor
@@ -78,8 +72,6 @@ public class Revival extends Data {
         ee.group = group;
         ee.rev = rev;
         ee.added(1, pos);
-        if (!b.enemyStatistics.containsKey((Enemy)ee.data.getPack()))
-            b.enemyStatistics.put((Enemy)ee.data.getPack(), new long[]{0, 0, 1});
         b.le.add(ee);
 
         if (bgm != null) {

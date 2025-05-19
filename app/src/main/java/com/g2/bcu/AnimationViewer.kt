@@ -3,8 +3,6 @@ package com.g2.bcu
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences.Editor
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -30,6 +28,7 @@ import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import com.g2.bcu.androidutil.unit.adapters.UnitListPager
@@ -40,16 +39,17 @@ import common.pack.UserProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 class AnimationViewer : AppCompatActivity() {
+    private var sele = false
+    private var pack : PackData.UserPack? = null
+
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 supportFragmentManager.fragments.forEach {
-                    if (it is UnitListPager) {
+                    if (it is UnitListPager)
                         it.validate()
-                    }
                 }
             }
         }
@@ -82,8 +82,14 @@ class AnimationViewer : AppCompatActivity() {
         AContext.check()
 
         (CommonStatic.ctx as AContext).updateActivity(this)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_animation_viewer)
+
+        val extra = intent.extras
+        if(extra != null) {
+            pack = UserProfile.getUserPack(extra.getString("pack", ""))
+            sele = extra.getBoolean("sele", false)
+        }
 
         lifecycleScope.launch {
             //Prepare
@@ -125,7 +131,6 @@ class AnimationViewer : AppCompatActivity() {
                             supportFragmentManager.fragments.forEach {
                                 if (it is UnitListPager)
                                     it.validate()
-
                             }
                         }
                     }
@@ -135,10 +140,9 @@ class AnimationViewer : AppCompatActivity() {
             pager.isSaveEnabled = false
             pager.isSaveFromParentEnabled = false
 
-            pager.adapter = UnitListTab()
-            pager.offscreenPageLimit = getExistingUnit()
-
             val keys = getExistingPack()
+            pager.adapter = UnitListTab()
+            pager.offscreenPageLimit = keys.size
 
             TabLayoutMediator(tab, pager) { t, position ->
                 t.text = if(position == 0) {
@@ -161,7 +165,6 @@ class AnimationViewer : AppCompatActivity() {
                             ""
                         }
                     }
-
                     name.ifEmpty {
                         keys[position]
                     }
@@ -175,29 +178,24 @@ class AnimationViewer : AppCompatActivity() {
                     finish()
                 }
             })
-
             search.setOnClickListener(object : SingleClick() {
                 override fun onSingleClick(v: View?) {
                     gotoFilter()
                 }
             })
-
             onBackPressedDispatcher.addCallback(this@AnimationViewer, object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        back.performClick()
-                    }
+                override fun handleOnBackPressed() {
+                    back.performClick()
                 }
-            )
+            })
 
-            if(getExistingUnit() != 1) {
+            if(keys.size != 1)
                 StaticStore.setAppear(tab)
-            } else {
+            else {
                 val collapse = findViewById<CollapsingToolbarLayout>(R.id.animcollapse)
-
                 val param = collapse.layoutParams as AppBarLayout.LayoutParams
 
                 param.scrollFlags = 0
-
                 collapse.layoutParams = param
             }
 
@@ -210,31 +208,15 @@ class AnimationViewer : AppCompatActivity() {
 
     private fun gotoFilter() {
         val intent = Intent(this@AnimationViewer, SearchFilter::class.java)
-
+        if (pack != null)
+            intent.putExtra("pack", pack!!.sid)
         resultLauncher.launch(intent)
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 
@@ -245,39 +227,29 @@ class AnimationViewer : AppCompatActivity() {
 
     override fun onResume() {
         AContext.check()
-
         if(CommonStatic.ctx is AContext)
             (CommonStatic.ctx as AContext).updateActivity(this)
 
         super.onResume()
     }
 
-    private fun getExistingUnit() : Int {
-        var i = 0
-
-        for(p in UserProfile.getAllPacks()) {
-            if(p.units.list.isNotEmpty())
-                i++
-        }
-
-        return i
-    }
-
     private fun getExistingPack() : ArrayList<String> {
-        val packs = UserProfile.getAllPacks()
-
         val res = ArrayList<String>()
+        res.add(Identifier.DEF)
 
-        for(p in packs) {
-            if(p.units.list.isNotEmpty()) {
-                if(p is PackData.DefPack) {
-                    res.add(Identifier.DEF)
-                } else if(p is PackData.UserPack) {
+        if (pack != null) {
+            if (!pack!!.units.isEmpty)
+                res.add(pack!!.sid)
+
+            for(str in pack!!.desc.dependency)
+                if(!UserProfile.getUserPack(str).units.isEmpty)
+                    res.add(str)
+        } else {
+            val packs = UserProfile.getUserPacks()
+            for (p in packs)
+                if (!p.units.isEmpty)
                     res.add(p.sid)
-                }
-            }
         }
-
         return res
     }
 
@@ -289,7 +261,7 @@ class AnimationViewer : AppCompatActivity() {
         }
 
         override fun createFragment(position: Int): Fragment {
-            return UnitListPager.newInstance(keys[position], position)
+            return UnitListPager.newInstance(keys[position], position, sele)
         }
     }
 }

@@ -79,7 +79,7 @@ public class ERUnit extends Data implements IForm {
         if (iList.size() == 1)
             return iList.get(0).iform;
         if (tot > 0) {
-            int r = (int) (sb.r.nextDouble() * tot);
+            int r = sb.r.nextInt(tot);
             for (DH ent : iList) {
                 r -= ent.share;
                 if (r < 0)

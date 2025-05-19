@@ -9,7 +9,6 @@ import common.battle.data.MaskAtk;
 import common.util.anim.EAnimD;
 import common.util.pack.EffAnim.DefEff;
 import common.util.pack.EffAnim.GuardEff;
-import common.util.unit.Enemy;
 
 import java.util.Arrays;
 
@@ -64,8 +63,8 @@ public class ECastle extends AbEntity {
 		else
 			smoke = effas().A_ATK_SMOKE.getEAnim(DefEff.DEF);
 
-		smokeLayer = (int) (atk.layer + 3 - sb.r.irFloat() * -6);
-		smokeX = (int) (pos + 25 - sb.r.irFloat() * -25);
+		smokeLayer = atk.layer + 3 + sb.r.irInt(6);
+		smokeX = (int) (pos + 25 + sb.r.irInt(25));
 
 		int ans = atk.atk;
 		ans *= 1 + atk.getProc().ATKBASE.mult / 100.0;
@@ -85,11 +84,7 @@ public class ECastle extends AbEntity {
 
 		if (atk.attacker != null) {
 			atk.attacker.damageGiven += Math.min(ans, health);
-			if(atk.attacker instanceof EUnit && ((EUnit)atk.attacker).index != null) {
-				int[] index = ((EUnit)atk.attacker).index;
-				sb.totalDamageGiven[index[0]][index[1]] += Math.min(ans, health);
-			} else if (atk.attacker instanceof EEnemy)
-				sb.enemyStatistics.get((Enemy)atk.attacker.data.getPack())[0] += Math.min(ans, health);
+			sb.dmgStatistics.get(atk.attacker.data.getPack())[0] += Math.min(ans, health);
 		}
 		health -= ans;
 

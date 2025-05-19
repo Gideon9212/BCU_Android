@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">G2 BCU</string>
+    <string name="app_name">BC Unlimited</string>
     <string name="anim_view">Просмотр Анимации</string>
     <string name="stg_inf">Инфо. об Уровне</string>
     <string name="def_animsch">Открыть окно фильтра</string>
@@ -474,18 +474,7 @@
     <string name="battle_sure_go">Вы уверены что вы хотите выйти из битвы?</string>
     <string name="battle_do_not_show">Не показывать это предупреждение</string>
     <string name="battle_exit">Выйти</string>
-    <string name="main_err_upload">Приложение вылетело, загружаем на сервер</string>
-    <string name="main_err_detect">Приложение вылетело</string>
-    <string name="main_err_ask">Файлы списков ошибок созданы. Вы хотите загрузить их на сервер?</string>
-    <string name="main_err_yes">Загрузить</string>
-    <string name="main_err_no">Нет</string>
-    <string name="main_err_notshow">Не показывать это окно ещё раз.</string>
-    <string name="main_err_always">Всегда загружать списки ошибок на сервер.</string>
-    <string name="main_err_start">Начать загружать списки ошибок…</string>
-    <string name="config_send_err">Всегда отправлять списки ошибок на сервер.</string>
     <string name="down_state_music">Загружаем музыку… : %1$s</string>
-    <string name="err_send_log">Отправляем списки… : -/_</string>
-    <string name="err_send_result">Отправление списка | Успешно : - / Не успешно : _</string>
     <string name="config_sound">Звук</string>
     <string name="config_music">Музыка</string>
     <string name="config_se">Звуковые эффекты</string>
@@ -867,9 +856,9 @@
     <string name="orb_str">Strong Against</string>
     <string name="orb_mas">Massive Damage</string>
     <string name="orb_res">Resistant</string>
-    <string name="orb_str_desc">Add x_ to damage multiplier, decrease defense multiplier by -%</string>
-    <string name="orb_mas_desc">Add x_ to damage multiplier</string>
-    <string name="orb_res_desc">Decrease defense multiplier by _%</string>
+    <string name="orb_str_desc">Deal x_ more damage, decrease damage taken by -%</string>
+    <string name="orb_mas_desc">Deal x_ more damage</string>
+    <string name="orb_res_desc">Decrease damage taken by _%</string>
     <string name="sch_de">Aku</string>
     <string name="sch_abi_ds">Aku Shield</string>
     <string name="sch_abi_shb">Shield Piercing</string>

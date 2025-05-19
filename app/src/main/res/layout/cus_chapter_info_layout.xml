@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="48dp">
+
+    <com.g2.bcu.androidutil.supports.WatcherEditText
+        android:id="@+id/cuschapter_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:ems="10"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:textColor="?attr/TextPrimary"
+        app:layout_constraintEnd_toStartOf="@id/cuschapter_expand"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/cuschapter_expand"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/cell_shape"
+        android:contentDescription="@string/def_description"
+        android:minWidth="48dp"
+        app:layout_constraintBottom_toTopOf="@id/cuschapter_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_expand_less_black_24dp"
+        app:tint="?attr/iconPrimary" />
+
+    <TableLayout
+        android:id="@+id/cuschapter_info"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cuschapter_name">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/pk_stageEdit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:gravity="center"
+                android:minHeight="32dip"
+                android:text="@string/packcus_mapcreate"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/pk_chapterStarRow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:inputType="number"
+                android:minHeight="36dp"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:inputType="number"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:inputType="number"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:inputType="number"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:id="@+id/pk_chapterCost"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:inputType="number"
+                android:minHeight="36dp"
+                android:textColor="?attr/TextPrimary" />
+
+            <Button
+                android:id="@+id/pk_limitAdd"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:gravity="center"
+                android:minHeight="32dip"
+                android:text="@string/packcus_addlimit"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/pk_limitList"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2" />
+
+        </TableRow>
+
+    </TableLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

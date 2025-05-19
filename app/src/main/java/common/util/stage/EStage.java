@@ -81,8 +81,9 @@ public class EStage extends BattleObj {
 				AbEnemy e = Identifier.getOr(data.enemy, AbEnemy.class);
 				EEnemy ee = e.getEntity(b, data, multi, mulatk, data.layer_0, data.layer_1, data.boss);
 
-				if (data.doorchance > 0 && b.r.nextFloat() * 100 < data.doorchance)
+				if (data.doorchance > 0 && (data.doorchance == 100 || b.r.nextFloat() * 100 < data.doorchance))
 					ee.door = data.doordis_0 == data.doordis_1 ? data.doordis_0 : ((data.doordis_1 - data.doordis_0) * b.r.nextFloat()) + data.doordis_0;
+				b.shockP += ee.door;
 				ee.group = data.group;
 				ee.rev = data.rev;
 				return ee;
@@ -191,9 +192,10 @@ public class EStage extends BattleObj {
 	}
 
 	private boolean inHealth(SCDef.Line line) {
-		int c0 = !s.trail ? Math.min(line.castle_0, 100) : line.castle_0;
+		int c0 = line.castle_0;
 		int c1 = line.castle_1;
-		float d = !s.trail ? b.getEBHP() : b.ebase.maxH - b.ebase.health;
-		return c0 >= c1 ? (s.trail ? d >= c0 : d <= c0) : (d > c0 && d <= c1);
+		boolean raw = s.trail || Math.max(c0, c1) > 100;
+		float d = !raw ? b.getEBHP() : b.ebase.maxH - b.ebase.health;
+		return c0 >= c1 ? (raw ? d >= c0 : d <= c0) : (d > c0 && d <= c1);
 	}
 }

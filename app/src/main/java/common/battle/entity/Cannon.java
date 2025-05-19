@@ -161,6 +161,8 @@ public class Cannon extends AtkModelAb {
                     float wid = NYRAN[0];
                     float p = b.ubase.pos - wid / 2 + 100;
                     int atk = b.b.t().getCanonAtk(b.elu.getInc(C_C_ATK));
+                    if (b.est.lim.stageLimit != null)
+                        atk = atk * b.est.lim.stageLimit.cannonMultiplier / 100;
                     AttackCanon eatk = new AttackCanon(this, atk, CTrait, 0, proc, 0, 0, 1);
                     new ContWaveCanon(new AttackWave(eatk.attacker, eatk, p, wid, WT_CANN | WT_WAVE), p, 0);
                 } else if (id == 1) {

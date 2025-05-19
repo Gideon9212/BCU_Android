@@ -17,6 +17,7 @@ import common.battle.attack.ContAb;
 import common.battle.attack.ContWaveAb;
 import common.battle.data.DataEnemy;
 import common.battle.data.DataUnit;
+import common.battle.entity.DoorCont;
 import common.battle.entity.EAnimCont;
 import common.battle.entity.ECastle;
 import common.battle.entity.Entity;
@@ -703,7 +704,8 @@ public interface BattleBox {
             else {
                 if(bf.sb.timeFlow != 1 && (bf.sb.ubase.getAbi() & Data.AB_TIMEI) != 0)
                     gra.setComposite(CVGraphics.POSITIVE, 0, 0);
-                ((Entity) bf.sb.ubase).anim.draw(gra,  setP(posx + shake, posy), bf.sb.siz * sprite);
+                posx = (int) getX(bf.sb.ubase.pos);
+                ((Entity) bf.sb.ubase).anim.draw(gra, setP(posx + shake, posy), bf.sb.siz * sprite);
 
                 if(bf.sb.ubase.health > 0) //This causes some rarted bug and idk how to even deal with it
                     ((Entity) bf.sb.ubase).anim.drawEff(gra, p, bf.sb.siz * sprite);
@@ -770,38 +772,53 @@ public interface BattleBox {
             CommonStatic.getConfig().battle = true;
 
             for (int i = 0; i < bf.sb.le.size(); i++) {
-                if(bf.sb.le.get(i).dead)
+                Entity e = bf.sb.le.get(i);
+                if(e.dead)
                     continue;
 
-                if ((bf.sb.timeFlow == 1 || (bf.sb.le.get(i).getAbi() & Data.AB_TIMEI) == 0)) {
-                    int dep = bf.sb.le.get(i).layer * DEP;
+                if ((bf.sb.timeFlow == 1 || (e.getAbi() & Data.AB_TIMEI) == 0)) {
+                    int dep = e.layer * DEP;
 
                     while (!efList.isEmpty()) {
                         ContAb wc = efList.get(0);
 
-                        if (wc.layer + 1 <= bf.sb.le.get(i).layer) {
+                        if (wc.layer + 1 <= e.layer) {
                             drawEff(gra, wc, at, psiz);
 
                             efList.remove(0);
                         } else
                             break;
                     }
+                    for (DoorCont d : bf.sb.doors)
+                        if (d.ECheck(e.getLayer())) {
+                            gra.setTransform(at);
+                            d.draw(gra, setP(getX(d.pos), midh - (road_h - d.layer * DEP) * bf.sb.siz), psiz);
+                        }
 
                     gra.setTransform(at);
 
-                    float p = getX(bf.sb.le.get(i).pos);
+                    float p = getX(e.pos);
                     float y = midh - (road_h - dep) * bf.sb.siz;
 
-                    bf.sb.le.get(i).anim.draw(gra, setP(p, y), psiz);
+                    e.anim.draw(gra, setP(p, y), psiz);
 
                     gra.setTransform(at);
 
-                    if (bf.sb.le.get(i).anim.corpse == null || bf.sb.le.get(i).anim.corpse.type == EffAnim.ZombieEff.BACK) {
-                        bf.sb.le.get(i).anim.drawEff(gra, setP(p, y), bf.sb.siz);
-                    }
+                    if (e.anim.corpse == null || e.anim.corpse.type == EffAnim.ZombieEff.BACK)
+                        e.anim.drawEff(gra, setP(p, y), bf.sb.siz);
                 }
             }
+            for (DoorCont d : bf.sb.doors) {
+                if (!d.drawn) {
+                    int dep = d.layer * DEP;
+                    gra.setTransform(at);
 
+                    float p = getX(d.pos);
+                    float y = midh - (road_h - dep) * bf.sb.siz;
+                    d.draw(gra, setP(p, y), psiz);
+                }
+                d.drawn = false;
+            }
             for(int i = 0; i < bf.sb.le.size(); i++) {
                 Entity e = bf.sb.le.get(i);
 

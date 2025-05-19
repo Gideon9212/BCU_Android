@@ -178,13 +178,12 @@ class Release {
 	}
 
 	protected int get() {
-		if (rex == 0)
-			if (recd.length <= ind)
-				rec = 0;
-			else {
-				rec = recd[ind++];
-				rex = recd[ind++];
-			}
+		if (recd.length <= ind || rex != 0)
+			rec = 0;
+		else {
+			rec = recd[ind++];
+			rex = recd[ind++];
+		}
 		rex--;
 		return rec;
 	}

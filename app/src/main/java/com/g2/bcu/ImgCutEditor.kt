@@ -2,9 +2,6 @@ package com.g2.bcu
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.text.InputType
-import android.widget.EditText
-import android.widget.TextView
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -13,32 +10,37 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.InputType
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.get
-import androidx.core.view.size
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionValues
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.gson.JsonParser
+import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.animation.SpriteView
 import com.g2.bcu.androidutil.animation.adapter.ImgcutListAdapter
 import com.g2.bcu.androidutil.fakeandroid.FIBM
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
-import com.g2.bcu.androidutil.supports.DynamicListView
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import common.CommonStatic
@@ -47,19 +49,16 @@ import common.io.json.JsonEncoder
 import common.pack.Source.ResourceLocation
 import common.pack.UserProfile
 import common.system.files.FDFile
-import common.system.files.VFile
 import common.util.anim.AnimCE
 import common.util.anim.ImgCut
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
-import java.io.FileOutputStream
 
 class ImgCutEditor : AppCompatActivity() {
 
     companion object {
         private var tempFunc : ((input: Any) -> Unit)? = null
-        private var tempFile : VFile? = null
     }
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -106,51 +105,6 @@ class ImgCutEditor : AppCompatActivity() {
             }
         }
     }
-    private val exportLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(result.resultCode == RESULT_OK) {
-            val data = result.data
-
-            if(data != null) {
-                val file = tempFile
-                val uri = data.data
-
-                if(uri == null || file == null) {
-                    StaticStore.showShortMessage(this, getString(R.string.file_extract_cant))
-                } else {
-                    val pfd = contentResolver.openFileDescriptor(uri, "w")
-
-                    if(pfd != null) {
-                        val fos = FileOutputStream(pfd.fileDescriptor)
-                        val ins = file.data.stream
-
-                        val b = ByteArray(65536)
-                        var len: Int
-                        while(ins.read(b).also { len = it } != -1)
-                            fos.write(b, 0, len)
-
-                        ins.close()
-                        fos.close()
-
-                        val path = uri.path
-                        if(path == null) {
-                            StaticStore.showShortMessage(this, getString(R.string.file_extract_semi).replace("_",file.name))
-                            return@registerForActivityResult
-                        }
-
-                        val f = File(path)
-                        if(f.absolutePath.contains(":")) {
-                            val p = f.absolutePath.split(":")[1]
-                            StaticStore.showShortMessage(this,
-                                getString(R.string.file_extract_success).replace("_", file.name)
-                                    .replace("-", p))
-                        } else
-                            StaticStore.showShortMessage(this, getString(R.string.file_extract_semi).replace("_",file.name))
-                    } else
-                        StaticStore.showShortMessage(this, getString(R.string.file_extract_cant))
-                }
-            }
-        }
-    }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -173,6 +127,7 @@ class ImgCutEditor : AppCompatActivity() {
         DefineItf.check(this)
         AContext.check()
         (CommonStatic.ctx as AContext).updateActivity(this)
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_imgcut_editor)
 
         val result = intent
@@ -195,7 +150,7 @@ class ImgCutEditor : AppCompatActivity() {
                 UserProfile.getUserPack(res.pack)?.source?.loadAnimation(res.id, res.base) as AnimCE?
             if (anim == null)
                 return@launch
-            anim.load()
+            anim.check()
 
             val cfgShowT = MaterialContainerTransform().apply {
                 startView = cfgBtn
@@ -231,56 +186,125 @@ class ImgCutEditor : AppCompatActivity() {
                     cfgMenu.visibility = View.GONE
                 }
             })
-            val list = findViewById<DynamicListView>(R.id.imgcutvalList)
+            val list = findViewById<RecyclerView>(R.id.imgcutvalList)
+            list.layoutManager = LinearLayoutManager(this@ImgCutEditor)
             val adp = ImgcutListAdapter(this@ImgCutEditor, anim)
             list.adapter = adp
-            list.setSwapListener { from, to ->
-                val s = anim.imgcut.strs
-                val tempe = s[from]
-                s[from] = s[to]
-                s[to] = tempe
+            val touch = ItemTouchHelper(object: ItemTouchHelper.Callback() {
+                var moved : Boolean = false
 
-                val c = anim.imgcut.cuts
-                val temp = c[from]
-                c[from] = c[to]
-                c[to] = temp
-                for (p in anim.mamodel.parts) {
-                    if (p[2] == from)
-                        p[2] = to
-                    else if (p[2] == to)
-                        p[2] = from
+                override fun getMovementFlags(p0: RecyclerView, p1: RecyclerView.ViewHolder): Int {
+                    return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.END)
                 }
-                for (ma in anim.anims)
-                    for (pt in ma.parts)
-                        if (pt.ints[1] == 2)
-                            for (mov in pt.moves) {
-                                if (mov[1] == from)
-                                    mov[1] = to
-                                else if (mov[1] == to)
-                                    mov[1] = from
-                            }
-                unSave(anim,"imgcut sort")
-                val view = findViewById<SpriteView>(R.id.spriteView)
-                if (view.sele == from)
-                    view.sele = to
-                else if (view.sele == to)
-                    view.sele = from
-            }
+
+                override fun canDropOver(recyclerView: RecyclerView, current: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                    return current.itemViewType == target.itemViewType
+                }
+
+                override fun onMove(view: RecyclerView, src: RecyclerView.ViewHolder, dest: RecyclerView.ViewHolder): Boolean {
+                    val from = src.bindingAdapterPosition
+                    val to = dest.bindingAdapterPosition
+                    val s = anim.imgcut.strs
+                    val tempe = s[from]
+                    s[from] = s[to]
+                    s[to] = tempe
+
+                    val c = anim.imgcut.cuts
+                    val temp = c[from]
+                    c[from] = c[to]
+                    c[to] = temp
+                    for (p in anim.mamodel.parts) {
+                        if (p[2] == from)
+                            p[2] = to
+                        else if (p[2] == to)
+                            p[2] = from
+                    }
+                    for (ma in anim.anims)
+                        for (pt in ma.parts)
+                            if (pt.ints[1] == 2)
+                                for (mov in pt.moves) {
+                                    if (mov[1] == from)
+                                        mov[1] = to
+                                    else if (mov[1] == to)
+                                        mov[1] = from
+                                }
+                    moved = true
+                    val voo = findViewById<SpriteView>(R.id.spriteView)
+                    if (voo.sele == from)
+                        voo.sele = to
+                    else if (voo.sele == to)
+                        voo.sele = from
+                    adp.notifyItemMoved(from, to)
+                    (src as ImgcutListAdapter.ViewHolder).setID(to, voo)
+                    (dest as ImgcutListAdapter.ViewHolder).setID(from, voo)
+                    return false
+                }
+
+                override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                    super.clearView(recyclerView, viewHolder)
+                    // Action finished
+                    if (moved)
+                        unSave(anim,"imgcut sort")
+                    moved = false
+                }
+
+                override fun onSwiped(holder: RecyclerView.ViewHolder, j: Int) {
+                    val pos = holder.bindingAdapterPosition
+                    val parts = StringBuilder()
+                    for (i in anim.mamodel.parts.indices)
+                        if (anim.mamodel.parts[i][2] == pos)
+                            parts.append("MaModel ").append(getString(R.string.def_part)).append(" $i (").append(anim.mamodel.strs0[i]).append(")\n")
+
+                    for (i in anim.anims.indices)
+                        for (part in anim.anims[i].parts) {
+                            var animd = false
+                            if (part.ints[1] == 2)
+                                for (mov in part.moves)
+                                    if (mov[1] == pos) {
+                                        parts.append("MaAnim: ${anim.types[i]}").append("\n")
+                                        animd = true
+                                        break
+                                    }
+                            if (animd)
+                                break
+                        }
+                    if (parts.isBlank())
+                        removePart(findViewById(R.id.spriteView), anim, adp, pos)
+                    else {
+                        val delPop = Dialog(this@ImgCutEditor)
+                        delPop.setContentView(R.layout.animation_part_delete_confirm)
+                        delPop.setCancelable(true)
+
+                        val parList = delPop.findViewById<TextView>(R.id.usedPartList)
+                        parList.text = parts.toString()
+                        val del = delPop.findViewById<Button>(R.id.part_delete_tree)
+                        del.setOnClickListener {
+                            removePart(findViewById(R.id.spriteView), anim, adp, pos)
+                            delPop.dismiss()
+                        }
+                        val cancel = delPop.findViewById<Button>(R.id.part_nodelete)
+                        cancel.setOnClickListener {
+                            delPop.dismiss()
+                            adp.notifyItemChanged(pos)
+                        }
+                        if (!isDestroyed && !isFinishing)
+                            delPop.show()
+                    }
+                }
+            })
+            touch.attachToRecyclerView(list)
 
             val viewer = SpriteView(this@ImgCutEditor, anim).apply {
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 postMove = fun(sav : String) {
                     if (sav.isBlank()) {
-                        if (list.size > sele)
-                            (list[sele].tag as ImgcutListAdapter.ViewHolder).setData(anim.imgcut.cuts[sele])
+                        adp.notifyItemChanged(sele) //if (list.size > sele) //    (list.getChildViewHolder(list[sele]) as ImgcutListAdapter.ViewHolder).setData(anim.imgcut.cuts[sele])
                     } else
                         unSave(anim, sav)
                 }
                 selectionChanged = fun() {
-                    if (sele != -1) {
+                    if (sele != -1)
                         list.smoothScrollToPosition(sele)
-                        list.setSelection(sele)
-                    }
                 }
             }
             viewer.id = R.id.spriteView
@@ -288,33 +312,25 @@ class ImgCutEditor : AppCompatActivity() {
 
             val addl = findViewById<Button>(R.id.imgcutpadd)
             val impr = findViewById<Button>(R.id.imgcutimport)
-            val expr = findViewById<Button>(R.id.imgcutexport)
             val spri = findViewById<Button>(R.id.imgcutsprimp)
             val resi = findViewById<Button>(R.id.imgcutresize)
             addl.setOnClickListener {
                 anim.imgcut.addLine(viewer.sele)
-                adp.add(anim.imgcut.cuts[anim.imgcut.n - 1])
+                adp.notifyItemInserted(anim.imgcut.n - 1)
+                viewer.sele = anim.imgcut.n - 1
                 unSave(anim, "imgcut add line")
                 viewer.invalidate()
+                adp.notifyDataSetChanged()
             }
             impr.setOnClickListener {
                 getImport(fun(f : Any) {
                     if (f !is ImgCut)
                         return
                     anim.imgcut = f
-                    adp.setTo(*f.cuts)
+                    adp.notifyDataSetChanged()
                     unSave(anim,"Import imgcut")
                     viewer.invalidate()
                 })
-            }
-            expr.setOnClickListener {
-                anim.save()
-                tempFile = VFile.getFile(CommonStatic.ctx.getWorkspaceFile(anim.id.path.substring(1) + "/imgcut.txt"))
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                    .addCategory(Intent.CATEGORY_OPENABLE)
-                    .setType("*/*")
-                intent.putExtra(Intent.EXTRA_TITLE, tempFile?.name ?: "")
-                exportLauncher.launch(intent)
             }
             spri.setOnClickListener {
                 getImport(fun(f : Any) {
@@ -364,9 +380,17 @@ class ImgCutEditor : AppCompatActivity() {
                 else
                     View.VISIBLE
                 redo.visibility = View.VISIBLE
-                adp.setTo(*anim.imgcut.cuts)
+                adp.notifyDataSetChanged()
                 viewer.invalidate()
             }
+            undo.setOnLongClickListener {
+                StaticStore.showShortMessage(this@ImgCutEditor, anim.undo)
+                false
+            }
+            undo.visibility = if (anim.undo == "initial")
+                View.GONE
+            else
+                View.VISIBLE
             redo.setOnClickListener {
                 anim.redo()
                 redo.visibility = if (anim.getRedo() == "nothing")
@@ -374,13 +398,13 @@ class ImgCutEditor : AppCompatActivity() {
                 else
                     View.VISIBLE
                 undo.visibility = View.VISIBLE
-                adp.setTo(*anim.imgcut.cuts)
+                adp.notifyDataSetChanged()
                 viewer.invalidate()
             }
-            undo.visibility = if (anim.undo == "initial")
-                View.GONE
-            else
-                View.VISIBLE
+            redo.setOnLongClickListener {
+                StaticStore.showShortMessage(this@ImgCutEditor, anim.getRedo())
+                false
+            }
             redo.visibility = if (anim.getRedo() == "nothing")
                 View.GONE
             else
@@ -389,6 +413,7 @@ class ImgCutEditor : AppCompatActivity() {
             val bck = findViewById<Button>(R.id.imgcutexit)
             bck.setOnClickListener {
                 anim.save()
+                anim.unload()
                 finish()
             }
             onBackPressedDispatcher.addCallback(this@ImgCutEditor, object : OnBackPressedCallback(true) {
@@ -446,5 +471,20 @@ class ImgCutEditor : AppCompatActivity() {
         val redo = findViewById<FloatingActionButton>(R.id.anim_Redo)
         undo.visibility = View.VISIBLE
         redo.visibility = View.GONE
+    }
+
+    private fun removePart(voo : SpriteView, a : AnimCE, adp : ImgcutListAdapter, pos : Int) {
+        a.removeICline(pos)
+        adp.notifyItemRemoved(pos)
+        unSave(a, "imgcut remove part")
+        voo.invalidate()
+        adp.notifyDataSetChanged()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
+        val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
+        super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 }

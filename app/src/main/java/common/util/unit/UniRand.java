@@ -22,7 +22,7 @@ public class UniRand extends Data implements AbUnit, AbForm {
     @JsonField
     public final Identifier<AbUnit> id;
 
-    @JsonField(defval = "isEmpty")
+    @JsonField
     public String name = "";
     public VImg icon = null, deployIcon = null;
     @JsonField(defval = "50")

@@ -15,11 +15,11 @@ public class CustomUnit extends CustomEntity implements MaskUnit, Cloneable {
 	public int price = 50;
 	@JsonField(defval = "60")
 	public int resp = 60;
-	@JsonField(defval = "0")
+	@JsonField
 	public int back, limit;
 	@JsonField(defval = "9")
 	public int front = 9;
-	@JsonField(gen = JsonField.GenType.GEN, defval = "null")
+	@JsonField(gen = JsonField.GenType.GEN)
 	public PCoin pcoin = null;
 
 	public CustomUnit() {

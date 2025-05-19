@@ -2,7 +2,6 @@ package common.util.unit;
 
 import common.io.json.JsonClass;
 import common.pack.Identifier;
-import common.system.VImg;
 
 import javax.annotation.Nullable;
 
@@ -11,7 +10,7 @@ import javax.annotation.Nullable;
  */
 @JsonClass.JCGeneric(AbForm.AbFormJson.class)
 @JsonClass(read = JsonClass.RType.FILL)
-public interface AbForm {
+public interface AbForm extends AbCharacter {
     @JsonClass(noTag = JsonClass.NoTag.LOAD)
     class AbFormJson {
         public Identifier<AbUnit> uid;
@@ -47,10 +46,6 @@ public interface AbForm {
     default int getFid() {
         return 0;
     }
-
-    VImg getIcon();
-
-    VImg getDeployIcon();
 
     default Level regulateLv(@Nullable Level src, Level target) {
         return target;

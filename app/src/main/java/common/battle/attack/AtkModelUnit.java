@@ -58,7 +58,7 @@ public class AtkModelUnit extends AtkModelEntity {
 		Proc p = super.getProc(matk);
 		if (p.CRIT.prob == 0 || elu.getInc(C_CRIT) == 0)
 			return p;
-		Proc pp = p.clone();
+		Proc pp = p == matk.getProc() ? p.clone() : p;
 		pp.CRIT.prob += elu.getInc(C_CRIT);
 		return pp;
 	}

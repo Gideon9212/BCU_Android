@@ -2,7 +2,6 @@ package com.g2.bcu.androidutil
 
 import android.content.Context
 import com.g2.bcu.androidutil.io.LangLoader
-import common.pack.PackData
 import common.pack.UserProfile
 
 object Revalidater {
@@ -15,9 +14,7 @@ object Revalidater {
             val plist = UserProfile.getAllPacks()
 
             for(m in plist) {
-                if(m !is PackData.DefPack && m !is PackData.UserPack) {
-                    continue
-                }
+                m ?: continue
 
                 for(i in m.units.list.indices) {
                     val unit = m.units.list[i]

@@ -82,12 +82,6 @@ public class PCoin extends Data {
 					data[j] = strs[2 + i * 14 + j];
 				if (data[13] == 1) //Super Talent
 					data[13] = 60;
-				if (data[0] == 62) {//Miniwave
-					if (data[6] == 0 && data[7] == 0) {
-						data[6] = 20;
-						data[7] = 20;
-					}
-				}
 
 				int[] corres = get_CORRES(data[0]);
 				if (corres[0] == -1) {
@@ -97,7 +91,7 @@ public class PCoin extends Data {
 				int[] trueArr;
 				switch (corres[0]) {
 					case PC_P:
-						trueArr = Arrays.copyOf(data, 3 + (du.getProc().getArr(corres[1]).getAllFields().length - (corres.length >= 3 ? corres[2] : 0)) * 2); //The Math.min is for testing
+						trueArr = Arrays.copyOf(data, 3 + (du.getProc().getArr(corres[1]).getDeclaredFields().length - (corres.length >= 3 ? corres[2] : 0)) * 2); //The Math.min is for testing
 						break;
 					case PC_BASE:
 						trueArr = Arrays.copyOf(data, 5);
@@ -131,9 +125,10 @@ public class PCoin extends Data {
 	}
 
 	public AtkDataModel[] getAtks(MaskUnit ans, int tal) {
-		if (tal >= atks.size())
+		int ind = getAtkInd(tal);
+		if (ind == -1)
 			return new AtkDataModel[0];
-		int[][] inds = atks.get(getAtkInd(tal));
+		int[][] inds = atks.get(ind);
 		AtkDataModel[] as = new AtkDataModel[inds.length];
 		for (int i = 0; i < as.length; i++)
 			as[i] = (AtkDataModel)ans.getAtkModel(inds[i][0], inds[i][1]);
@@ -259,7 +254,7 @@ public class PCoin extends Data {
 			int offset = type.length >= 3 && type[0] == PC_P ? type[2] : 0;
 			int fieldTOT = -offset;
 			if (type[0] == PC_P)
-				fieldTOT += ans.getProc().getArr(type[1]).getAllFields().length;
+				fieldTOT += ans.getProc().getArr(type[1]).getDeclaredFields().length;
 			else if (type[0] == PC_BASE)
 				fieldTOT = 1;
 			if (du instanceof DataUnit)
@@ -300,18 +295,20 @@ public class PCoin extends Data {
 					tar.set(0, modifs[0]);
 					tar.set(1, modifs[1] / 4);
 					tar.set(2, (modifs[1] + modifs[2]) / 4);
-					tar.set(3, 3);
-					tar.set(4, 30);
+					if (du.getProc().BLAST.lv == 0) {
+						du.getProc().BLAST.lv = 3;
+						du.getProc().BLAST.reduction = 30;
+					}
 				} else if (du instanceof DataUnit || ((CustomEntity)du).common || procSharable[type[1]])
 					for (int j = 0; j < fieldTOT; j++)
-						if (tar.getAllFields()[j].getType() == Identifier.class) {
+						if (tar.getDeclaredFields()[j].getType() == Identifier.class) {
 							if (modifs[j] == 0)
 								continue;
 							tar.set(j, (modifs[j] > 0 ? UserProfile.getBCData() : du.getPack().getPack()).units.get(Math.abs(modifs[j])-1).getID());
 						} else if (modifs[j] != 0)
 							tar.set(j+offset, tar.get(j+offset) + modifs[j]);
 				if (type[1] == P_BSTHUNT)
-					ans.getProc().BSTHUNT.type.active |= modifs[0] > 0;
+					ans.getProc().BSTHUNT.active |= modifs[0] > 0;
 
 				if (du instanceof DataUnit) {
 					if (type[1] == P_STRONG && modifs[0] != 0)
@@ -406,7 +403,7 @@ public class PCoin extends Data {
 			if (old && !procSharable[type[1]])
 				atks.add(new int[0][]);
 
-			int fieldTOT = (type.length >= 3 ? -type[2] : 0) + du.getProc().getArr(type[1]).getAllFields().length * 2;
+			int fieldTOT = (type.length >= 3 ? -type[2] : 0) + du.getProc().getArr(type[1]).getDeclaredFields().length * 2;
 			if (info.get(i).length - 3 == fieldTOT)
 				continue;
 			int[] modifs = Arrays.copyOf(info.get(i), fieldTOT + 3);

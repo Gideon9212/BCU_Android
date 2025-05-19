@@ -61,39 +61,40 @@ public abstract class PackData implements IndexContainer {
 		}
 
 		public void load(Consumer<String> progress, Consumer<Double> bar) {
-			progress.accept("loading basic images");
+			progress.accept("Loading basic Images");
 			Res.readData();
+			progress.accept("Loading traits");
 			Trait.addBCTraits();
-			progress.accept("loading cannon data");
+			progress.accept("Loading cannon Data");
 			Treasure.readCannonCurveData();
-			progress.accept("loading enemies");
+			progress.accept("Loading enemies");
 			loadEnemies(bar);
-			progress.accept("loading units");
+			progress.accept("Loading units");
 			loadUnits(bar);
-			progress.accept("loading auxiliary data");
+			progress.accept("Loading auxiliary data");
 			Combo.readFile();
 			PCoin.read();
-			progress.accept("loading effects");
+			progress.accept("Loading effects");
 			EffAnim.read();
-			progress.accept("loading backgrounds");
+			progress.accept("Loading backgrounds");
 			Background.read(bar);
 			BackgroundEffect.read();
-			progress.accept("loading cat castles");
+			progress.accept("Loading cat castles");
 			NyCastle.read();
-			progress.accept("loading souls");
+			progress.accept("Loading souls");
 			loadSoul();
-			progress.accept("loading stages");
-			DefMapColc.read();
+			progress.accept("Loading stages");
+			DefMapColc.read(bar);
 			Enemy.regType();
 			RandStage.read();
 			loadCharaGroup();
 			loadLimit();
 			CastleImg.loadBossSpawns();
-			progress.accept("loading orbs");
+			progress.accept("Loading orbs");
 			Orb.read();
-			progress.accept("loading musics");
+			progress.accept("Loading musics");
 			loadMusic();
-			progress.accept("process data");
+			progress.accept("Processing data");
 			this.traits.reset();
 			this.enemies.reset();
 			this.randEnemies.reset();
@@ -153,7 +154,7 @@ public abstract class PackData implements IndexContainer {
 					ints[j] = Integer.parseInt(strs[j]);
 
 				enemies.add(new Enemy(p, ints));
-				bar.accept(1.0 * (i++) / list.size());
+				bar.accept(1.0 * (++i) / list.size());
 			}
 		}
 
@@ -192,7 +193,7 @@ public abstract class PackData implements IndexContainer {
 					soulNumber = Math.max(soulNumber, CommonStatic.safeParseInt(vf.name));
 
 			String mid = "/battle_";
-			for (int i = 0; i < soulNumber; i++) {
+			for (int i = 0; i <= soulNumber; i++) {
 				String path = pre + Data.trio(i) + mid;
 				AnimUD anim = new AnimUD(path, "soul_" + Data.trio(i), null, null);
 				Identifier<Soul> identifier = new Identifier<>(Identifier.DEF, Soul.class, i);
@@ -200,7 +201,7 @@ public abstract class PackData implements IndexContainer {
 			}
 			String dem = "demonsoul"; // TODO identify if anim is enemy or not in demon soul name in effect page
 			CommonStatic.getBCAssets().demonSouls.add(new DemonSoul(0, new AnimUD(pre + dem + mid, "demonsoul_" + Data.duo(0), null, null), true));
-			CommonStatic.getBCAssets().demonSouls.add(new DemonSoul(0, new AnimUD(pre + dem + mid, "demonsoul_" + Data.duo(0), null, null), false));
+			CommonStatic.getBCAssets().demonSouls.add(new DemonSoul(0, new AnimUD(pre + dem + mid, "demonsoul_" + Data.duo(1), null, null), true));
 		}
 
 		private void loadUnits(Consumer<Double> bar) {
@@ -210,7 +211,14 @@ public abstract class PackData implements IndexContainer {
 
 			Queue<String> qt = VFile.readLine("./org/data/unitlevel.csv");
 			FixIndexList<UnitLevel> l = unitLevels;
+			int lastId = 0;
 			for (VFile p : list) {
+				int id = CommonStatic.parseIntN(p.getName());
+				while (lastId++ < id) {//Passes through missing slots
+					qs.poll();
+					qt.poll();
+					units.add(new Unit(lastId - 1));//Create a placeholder, because sure
+				}
 				String[] strs = qs.poll().split(",");
 
 				Unit u = new Unit(p, new int[]{Integer.parseInt(strs[strs.length - 2]), Integer.parseInt(strs[strs.length - 1])});
@@ -248,7 +256,7 @@ public abstract class PackData implements IndexContainer {
 				l.get(ind).units.add(u);
 
 				units.add(u);
-				bar.accept(1.0 * (x++) / list.size());
+				bar.accept(1.0 * (++x) / list.size());
 			}
 			CommonStatic.getBCAssets().defLv = l.get(2);
 		}
@@ -269,14 +277,11 @@ public abstract class PackData implements IndexContainer {
 		public final MultiLangData info = new MultiLangData();
 
 		public String creationDate;
-		@JsonField(defval = "null")
 		public String exportDate;
 		@JsonField(defval = "1")
 		public double version = 1.0;
 
-		@JsonField(defval = "false")
 		public boolean allowAnim = false;
-		@JsonField(defval = "null")
 		public byte[] parentPassword;
 		@JsonField(generic = String.class, defval = "isEmpty")
 		public SortedPackSet<String> dependency = new SortedPackSet<>();

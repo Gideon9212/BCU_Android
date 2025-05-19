@@ -18,9 +18,9 @@ import common.util.stage.Music;
 import common.util.unit.Trait;
 import common.util.unit.Unit;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 @SuppressWarnings("unused")
 @StaticPermitted
@@ -37,11 +37,7 @@ public class Data {
 
 			@Override
 			public boolean perform(CopRand r) {
-				return exists() && (prob == 100 || r.nextDouble() * 100 < prob);
-			}
-			@Override
-			public boolean exists() {
-				return prob > 0;
+				return prob > 0 && (prob >= 100 || r.nextInt(100) < prob);
 			}
 
 			@Override
@@ -54,27 +50,32 @@ public class Data {
 				nps[3] = Math.min(nps[3], (int)(100-prob));
 				return super.setTalent(nps);
 			}
+
+			@Override
+			public boolean exists() {
+				return prob > 0;
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class MULT extends ProcItem {
 			@Order(0)
-			@JsonField(defval = "0")
 			public double mult;
 
 			@Override
-			public boolean exists() {
-				return mult != 0;
-			}
-			@Override
 			public int[] setTalent(int[] nps) {
-				if (!exists()) {
+				if (mult == 0) {
 					if (nps[2] == 0)
 						nps[2] = 1;
 					if (nps[3] == 0)
 						nps[3] = 1;
 				}
 				return super.setTalent(nps);
+			}
+
+			@Override
+			public boolean exists() {
+				return mult != 0;
 			}
 		}
 
@@ -110,6 +111,13 @@ public class Data {
 				}
 				return super.setTalent(nps);
 			}
+
+			@Override
+			public boolean perform(CopRand r) {
+				if (time == 0)
+					return false;
+				return super.perform(r);
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
@@ -126,6 +134,11 @@ public class Data {
 				} else
 					nps = super.setTalent(nps);
 				return nps;
+			}
+
+			@Override
+			public boolean perform(CopRand r) {
+				return prob > 0 && (prob >= 100 || r.nextInt(100) < prob);
 			}
 		}
 
@@ -149,20 +162,14 @@ public class Data {
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class PTMS extends PTM {
 			@Order(3)
-			@JsonField(defval = "false")
 			public boolean stackable;
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class IMU extends MULT {
 			@Order(1)
-			@JsonField(defval = "0")
 			public float block;
 
-			@Override
-			public boolean exists() {
-				return mult != 0 || block != 0;
-			}
 			@Override
 			public int[] setTalent(int[] nps) {
 				nps[2] = Math.min(nps[2], (int)(100-mult));
@@ -170,6 +177,11 @@ public class Data {
 				nps[4] = Math.min(nps[4], (int)(100-block));
 				nps[5] = Math.min(nps[5], (int)(100-block));
 				return super.setTalent(nps);
+			}
+
+			@Override
+			public boolean exists() {
+				return mult != 0 || block != 0;
 			}
 		}
 
@@ -189,14 +201,26 @@ public class Data {
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class IMUAD extends IMU {
-			@Order(2)
-			@JsonField(defval = "0")
-			public int smartImu;
+			public enum FOCUS {
+				ALL(0),
+				DEBUFF(1),
+				BUFF(-1);
 
-			@Override
-			public int[] setTalent(int[] nps) {
-				nps[6] = nps[7] = Math.max(-1,Math.min(nps[6] + smartImu, 1));
-				return super.setTalent(nps);
+				public final int effect;
+				FOCUS(int eff) {
+					effect = eff;
+				}
+			}
+			@Order(2)
+			@JsonField(defval = "null||ALL")
+			public FOCUS focus = FOCUS.ALL;
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("smartImu")) {
+					int i = jobj.get("smartImu").getAsInt();
+					focus = FOCUS.values()[i == -1 ? 2 : i];
+				}
 			}
 		}
 
@@ -204,22 +228,35 @@ public class Data {
 		public static class WORKLV extends PROB {
 			@Order(1)
 			public int mult; //The same as PM, but mult is an int
+
+			@Override
+			public void add(ProcItem proc) {
+				super.add(proc);
+				mult = Math.max(-7, Math.min(mult, 7));
+			}
+
+			@Override
+			public boolean perform(CopRand r) {
+				if (mult == 0)
+					return false;
+				return super.perform(r);
+			}
+		}
+
+		@JsonClass(noTag = NoTag.LOAD)
+		public static class REFUND extends PM {
+			@Order(2)
+			@JsonField(defval = "1")
+			public int count = 1;
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class WAVE extends PROB {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				public boolean hitless;
-			}
 			@Order(1)
 			public int lv;
 			@Order(3)
-			@JsonField(defval = "hitless false")
-			public TYPE type = new TYPE();
+			public boolean hitless;
 			@Order(4)
-			@JsonField(defval = "false")
 			public boolean inverted;
 			@Order(5)
 			@JsonField(defval = "isEmpty")
@@ -232,28 +269,36 @@ public class Data {
 				nps[5] = Math.max(min, nps[5]);
 				return super.setTalent(nps);
 			}
+
+			@Override
+			public void add(ProcItem proc) {
+				super.add(proc);
+				lv = Math.max(1, lv);
+			}
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type"))
+					hitless = jobj.getAsJsonObject("type").get("hitless").getAsBoolean();
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class MINIWAVE extends WAVE {
 			@Order(2)
 			@JsonField(defval = "20")
-			public int multi;
+			public int multi = 20;
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class CANNI extends MULT {
 			@Order(1)
+			@BitMasked
 			public int type;
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class VOLC extends PROB {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				public boolean hitless;
-			}
 			@Order(1)
 			public int dis_0;
 			@Order(2)
@@ -261,17 +306,19 @@ public class Data {
 			@Order(3)
 			public int time;
 			@Order(5)
-			@JsonField(defval = "hitless false")
-			public TYPE type = new TYPE();
+			public boolean hitless;
 			@Order(6)
 			@JsonField(defval = "isEmpty")
 			public ProcID pid = new ProcID();
+			@Order(7)
+			@JsonField(defval = "1")
+			public int spawns = 1;//Only for deathsurges
 
 			@Override
 			public int[] setTalent(int[] nps) {
 				int min = time == 0 ? 1 : 0;
-				nps[8] = Math.max(min, nps[8] / Data.VOLC_ITV) * Data.VOLC_ITV;
-				nps[9] = Math.max(min, nps[9] / Data.VOLC_ITV) * Data.VOLC_ITV;
+				nps[8] = Math.max(min, nps[8] / VOLC_ITV) * VOLC_ITV;
+				nps[9] = Math.max(min, nps[9] / VOLC_ITV) * VOLC_ITV;
 				int d0 = nps[4], d1 = nps[5];
 				nps[4] = Math.min(d0, nps[6]);
 				nps[5] = Math.min(d1, nps[7]);
@@ -279,13 +326,25 @@ public class Data {
 				nps[7] = Math.max(d1, nps[7]);
 				return super.setTalent(nps);
 			}
+
+			@Override
+			public void add(ProcItem proc) {
+				super.add(proc);
+				time = Math.max(VOLC_ITV, time);
+			}
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type"))
+					hitless = jobj.getAsJsonObject("type").get("hitless").getAsBoolean();
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class MINIVOLC extends VOLC {
 			@Order(4)
 			@JsonField(defval = "20")
-			public int mult;
+			public int mult = 20;
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
@@ -296,13 +355,37 @@ public class Data {
 			public int dis_1;
 			@Order(3)
 			@JsonField(defval = "3")
-			public int lv;
+			public int lv = 3;
 			@Order(4)
 			@JsonField(defval = "30")
-			public float reduction;
+			public float reduction = 30;
 			@Order(5)
 			@JsonField(defval = "isEmpty")
 			public ProcID pid = new ProcID();
+
+			@Override
+			public int[] setTalent(int[] nps) {
+				int d0 = nps[4], d1 = nps[5];
+				nps[4] = Math.min(d0, nps[6]);
+				nps[5] = Math.min(d1, nps[7]);
+				nps[6] = Math.max(d0, nps[6]);
+				nps[7] = Math.max(d1, nps[7]);
+
+				int min = lv == 0 ? 1 : 0;
+				nps[8] = Math.max(min, nps[8]);
+				nps[9] = Math.max(min, nps[9]);
+				nps[10] = (int)Math.min(reduction + nps[10], 100f / (lv + nps[8]));
+				nps[11] = (int)Math.min(reduction + nps[11], 100f / (lv + nps[9]));
+
+				return super.setTalent(nps);
+			}
+
+			@Override
+			public void add(ProcItem proc) {
+				super.add(proc);
+				lv = Math.max(1, lv);
+				reduction = Math.min(reduction, 100f / lv);
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
@@ -312,7 +395,6 @@ public class Data {
 			@Order(1)
 			public int mult;
 			@Order(2)
-			@JsonField(defval = "false")
 			public boolean incremental;
 
 			@Override
@@ -322,13 +404,23 @@ public class Data {
 					nps[i] = Math.max(min, nps[i]);
 				return super.setTalent(nps);
 			}
+
+			@Override
+			public boolean exists() {
+				return health > 0;
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class IMUATK extends PT {
 			@Order(2)
-			@JsonField(defval = "0")
 			public int cd;
+
+			@Override
+			public void add(ProcItem proc) {
+				super.add(proc);
+				cd = Math.max(0, cd);
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
@@ -345,32 +437,21 @@ public class Data {
 					nps[i] = Math.max(min, nps[i]);
 				return super.setTalent(nps);
 			}
+
+			@Override
+			public boolean exists() {
+				return count != 0;
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class REVIVE extends ProcItem {
-
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@BitCount(2)
-				@Order(0)
-				@JsonField(defval = "0")
-				public int range_type;
-				@Order(1)
-				@JsonField(defval = "false")
-				public boolean imu_zkill;
-				@Order(2)
-				@JsonField(defval = "false")
-				public boolean revive_non_zombie;
-				@Order(3)
-				@JsonField(defval = "false")
-				public boolean revive_others;
-
-				public boolean unencodable() {
-					return !(imu_zkill || revive_others);
-				}
+			public enum RANGE {
+				ACTIVE,
+				PRESENT,
+				ALIVE,
+				FOREVER
 			}
-
 			@Order(0)
 			public int count;
 			@Order(1)
@@ -378,14 +459,18 @@ public class Data {
 			@Order(2)
 			public int health;
 			@Order(3)
-			@JsonField(defval = "0")
 			public int dis_0;
 			@Order(4)
-			@JsonField(defval = "0")
 			public int dis_1;
 			@Order(5)
-			@JsonField(defval = "unencodable")
-			public TYPE type = new TYPE();
+			@JsonField(defval = "null||ACTIVE")
+			public RANGE range_type = RANGE.ACTIVE;
+			@Order(6)
+			public boolean imu_zkill;
+			@Order(7)
+			public boolean revive_non_zombie;
+			@Order(8)
+			public boolean revive_others;
 
 			@Override
 			public int[] setTalent(int[] nps) {
@@ -399,27 +484,38 @@ public class Data {
 				nps[11] = Math.max(d1, nps[11]);
 				return super.setTalent(nps);
 			}
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type")) {
+					JsonObject type = jobj.getAsJsonObject("type");
+					if (type.has("range_type"))
+						range_type = RANGE.values()[type.get("range_type").getAsInt()];
+					if (type.has("imu_zkill"))
+						imu_zkill = type.get("imu_zkill").getAsBoolean();
+					if (type.has("revive_non_zombie"))
+						revive_non_zombie = type.get("revive_non_zombie").getAsBoolean();
+					if (type.has("revive_others"))
+						revive_others = type.get("revive_others").getAsBoolean();
+				}
+			}
+
+			@Override
+			public boolean exists() {
+				return count != 0;
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD) // Starred Barrier
 		public static class BARRIER extends ProcItem {
-
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				public boolean magnif;
-			}
 			@Order(0)
 			public int health;
 			@Order(1)
-			@JsonField(defval = "0")
 			public int regentime;
 			@Order(2)
-			@JsonField(defval = "0")
 			public int timeout;
 			@Order(3)
-			@JsonField(defval = "magnif false")
-			public TYPE type = new TYPE();
+			public boolean magnif;
 
 			@Override
 			public int[] setTalent(int[] nps) {
@@ -427,6 +523,17 @@ public class Data {
 				nps[2] = Math.max(min, nps[2]);
 				nps[3] = Math.max(min, nps[3]);
 				return super.setTalent(nps);
+			}
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type"))
+					magnif = jobj.getAsJsonObject("type").get("magnif").getAsBoolean();
+			}
+
+			@Override
+			public boolean exists() {
+				return health > 0;
 			}
 		}
 
@@ -448,18 +555,12 @@ public class Data {
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class BSTHUNT extends ProcItem {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				public boolean active;
-			}
 			@Order(0)
-			public TYPE type = new TYPE();
+			@JsonField(defval = "dodges")
+			public boolean active;
 			@Order(1)
-			@JsonField(defval = "0")
 			public float prob;
 			@Order(2)
-			@JsonField(defval = "0")
 			public int time;
 
 			@Override
@@ -470,6 +571,22 @@ public class Data {
 				nps[2] = Math.min(nps[2], (int)(100-prob));
 				nps[3] = Math.min(nps[3], (int)(100-prob));
 				return super.setTalent(nps);
+			}
+			public boolean dodges() {
+				return prob > 0;
+			}
+			@JsonDecoder.OnInjected
+			public void inject() {
+				active = true;
+			}
+
+			@Override
+			public boolean exists() {
+				return active || prob > 0;
+			}
+			@Override
+			public boolean perform(CopRand r) {
+				return time > 0 && prob > 0 && (prob >= 100 || r.nextInt(100) < prob);
 			}
 		}
 
@@ -485,32 +602,21 @@ public class Data {
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class AURA extends ProcItem {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				public boolean trait; //classic ignore/consider trait
-			}
 			@Order(0)
-			@JsonField(defval = "0")
 			public int amult; //Modifies Damage
 			@Order(1)
-			@JsonField(defval = "0")
 			public int dmult; //Modifies Defense
 			@Order(2)
-			@JsonField(defval = "0")
 			public int smult; //Modifies Speed
 			@Order(3)
-			@JsonField(defval = "0")
 			public int tmult; //Modifies TBA
 			@Order(4)
 			public int min_dis;
 			@Order(5)
 			public int max_dis;
 			@Order(6)
-			@JsonField(defval = "trait false")
-			public TYPE type = new TYPE();
+			public boolean trait;
 			@Order(7)
-			@JsonField(defval = "false")
 			public boolean skip_self;
 
 			@Override
@@ -531,18 +637,29 @@ public class Data {
 				nps[13] = Math.max(d1, nps[13]);
 				return super.setTalent(nps);
 			}
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type"))
+					trait = jobj.getAsJsonObject("type").get("trait").getAsBoolean();
+			}
+
+			@Override
+			public boolean exists() {
+				return amult != 0 || dmult != 0 || smult != 0 || tmult != 0;
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class LETHARGY extends PTMS {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				public boolean percentage;
-			}
 			@Order(3)
-			@JsonField(defval = "percentage false")
-			public TYPE type = new TYPE();
+			public boolean percentage;
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type"))
+					percentage = jobj.getAsJsonObject("type").get("percentage").getAsBoolean();
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
@@ -560,44 +677,50 @@ public class Data {
 			@Order(6)
 			@JsonField(defval = "isEmpty")
 			public ProcID pid = new ProcID();
+			@Order(7)
+			public boolean hit_base;
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class POISON extends PT {
-
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@BitCount(2)
-				@Order(0)
-				@JsonField(defval = "0")
-				public int damage_type;
-				@Order(1)
-				@JsonField(defval = "false")
-				public boolean unstackable;
-				@Order(2)
-				@JsonField(defval = "false")
-				public boolean ignoreMetal;
-				@Order(3)
-				@JsonField(defval = "false")
-				public boolean modifAffected;
-
-				public boolean unencodable() {
-					return !(damage_type > 0 || unstackable || ignoreMetal || modifAffected);
-				}
+			public enum TYPE {
+				BURN,
+				POISON,
+				BLEED,
+				CORRODE
 			}
 			@Order(2)
 			public int damage;
 			@Order(3)
 			public int itv;
 			@Order(4)
-			@JsonField(defval = "unencodable")
-			public TYPE type = new TYPE();
+			@JsonField(defval = "null||BURN")
+			public TYPE damage_type = TYPE.BURN;
+			@Order(5)
+			public boolean unstackable;
+			@Order(6)
+			public boolean ignoreMetal;
+			@Order(7)
+			public boolean modifAffected;
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type")) {
+					JsonObject type = jobj.getAsJsonObject("type");
+					if (type.has("damage_type"))
+						damage_type = TYPE.values()[type.get("damage_type").getAsInt()];
+					if (type.has("unstackable"))
+						unstackable = type.get("unstackable").getAsBoolean();
+					if (type.has("ignoreMetal"))
+						ignoreMetal = type.get("ignoreMetal").getAsBoolean();
+					if (type.has("modifAffected"))
+						modifAffected = type.get("modifAffected").getAsBoolean();
+				}
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
-		public static class WARP extends PT {
-			@Order(2)
-			public int dis;
+		public static class WARP extends PTD {
 			@Order(3)
 			public int dis_1;
 
@@ -616,7 +739,7 @@ public class Data {
 		public static class TIME extends PT {
 			@Order(2)
 			@JsonField(defval = "100")
-			public float intensity;
+			public float intensity = 100;
 
 			@Override
 			public int[] setTalent(int[] nps) {
@@ -629,126 +752,130 @@ public class Data {
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class SPEED extends PT {
+			public enum TYPE {
+				FIXED,
+				PERCENTAGE,
+				SET
+			}
 			@Order(2)
 			public int speed;
 			@Order(3)
-			@JsonField(defval = "0")
-			public int type;
+			@JsonField(defval = "null||FIXED")
+			public TYPE type = TYPE.FIXED;
 			@Order(4)
-			@JsonField(defval = "false")
 			public boolean stackable;
 		}
 
+		public enum SUMMON_ANIM {
+			NONE,
+			WARP,
+			BURROW,
+			BURROW_DISABLE,
+			ENTRY,
+			ATTACK,
+			EVERYWHERE_DOOR
+		}
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class SUMMON extends PROB {
-
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@BitCount(2)
-				@Order(0)
-				@JsonField(defval = "0")
-				public int anim_type;
-				@Order(1)
-				@JsonField(defval = "false")
-				public boolean ignore_limit;
-				@Order(2)
-				@JsonField(defval = "false")
-				public boolean fix_buff;
-				@Order(3)
-				@JsonField(defval = "false")
-				public boolean same_health;
-				@Order(4)
-				@JsonField(defval = "false")
-				public boolean bond_hp;
-				@Order(5)
-				@JsonField(defval = "false")
-				public boolean on_hit;
-				@Order(6)
-				@JsonField(defval = "false")
-				public boolean on_kill;
-				@BitCount(2)
-				@Order(7)
-				@JsonField(defval = "0")
-				public int pass_proc;
-			}
-
 			@Order(1)
-			@JsonField(defval = "null")
 			public Identifier<?> id;
 			@Order(2)
-			@JsonField(defval = "0")
 			public int dis;
 			@Order(3)
-			@JsonField(defval = "0")
 			public int max_dis;
 			@Order(4)
 			@JsonField(defval = "1")
-			public int mult;
+			public int mult = 1;
 			@Order(5)
-			@JsonField(defval = "0")
 			public int min_layer;
 			@Order(6)
 			@JsonField(defval = "9")
-			public int max_layer;
+			public int max_layer = 9;
 			@Order(7)
-			public TYPE type = new TYPE();
+			@JsonField(defval = "null||NONE")
+			public SUMMON_ANIM anim_type = SUMMON_ANIM.NONE;
 			@Order(8)
-			@JsonField(defval = "0")
-			public int time;
+			public boolean ignore_limit;
 			@Order(9)
-			@JsonField(defval = "1")
-			public int amount;
+			public boolean fix_buff;
 			@Order(10)
+			public boolean same_health;
+			@Order(11)
+			public boolean bond_hp;
+			@Order(12)
+			public boolean on_hit;
+			@Order(13)
+			public boolean on_kill;
+			@Order(14)
+			@BitMasked
+			public int pass_proc;
+			@Order(15)
+			public int time;
+			@Order(16)
 			@JsonField(defval = "1")
-			public int form;
+			public int amount = 1;
+			@Order(17)
+			@JsonField(defval = "1")
+			public int form = 1;
+			@Order(18)
+			public int interval;
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type")) {
+					JsonObject type = jobj.getAsJsonObject("type");
+					if (type.has("anim_type"))
+						anim_type = SUMMON_ANIM.values()[type.get("anim_type").getAsInt()];
+					if (type.has("ignore_limit"))
+						ignore_limit = type.get("ignore_limit").getAsBoolean();
+					if (type.has("fix_buff"))
+						fix_buff = type.get("fix_buff").getAsBoolean();
+					if (type.has("same_health"))
+						same_health = type.get("same_health").getAsBoolean();
+					if (type.has("bond_hp"))
+						bond_hp = type.get("bond_hp").getAsBoolean();
+					if (type.has("on_hit"))
+						on_hit = type.get("on_hit").getAsBoolean();
+					if (type.has("on_kill"))
+						on_kill = type.get("on_kill").getAsBoolean();
+					if (type.has("pass_proc"))
+						pass_proc = type.get("pass_proc").getAsInt();
+				}
+			}
+
+			@Override
+			public void add(ProcItem itm) {
+				SUMMON_ANIM a = prob > 0 ? anim_type : ((SUMMON)itm).anim_type;
+				super.add(itm);
+				anim_type = a;
+				amount = Math.max(1, amount);
+				interval = Math.max(0, interval);
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class THEME extends PT {
-
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				public boolean kill;
-			}
 			@Order(2)
-			@JsonField(defval = "null")
 			public Identifier<Background> id;
 			@Order(3)
-			@JsonField(defval = "null")
 			public Identifier<Music> mus;
 			@Order(4)
-			@JsonField(defval = "kill false")
-			public TYPE type = new TYPE();
+			public boolean kill;
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type"))
+					kill = jobj.getAsJsonObject("type").get("kill").getAsBoolean();
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class COUNTER extends PROB {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@BitCount(2)
-				@Order(0)
-				@JsonField(defval = "0")
-				public int counterWave;
-				@BitCount(2)
-				@Order(1)
-				@JsonField(defval = "0")
-				public int procType;
-				@Order(1)
-				@JsonField(defval = "false")
-				public boolean useOwnDamage;
-				@Order(2)
-				@JsonField(defval = "false")
-				public boolean outRange;
-				@Order(3)
-				@JsonField(defval = "false")
-				public boolean areaAttack;
-
-				public boolean unencodable() {
-					return !(counterWave > 0 || procType > 0 || useOwnDamage || outRange || areaAttack);
-				}
+			public enum CWAVE {
+				NONE,
+				COUNTER,
+				REFLECT
 			}
-
 			@Order(1)
 			public int damage;
 			@Order(2)
@@ -756,38 +883,50 @@ public class Data {
 			@Order(3)
 			public int maxRange;
 			@Order(4)
-			@JsonField(defval = "unencodable")
-			public TYPE type = new TYPE();
+			@JsonField(defval = "null||NONE")
+			public CWAVE counterWave = CWAVE.NONE;
 			@Order(5)
-			@JsonField(defval = "0")
+			@BitMasked
+			public int procType;
+			@Order(6)
+			public boolean useOwnDamage;
+			@Order(7)
+			public boolean outRange;
+			@Order(8)
+			public boolean areaAttack;
+			@Order(9)
 			public int maxDamage;
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type")) {
+					JsonObject type = jobj.getAsJsonObject("type");
+					if (type.has("counterWave"))
+						counterWave = CWAVE.values()[type.get("counterWave").getAsInt()];
+					if (type.has("procType"))
+						procType = type.get("procType").getAsInt();
+					if (type.has("useOwnDamage"))
+						useOwnDamage = type.get("useOwnDamage").getAsBoolean();
+					if (type.has("outRange"))
+						outRange = type.get("outRange").getAsBoolean();
+					if (type.has("areaAttack"))
+						areaAttack = type.get("areaAttack").getAsBoolean();
+				}
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class DMGCUT extends PROB {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				@JsonField(defval = "false")
-				public boolean traitIgnore;
-				@Order(1)
-				@JsonField(defval = "false")
-				public boolean procs;
-				@Order(2)
-				@JsonField(defval = "false")
-				public boolean magnif;
-
-				public boolean unencodable() {
-					return !(traitIgnore || procs || magnif);
-				}
-			}
 			@Order(1)
 			public int dmg;
 			@Order(2)
 			public int reduction;
 			@Order(3)
-			@JsonField(defval = "unencodable")
-			public TYPE type = new TYPE();
+			public boolean traitIgnore;
+			@Order(4)
+			public boolean procs;
+			@Order(5)
+			public boolean magnif;
 
 			@Override
 			public int[] setTalent(int[] nps) {
@@ -796,65 +935,66 @@ public class Data {
 				nps[5] = Math.max(min, nps[5]);
 				return super.setTalent(nps);
 			}
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type")) {
+					JsonObject type = jobj.getAsJsonObject("type");
+					if (type.has("traitIgnore"))
+						traitIgnore = type.get("traitIgnore").getAsBoolean();
+					if (type.has("procs"))
+						procs = type.get("procs").getAsBoolean();
+					if (type.has("magnif"))
+						magnif = type.get("magnif").getAsBoolean();
+				}
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class DMGCAP extends PROB {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				@JsonField(defval = "false")
-				public boolean traitIgnore;
-				@Order(1)
-				@JsonField(defval = "false")
-				public boolean nullify;
-				@Order(2)
-				@JsonField(defval = "false")
-				public boolean procs;
-				@Order(3)
-				@JsonField(defval = "false")
-				public boolean magnif;
-
-				public boolean unencodable() {
-					return !(traitIgnore || nullify || procs || magnif);
-				}
-			}
 			@Order(1)
 			public int dmg;
 			@Order(2)
-			public TYPE type = new TYPE();
+			public boolean traitIgnore;
+			@Order(3)
+			public boolean nullify;
+			@Order(4)
+			public boolean procs;
+			@Order(5)
+			public boolean magnif;
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type")) {
+					JsonObject type = jobj.getAsJsonObject("type");
+					if (type.has("traitIgnore"))
+						traitIgnore = type.get("traitIgnore").getAsBoolean();
+					if (type.has("nullify"))
+						nullify = type.get("nullify").getAsBoolean();
+					if (type.has("procs"))
+						procs = type.get("procs").getAsBoolean();
+					if (type.has("magnif"))
+						magnif = type.get("magnif").getAsBoolean();
+				}
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class REMOTESHIELD extends PROB {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				@JsonField(defval = "false")
-				public boolean traitCon;
-				@Order(1)
-				@JsonField(defval = "false")
-				public boolean procs;
-				@Order(2)
-				@JsonField(defval = "false")
-				public boolean waves;
-
-				public boolean unencodable() {
-					return !(traitCon || procs || waves);
-				}
-			}
 			@Order(1)
 			public int minrange;
 			@Order(2)
 			public int maxrange;
 			@Order(3)
-			@JsonField(defval = "0")
 			public int reduction;
 			@Order(4)
-			@JsonField(defval = "0")
 			public int block;
 			@Order(5)
-			public TYPE type = new TYPE();
+			public boolean traitCon;
+			@Order(6)
+			public boolean procs;
+			@Order(7)
+			public boolean waves;
 
 			@Override
 			public int[] setTalent(int[] nps) {
@@ -870,81 +1010,87 @@ public class Data {
 
 				return super.setTalent(nps);
 			}
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type")) {
+					JsonObject type = jobj.getAsJsonObject("type");
+					if (type.has("traitCon"))
+						traitCon = type.get("traitCon").getAsBoolean();
+					if (type.has("procs"))
+						procs = type.get("procs").getAsBoolean();
+					if (type.has("waves"))
+						waves = type.get("waves").getAsBoolean();
+				}
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class AI extends ProcItem {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				@JsonField(defval = "false")
-				public boolean calcstrongest;
-				@Order(1)
-				@JsonField(defval = "false")
-				public boolean calcblindspot;
-				//@Order(2)
-				//@JsonField(defval = "false")
-				//public boolean manualcontrol; //The player controls the unit manually; Arrow keys to move, spacebar to attack
-				public boolean unencodable() {
-					return !(calcstrongest || calcblindspot);
-				}
-			}
 			@Order(0)
-			@JsonField(defval = "0")
 			public int retreatDist;
 			@Order(1)
-			@JsonField(defval = "0")
 			public int retreatSpeed;
 			@Order(2)
-			@JsonField(defval = "unencodable")
-			public TYPE type = new TYPE();
+			public boolean calcstrongest;
+			@Order(3)
+			public boolean calcblindspot;
+			@Order(4)
+			public boolean danger;
+			@Order(5)
+			public boolean ignHypno;
+			//@Order(6)
+			//public boolean manualcontrol; //The player controls the unit manually; Arrow keys to move, spacebar to attack
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type")) {
+					JsonObject type = jobj.getAsJsonObject("type");
+					if (type.has("calcstrongest"))
+						calcstrongest = type.get("calcstrongest").getAsBoolean();
+					if (type.has("calcblindspot"))
+						calcblindspot = type.get("calcblindspot").getAsBoolean();
+				}
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class RANGESHIELD extends PM {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				public boolean range;
-			}
 			@Order(2)
-			@JsonField(defval = "range false")
-			public TYPE type = new TYPE();
+			public boolean range;
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type") && jobj.getAsJsonObject("type").has("range"))
+					range = jobj.getAsJsonObject("type").get("range").getAsBoolean();
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class SPIRIT extends ProcItem {
-			@JsonClass(noTag = NoTag.LOAD)
-			public static class TYPE extends IntType {
-				@Order(0)
-				public boolean inv;
-			}
 			@Order(0)
 			public Identifier<?> id;
 			@Order(1)
 			@JsonField(defval = "15")
-			public int cd0;
+			public int cd0 = 15;
 			@Order(2)
 			@JsonField(defval = "15")
-			public int cd1;
+			public int cd1 = 15;
 			@Order(3)
 			@JsonField(defval = "1")
-			public int amount;
+			public int amount = 1;
 			@Order(4)
-			@JsonField(defval = "0")
 			public int summonerCd;
 			@Order(5)
-			@JsonField(defval = "0")
 			public int moneyCost;
 			@Order(6)
-			@JsonField(defval = "0")
-			public int animType;
+			@JsonField(defval = "null||NONE")
+			public SUMMON_ANIM animType = SUMMON_ANIM.NONE;
 			@Order(7)
 			@JsonField(defval = "1")
-			public int form;
+			public int form = 1;
 			@Order(8)
-			@JsonField(defval = "inv false")
-			public TYPE type = new TYPE();
+			public boolean inv;
 
 			public int[] setTalent(int[] nps) {
 				if (id == null && nps[2] == 0)
@@ -957,7 +1103,7 @@ public class Data {
 				nps[8] = Math.max(nps[8], amount == 0 ? 1 : 0);
 				nps[9] = Math.max(nps[9], amount == 0 ? 1 : 0);
 
-				nps[14] = nps[15] = Math.max(0,Math.min(nps[14], 5));
+				nps[14] = nps[15] = Math.max(0,Math.min(nps[14], SUMMON_ANIM.values().length - 1));
 				nps[16] = Math.max(nps[16], 1-form);
 				nps[17] = Math.max(nps[17], 1-form);
 				if (nps[2] > 0) {//Dunno how to custom unit
@@ -971,15 +1117,24 @@ public class Data {
 				}
 				return super.setTalent(nps);
 			}
+
+			@Override
+			public boolean def_exists() {
+				return id != null;
+			}
+
+			@JsonDecoder.OnInjected
+			public void inject(JsonObject jobj) {
+				if (jobj.has("type") && jobj.getAsJsonObject("type").has("inv"))
+					inv = jobj.getAsJsonObject("type").get("inv").getAsBoolean();
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class BLESSING extends PT {
 			@Order(2)
-			@JsonField(defval = "false")
 			public boolean stackable;
 			@Order(3)
-			@JsonField(defval = "0")
 			public int abis;
 			@Order(4)
 			@JsonField(defval = "null||isBlank")
@@ -987,6 +1142,20 @@ public class Data {
 			@Order(5)
 			@JsonField(generic = Trait.class, alias = Identifier.class, defval = "isEmpty")
 			public SortedPackSet<Trait> traits = new SortedPackSet<>();
+		}
+		@JsonClass(noTag = NoTag.LOAD)
+		public static class STATINC extends MULT { //It has no params, it just dictates behavior for strong v bless
+			@Override
+			public void add(ProcItem pi) {
+				double m = ((MULT)pi).mult;
+				if (m == 0)
+					return;
+				if (mult == 0)
+					mult += 100;
+				if (mult + m == 0)
+					m -= m > 0 ? 0.01 : -0.01; //Negligible difference but doesn't reset the markiplier
+				mult += m;
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
@@ -1040,101 +1209,31 @@ public class Data {
 			}
 		}
 
-		public static abstract class IntType implements Cloneable, BattleStatic {
-
-			@Documented
-			@Retention(value = RetentionPolicy.RUNTIME)
-			@Target(value = ElementType.FIELD)
-			public @interface BitCount {
-				int value();
-			}
-
-			@Override
-			public IntType clone() throws CloneNotSupportedException {
-				return (IntType) super.clone();
-			}
-
-			public Field[] getDeclaredFields() {
-				return FieldOrder.getDeclaredFields(this.getClass());
-			}
-
-			public void set(int i, int v) {
-				try {
-					Field fs = getDeclaredFields()[i];
-					if (fs.getType() == int.class)
-						fs.set(this, v);
-					else if (fs.getType() == boolean.class)
-						fs.set(this, v != 0);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			public void add(IntType it) {
-				try {
-					for (Field fs : getDeclaredFields())
-						if (fs.getType() == int.class)
-							fs.set(this, (int)fs.get(this) + (int)fs.get(it));
-						else if (fs.getType() == boolean.class)
-							fs.set(this, (boolean)fs.get(this) || (boolean)fs.get(it));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-			public IntType load(int val) throws Exception {
-				Field[] fs = getDeclaredFields();
-				for (int i = 0; i < fs.length;) {
-					BitCount c = fs[i].getAnnotation(BitCount.class);
-					if (c == null) {
-						fs[i].set(this, (val >> i & 1) == 1);
-						i++;
-					} else {
-						fs[i].set(this, val >> i & (1 << c.value()) - 1);
-						i += c.value();
-					}
-				}
-				return this;
-			}
-
-			public int toInt() throws Exception {
-				Field[] fs = getDeclaredFields();
-				int ans = 0;
-				for (int i = 0; i < fs.length;) {
-					BitCount c = fs[i].getAnnotation(BitCount.class);
-					if (c == null) {
-						if (fs[i].getBoolean(this))
-							ans |= 1 << i;
-						i++;
-					} else {
-						int val = fs[i].getInt(this);
-						ans |= val << i;
-						i += c.value();
-					}
-				}
-				return ans;
-			}
-
-		}
-
 		public static abstract class ProcItem implements Cloneable, BattleStatic {
+			@Retention(RetentionPolicy.RUNTIME)
+			public @interface BitMasked {//Nothingburger
+			}
+
 			public ProcItem clear() {
 				try {
 					Field[] fs = getDeclaredFields();
 					for (Field f : fs)
 						if (f.getType() == int.class || f.getType() == float.class || f.getType() == double.class)
 							f.set(this, 0);
-						else if (IntType.class.isAssignableFrom(f.getType()))
-							f.set(this, (f.getType().getDeclaredConstructor().newInstance()));
+						else if (f.getType() == boolean.class)
+							f.setBoolean(this, false);
 						else if (f.getType() == Identifier.class || f.getType() == Proc.class)
 							f.set(this, null);
 						else if (f.getType() == SortedPackSet.class)
 							((SortedPackSet<?>)f.get(this)).clear();
 						else if (f.getType() == ProcID.class)
 							((ProcID)f.get(this)).clear();
+						else if (Enum.class.isAssignableFrom(f.getType()))
+							f.set(this, f.getType().getEnumConstants()[0]);
 						else
 							throw new Exception("unknown field " + f.getType() + " " + f.getName());
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error clearing Proc of type " + getClass().getName());
 				}
 				return this;
 			}
@@ -1145,9 +1244,7 @@ public class Data {
 					ProcItem ans = (ProcItem) super.clone();
 					for (Field f : getDeclaredFields())
 						if (f.get(this) != null) {
-							if (IntType.class.isAssignableFrom(f.getType()))
-								f.set(ans, ((IntType) f.get(this)).clone());
-							else if (f.getType() == Identifier.class)
+							if (f.getType() == Identifier.class)
 								f.set(ans, ((Identifier<?>) f.get(this)).clone());
 							else if (f.getType() == Proc.class) {
 								f.set(ans, ((Proc) f.get(this)).clone());
@@ -1160,24 +1257,20 @@ public class Data {
 						}
 					return ans;
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error cloning Proc of type " + getClass().getName());
 					return null;
 				}
 			}
 
-			public boolean exists() {
+			public boolean def_exists() {
 				try {
 					Field[] fs = getDeclaredFields();
 					for (Field f : fs)
 						if (f.getType() == double.class || f.getType() == float.class) {
-							double d = f.getDouble(this);
-							if(f.getName().equals("prob") && d == 0)
-								return false;
-
-							if (d != 0)
+							if (f.getDouble(this) != (f.getAnnotation(JsonField.class) != null ? Double.parseDouble(f.getAnnotation(JsonField.class).defval()) : 0))
 								return true;
 						} else if (f.getType() == int.class) {
-							if (f.getInt(this) != 0)
+							if (f.getInt(this) != (f.getAnnotation(JsonField.class) != null ? Integer.parseInt(f.getAnnotation(JsonField.class).defval()) : 0))
 								return true;
 						} else if (f.getType() == Identifier.class) {
 							if (f.get(this) != null)
@@ -1185,32 +1278,28 @@ public class Data {
 						} else if (f.getType() == boolean.class) {
 							if (f.getBoolean(this))
 								return true;
-						} else {
-							if (((IntType) f.get(this)).toInt() > 0)
+						} else if (f.getType() == ProcID.class) {
+							if (!((ProcID)f.get(this)).isEmpty())
 								return true;
-						}
+						} else if (Enum.class.isAssignableFrom(f.getType()))
+							if (!f.get(this).toString().equals(f.getAnnotation(JsonField.class).defval()))
+								return true;
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error checking if Proc of type " + getClass().getName() + " exists");
 				}
 				return false;
+			}
+			public boolean exists() {
+				return def_exists();
 			}
 
 			public int get(int i) { //Only used for talents
 				try {
-					Field[] fs = getDeclaredFields();
-					int loc = 0;
-					for (int j = 0; j < i; j++)
-						if (IntType.class.isAssignableFrom(fs[j].getType())) {
-							int len = ((IntType) fs[j].get(this)).getDeclaredFields().length - 1;
-							loc = Math.min(i - j, len);
-							break;
-						}
-					Field f = fs[i - loc];
-					if (IntType.class.isAssignableFrom(f.getType())) {
-						Field ff = ((IntType)f.get(this)).getDeclaredFields()[loc];
-						return ff.getType() == int.class ? ff.getInt(f.get(this)) : ff.getBoolean(f.get(this)) ? 1 : 0;
-					} else if (f.getType() == Identifier.class)
+					Field f = getDeclaredFields()[i];
+					if (f.getType() == Identifier.class)
 						return ((Identifier<?>)f.get(this)).id;
+					else if (Enum.class.isAssignableFrom(f.getType()))
+						return ((Enum<?>)f.get(this)).ordinal();
 					else if (f.getType() == boolean.class)
 						return f.getBoolean(this) ? 1 : 0;
 					else if (f.getType() == ProcID.class) {
@@ -1219,18 +1308,16 @@ public class Data {
 					}
 					return f.getType() == int.class ? f.getInt(this) : (int)f.getDouble(this);
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error getting talent " + i + " for proc type " + getClass().getName());
 					return 0;
 				}
 			}
 
 			public String getFieldName(int i) {
 				try {
-					Field f = getDeclaredFields()[i];
-
-					return f.getName();
+					return getDeclaredFields()[i].getName();
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, i < 0 ? "Negative Index" : getClass().getName() + " has less than " + i + " fields");
 					return null;
 				}
 			}
@@ -1239,36 +1326,8 @@ public class Data {
 				return FieldOrder.getFields(this.getClass());
 			}
 
-			public Field[] getAllFields() { //Revive talent bug
-				Field[] dfs = getDeclaredFields();
-				for (int i = 0; i < dfs.length; i++)
-					if (IntType.class.isAssignableFrom(dfs[i].getType())) {
-						int postl = dfs.length - i - 1;
-						Field[] nf = dfs[i].getType().getDeclaredFields();
-						dfs = Arrays.copyOf(dfs, dfs.length + nf.length - 1);
-						dfs[i] = dfs[i].getType().getDeclaredFields()[0];
-						for (int j = 1; j < nf.length; j++) {
-							if (j < postl)
-								dfs[i + j + nf.length] = dfs[i + j];
-							dfs[i + j] = nf[j];
-						}
-						break;
-					}
-				return dfs;
-			}
-
 			public boolean perform(CopRand r) {
-				try {
-					Field f = get("prob");
-					int prob = f.getInt(this);
-					if (prob == 0)
-						return false;
-					if (prob == 100)
-						return true;
-					return r.nextFloat() * 100 < prob;
-				} catch (Exception e) {
-					return exists();
-				}
+				return exists();
 			}
 
 			public Field get(String name) {
@@ -1285,27 +1344,19 @@ public class Data {
 			@Deprecated
 			public void set(int i, int v) {
 				try {
-					Field[] fs = getDeclaredFields();
-					int loc = 0;
-					for (int j = 0; j < i; j++)
-						if (IntType.class.isAssignableFrom(fs[j].getType())) {
-							int len = ((IntType) fs[j].get(this)).getDeclaredFields().length - 1;
-							loc = Math.min(i - j, len);
-							break;
-						}
-					Field f = fs[i - loc];
-					if (IntType.class.isAssignableFrom(f.getType()))
-						((IntType)f.get(this)).set(loc, v);
-					else if (f.getType() == boolean.class)
+					Field f = getDeclaredFields()[i];
+					if (f.getType() == boolean.class)
 						f.set(this, v != 0);
 					else if (f.getType() == ProcID.class) {
 						ProcID pid = (ProcID)f.get(this);
 						if (v != 0 || !pid.isEmpty())
 							pid.l.add(v);
-					} else
+					} else if (Enum.class.isAssignableFrom(f.getType()))
+						f.set(this, f.getType().getEnumConstants()[v]);
+					else
 						f.set(this, v);
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error setting " + v + " for talent " + i + " for proc type " + getClass().getName());
 				}
 			}
 			/**
@@ -1314,29 +1365,18 @@ public class Data {
 			@Deprecated
 			public void set(int i, Identifier<?> id) {
 				try {
-					Field[] fs = getDeclaredFields();
-					int loc = 0;
-					for (int j = 0; j < fs.length && loc < i; j++)
-						if (IntType.class.isAssignableFrom(fs[j].getType())) {
-							int len = ((IntType) fs[j].get(this)).getDeclaredFields().length - 1;
-							if (j + loc + len >= i)
-                                break;
-							loc += len;
-						}
-					Field f = fs[i - loc];
+					Field f = getDeclaredFields()[i];
 					f.set(this, id);
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error setting " + id + " for talent " + i + " for proc type " + getClass().getName());
 				}
 			}
 
 			public void set(ProcItem pi) {
 				try {
 					for (Field f : getDeclaredFields())
-						if (f.getType().isPrimitive())
+						if (f.getType().isPrimitive() || Enum.class.isAssignableFrom(f.getType()))
 							f.set(this, f.get(pi));
-						else if (IntType.class.isAssignableFrom(f.getType()))
-							f.set(this, ((IntType) f.get(pi)).clone());
 						else if (f.getType() == Identifier.class) {
 							Identifier<?> id = (Identifier<?>) f.get(pi);
 							f.set(this, id == null ? null : id.clone());
@@ -1352,25 +1392,27 @@ public class Data {
 						} else
 							throw new Exception("unknown field " + f.getType() + " " + f.getName());
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error setting data for proc type " + getClass().getName());
 				}
 			}
 			public void add(ProcItem pi) {
-				if (!pi.exists())
+				if (!pi.def_exists())
 					return;
 				try {
 					for (Field f : getDeclaredFields()) {
-						if (f.getType() == int.class)
-							f.set(this, (int)f.get(this) + (int)f.get(pi));
-						else if (f.getType() == float.class)
+						if (f.getType() == int.class) {
+							if (f.getAnnotation(BitMasked.class) != null)
+								f.set(this, (int) f.get(this) | (int) f.get(pi));
+							f.set(this, (int) f.get(this) + (int) f.get(pi));
+						} else if (f.getType() == float.class)
 							f.set(this, (float)f.get(this) + (float)f.get(pi));
 						else if (f.getType() == double.class)
 							f.set(this, (double)f.get(this) + (double)f.get(pi));
 						else if (f.getType() == boolean.class)
 							f.set(this, (boolean)f.get(this) || (boolean)f.get(pi));
-						else if (IntType.class.isAssignableFrom(f.getType())) {
-							((IntType)f.get(this)).add((IntType)f.get(pi));
-						} else if (f.getType() == Identifier.class) {
+						else if (Enum.class.isAssignableFrom(f.getType()))
+							f.set(this, f.get(pi));
+						else if (f.getType() == Identifier.class) {
 							Identifier<?> id = (Identifier<?>)f.get(pi);
 							if (id != null)
 								f.set(this, id.clone());
@@ -1379,7 +1421,7 @@ public class Data {
 							if (p != null)
 								f.set(this, p.clone());
 						} else if (f.getType() == SortedPackSet.class) {
-							SortedPackSet<Comparable<? super Comparable>> l = (SortedPackSet<Comparable<? super Comparable>>) f.get(pi), m = (SortedPackSet<Comparable<? super Comparable>>) f.get(this);
+							SortedPackSet<? extends Comparable<?>> l = (SortedPackSet<? extends Comparable<?>>) f.get(pi), m = (SortedPackSet<? extends Comparable<?>>) f.get(this);
 							m.addAll(l);
 							f.set(this, m);
 						} else if (f.getType() == ProcID.class) {
@@ -1390,7 +1432,7 @@ public class Data {
 							throw new Exception("unknown field " + f.getType() + " " + f.getName());
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error adding bless effect for proc type " + getClass().getName());
 				}
 			}
 
@@ -1568,9 +1610,9 @@ public class Data {
 		@Order(68)
 		public final PM DEMONVOLC = new PM();
 		@Order(69)
-		public final MULT DMGINC = new MULT(); //Merges Strong against, Massive Damage, and Insane Damage
+		public final STATINC DMGINC = new STATINC(); //Merges Strong against, Massive Damage, and Insane Damage
 		@Order(70)
-		public final MULT DEFINC = new MULT(); //Merges Strong against, Resistant, and Insane Resist
+		public final STATINC DEFINC = new STATINC(); //Merges Strong against, Resistant, and Insane Resist
 		@Order(71)
 		public final RANGESHIELD RANGESHIELD = new RANGESHIELD();
 		@Order(72)
@@ -1585,6 +1627,12 @@ public class Data {
 		public final PM DRAIN = new PM();
 		@Order(77)
 		public final BLESSING BLESSING = new BLESSING();
+		@Order(78)
+		public final STRONG SPEEDUP = new STRONG();
+		@Order(79)
+		public final MINIVOLC MINIDEATHSURGE = new MINIVOLC();
+		@Order(80)
+		public final REFUND REFUND = new REFUND();
 
 		@Override
 		public Proc clone() {
@@ -1598,14 +1646,14 @@ public class Data {
 				}
 				return ans;
 			} catch (Exception e) {
-				e.printStackTrace();
+				CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error cloning proc");
 				return null;
 			}
 		}
 
 		public boolean isBlank() {
 			for (int i = 0; i < PROC_TOT; i++)
-				if (getArr(i).exists())
+				if (getArr(i).def_exists())
 					return false;
 			return true;
 		}
@@ -1614,7 +1662,7 @@ public class Data {
 			try {
 				return (ProcItem) Proc.class.getField(id).get(this);
 			} catch (Exception e) {
-				e.printStackTrace();
+				CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Couldn't get proc " + id);
 				return null;
 			}
 		}
@@ -1623,18 +1671,16 @@ public class Data {
 			try {
 				return (ProcItem) getDeclaredFields()[i].get(this);
 			} catch (Exception e) {
-				e.printStackTrace();
+				CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Couldn't get proc " + i);
 				return null;
 			}
 		}
 
-		public boolean sharable(int i) {
-			if(i >= procSharable.length) {
-				System.out.println("Warning : "+i+" is out of index of procSharable");
-				return false;
-			} else {
+		public static boolean sharable(int i) {
+			if(i < procSharable.length)
 				return procSharable[i];
-			}
+			System.out.println("Warning : "+i+" is out of index of procSharable");
+			return false;
 		}
 
 		@Override
@@ -1655,10 +1701,10 @@ public class Data {
 					String tag = f.getName();
 					ProcItem proc = (ProcItem) f.get(this);
 
-					if(proc.exists())
+					if(proc.def_exists())
 						obj.add(tag, JsonEncoder.encode(proc));
 				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Couldn't serializa proc " + f.getName());
 				}
 			}
 
@@ -1688,7 +1734,7 @@ public class Data {
 						f.set(proc, JsonDecoder.decode(obj.get(tag), f.getType()));
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Couldn't generate proc " + f.getName());
 				}
 			}
 
@@ -1894,7 +1940,7 @@ public class Data {
 	 */
 	public static final byte P_ARMOR = 22;
 	/**
-	 * Make target move faster/slower 0: chance, 1: duration, 2: speed, 3: type type
+	 * Make target move faster/slower 0: chance, 1: duration, 2: speed, 3: type
 	 * 0: Current speed * (100 + n)% type 1: Current speed + n type 2: Fixed speed
 	 */
 	public static final byte P_SPEED = 23;
@@ -1959,7 +2005,10 @@ public class Data {
 	public static final byte P_IMUBLAST = 75;
 	public static final byte P_DRAIN = 76;
 	public static final byte P_BLESS = 77;
-	public static final byte PROC_TOT = 78;
+	public static final byte P_SPEEDUP = 78;
+	public static final byte P_MINIDEATHSURGE = 79;
+	public static final byte P_REFUND = 80;
+	public static final byte PROC_TOT = 81;
 
 	public static final boolean[] procSharable = {
 			false, //kb
@@ -2035,17 +2084,26 @@ public class Data {
 			true,  //Resistant but good
 			true,  //Range Shield
 			true,  //spirit summon
-			false,  //TOTAL METALHEAD DEATH
+			false, //TOTAL METALHEAD DEATH
 			false, //BAJA BLAST
 			true,  //imu.blast
 			false, //Drain/ABsorb
 			false, //Bless
+			true,  //adrenaline
+			true,  //Mini Death Surge
+			true   //Refund
 	};
 
 	/**
 	 * Procs in here are shareable on any hit for BC entities, but not shareable for custom entities
 	 */
 	public static final int[] BCShareable = { P_BOUNTY, P_ATKBASE };
+	public static boolean bcShareable(int i) {
+		for (int bc : BCShareable)
+			if (bc == i)
+				return true;
+		return false;
+	}
 
 	public static final byte WT_WAVE = 1;
 	public static final byte WT_MOVE = 2;
@@ -2186,6 +2244,9 @@ public class Data {
 			{ PC_P, P_RANGESHIELD}, //40: Range Shield
 			{ PC_P, P_SPIRIT}, //41: Spirit summon
 			{ PC_P, P_DRAIN}, //42: Drain
+			{ PC_P, P_SPEEDUP}, //43: Adrenaline
+			{ PC_P, P_REFUND}, //44: Refund
+			{ PC_P, P_MINIDEATHSURGE} //45: Mini-Deathsurge
 	};
 
 	public static int[] get_CORRES(int ind) {
@@ -2271,21 +2332,21 @@ public class Data {
 	public static final byte A_IMUATK = 20;
 	public static final byte A_ARMOR = 21;
 	public static final byte A_SPEED = 22;
-	public static final byte A_WEAK_UP = 23;
-	public static final byte A_HEAL = 24;
-	public static final byte A_DEMON_SHIELD = 25;
-	public static final byte A_COUNTER = 26;
-	public static final byte A_DMGCUT = 27;
-	public static final byte A_DMGCAP = 28;
-	public static final byte A_LETHARGY = 29;
-	public static final byte A_REMSHIELD = 30;
-	public static final byte A_WEAKAURA = 31;
-	public static final byte A_STRONGAURA = 32;
-	public static final byte A_RAGE = 33;
-	public static final byte A_HYPNO = 34;
-	public static final byte A_RANGESHIELD = 35;
-	public static final byte A_DRAIN = 36;
-	public static final byte A_BLESS = 37;
+	public static final byte A_HEAL = 23;
+	public static final byte A_DEMON_SHIELD = 24;
+	public static final byte A_COUNTER = 25;
+	public static final byte A_DMGCUT = 26;
+	public static final byte A_DMGCAP = 27;
+	public static final byte A_LETHARGY = 28;
+	public static final byte A_REMSHIELD = 29;
+	public static final byte A_WEAKAURA = 30;
+	public static final byte A_STRONGAURA = 31;
+	public static final byte A_RAGE = 32;
+	public static final byte A_HYPNO = 33;
+	public static final byte A_RANGESHIELD = 34;
+	public static final byte A_DRAIN = 35;
+	public static final byte A_BLESS = 36;
+	public static final byte A_DRENALINE = 37;
 	public static final byte A_TOT = 38;
 
 	// atk type index used in filter page
@@ -2388,16 +2449,20 @@ public class Data {
 	public static final byte ORB_STRONG = 2;
 	public static final byte ORB_MASSIVE = 3;
 	public static final byte ORB_RESISTANT = 4;
+	public static final byte ORB_MINIDEATHSURGE = 5;
+	public static final byte ORB_RESWAVE = 6;
+	public static final byte ORB_REFUND = 7;
+	public static final byte ORB_RESKB = 8;
+	public static final byte ORB_SOLBUFF = 9;
+	public static final byte ORB_BAKILL = 10;
+	public static final byte ORB_TYPE_TOTAL = 11;
 	public static final byte ORB_TYPE = 0, ORB_TRAIT = 1, ORB_GRADE = 2, ORB_TOT = 3;
 
-	public static final short[] ORB_ATK_MULTI = { 100, 200, 300, 400, 500 }; // Atk orb multiplication
-	public static final byte[] ORB_RES_MULTI = { 4, 8, 12, 16, 20 }; // Resist orb multiplication
-	public static final byte[] ORB_STR_DEF_MULTI = {2, 4, 6, 8, 10};
-	public static final float[] ORB_STR_ATK_MULTI = {0.06f, 0.12f, 0.18f, 0.24f, 0.3f};
-	public static final float[] ORB_MASSIVE_MULTI = {0.1f, 0.2f, 0.3f, 0.4f, 0.5f};
-	public static final byte[] ORB_RESISTANT_MULTI = {5, 10, 15, 20, 25};
 	public static final short[] GATYA = { 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 160, 161, 164, 167,
 			168, 169, 170, 171, 179, 180, 181, 182, 183, 184};
+
+	public static final int ORB_DEATH_SURGE_SPAWN_MIN = 200;
+	public static final int ORB_DEATH_SURGE_SPAWN_MAX = 500;
 
 	public static final short MUSIC_DELAY = 2344; //Music change delay with milliseconds accuracy
 
@@ -2499,12 +2564,12 @@ public class Data {
 			return null;
 		}
 	}
-
+	//Same as ignore. but prints log
 	public static <T> T silent(SupExc<T> sup) {
 		try {
 			return sup.get();
 		} catch (Exception e) {
-			e.printStackTrace();
+			CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Unexpected Error");
 			return null;
 		}
 	}

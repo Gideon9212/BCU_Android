@@ -258,7 +258,7 @@
 
         </TableRow>
 
-        <com.g2.bcu.androidutil.supports.DynamicListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/imgcutvalList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -318,19 +318,6 @@
                 tools:ignore="ButtonStyle" />
 
             <Button
-                android:id="@+id/imgcutexport"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="0.5"
-                android:backgroundTint="?attr/ButtonPrimary"
-                android:text="@string/imgcut_export"
-                android:textAllCaps="false"
-                android:textColor="?attr/TextPrimary"
-                tools:ignore="ButtonStyle" />
-                
-                <Button
                 android:id="@+id/imgcutresize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

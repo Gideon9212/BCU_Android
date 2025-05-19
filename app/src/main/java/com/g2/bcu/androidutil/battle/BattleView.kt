@@ -65,7 +65,7 @@ class BattleView(context: Context, field: BattleField, axis: Boolean, private va
     else
         BBCtrl(
             this,
-            field as SBCtrl?,
+            field,
             this,
             StaticStore.dptopx(32f, context).toFloat(),
             cutout
@@ -76,6 +76,7 @@ class BattleView(context: Context, field: BattleField, axis: Boolean, private va
     var paused = false
     var battleEnd = false
     var musicChanged = false
+    var bgChanged = false
 
     var spd = 0
 
@@ -112,7 +113,7 @@ class BattleView(context: Context, field: BattleField, axis: Boolean, private va
         }
         if(CommonStatic.getConfig().stageName)
             painter.stageImage = stgImage
-        painter.deployImg = StageBitmapGenerator(context, fontMode, context.getString(R.string.nodeploy)).generateTextImage();
+        painter.deployImg = StageBitmapGenerator(context, fontMode, context.getString(R.string.nodeploy)).generateTextImage()
 
         painter.dpi = StaticStore.dptopx(32f, context)
         painter.stmImageOffset = StaticStore.dptopx(52f, context)
@@ -262,30 +263,30 @@ class BattleView(context: Context, field: BattleField, axis: Boolean, private va
                 if (!paused)
                     invalidate()
 
-                if (!musicChanged) {
-                    if (haveToChangeMusic()) {
-                        if (painter.bf.sb.st.mus1 == null) {
-                            musicChanged = true
-                        } else {
-                            if (SoundHandler.MUSIC.isPlaying)
-                                SoundHandler.MUSIC.pause()
+                if (!musicChanged && haveToChangeMusic()) {
+                    if (painter.bf.sb.st.mus1 != null) {
+                        if (SoundHandler.MUSIC.isPlaying)
+                            SoundHandler.MUSIC.pause()
 
-                            this@BattleView.postDelayed({
-                                if(battleEnd)
-                                    return@postDelayed
+                        this@BattleView.postDelayed({
+                            if(battleEnd)
+                                return@postDelayed
 
-                                SoundHandler.setBGM(painter.bf.sb.st.mus1, onReady = {
-                                    if (!activity.paused && SoundHandler.musicPlay) {
-                                        SoundHandler.MUSIC.play()
-                                    } else {
-                                        SoundHandler.MUSIC.pause()
-                                    }
-                                })
-                            }, Data.MUSIC_DELAY.toLong())
-
-                            musicChanged = true
-                        }
+                            SoundHandler.setBGM(painter.bf.sb.st.mus1, onReady = {
+                                if (!activity.paused && SoundHandler.musicPlay) {
+                                    SoundHandler.MUSIC.play()
+                                } else {
+                                    SoundHandler.MUSIC.pause()
+                                }
+                            })
+                        }, Data.MUSIC_DELAY.toLong())
                     }
+                    musicChanged = true
+                }
+                if (!bgChanged && mustChangeBG()) {
+                    if (painter.bf.sb.st.bg1 != null)
+                        painter.bf.sb.changeBG(painter.bf.sb.st.bg1)
+                    bgChanged = true
                 }
 
                 if(isSliding) {
@@ -322,10 +323,19 @@ class BattleView(context: Context, field: BattleField, axis: Boolean, private va
     override fun reset() {}
 
     private fun haveToChangeMusic(): Boolean {
-        if (painter.bf.sb.st.mush == 0 || painter.bf.sb.st.mush == 100)
+        if (painter.bf.sb.st.mush == 0 || painter.bf.sb.st.mush == 100) {
             musicChanged = true
+            return false
+        }
+        return (painter.bf.sb.ebase.health.toFloat() / painter.bf.sb.ebase.maxH.toFloat() * 100).toInt() < painter.bf.sb.st.mush
+    }
 
-        return (painter.bf.sb.ebase.health.toFloat() / painter.bf.sb.ebase.maxH.toFloat() * 100).toInt() <painter.bf.sb.st.mush && painter.bf.sb.st.mush != 0 && painter.bf.sb.st.mush != 100
+    private fun mustChangeBG(): Boolean {
+        if (painter.bf.sb.st.bgh == 0 || painter.bf.sb.st.bgh == 100) {
+            bgChanged = true
+            return false
+        }
+        return (painter.bf.sb.ebase.health.toFloat() / painter.bf.sb.ebase.maxH.toFloat() * 100).toInt() < painter.bf.sb.st.bgh
     }
 
     private fun resetSE() {
@@ -410,9 +420,8 @@ class BattleView(context: Context, field: BattleField, axis: Boolean, private va
         intent.putExtra("size", painter.bf.sb.siz)
         intent.putExtra("pos", painter.bf.sb.pos)
 
-        if(SoundHandler.MUSIC.isPlaying && SoundHandler.MUSIC.currentMediaItem != null) {
+        if(SoundHandler.MUSIC.isPlaying && SoundHandler.MUSIC.currentMediaItem != null)
             SoundHandler.MUSIC.stop()
-        }
 
         SoundHandler.resetHandler()
 
@@ -751,7 +760,7 @@ class BattleView(context: Context, field: BattleField, axis: Boolean, private va
     }
 
     private fun pickOneEXStage() : Stage? {
-        val chance = painter.bf.sb.r.nextDouble() * 100.0
+        val chance = painter.bf.sb.r.nextFloat() * 100.0
 
         val st = painter.bf.sb.st
 

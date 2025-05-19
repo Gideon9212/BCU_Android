@@ -6,30 +6,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.Spinner
-import androidx.core.widget.doAfterTextChanged
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.g2.bcu.MaAnimEditor
 import com.g2.bcu.R
 import com.g2.bcu.androidutil.animation.AnimationEditView
-import com.g2.bcu.androidutil.supports.DynamicListView.StableArrayAdapter
+import com.g2.bcu.androidutil.supports.WatcherEditText
 import common.CommonStatic
 import common.util.anim.AnimCE
-import common.util.anim.MaAnim
 import common.util.anim.Part
 
-class PartListAdapter(private val activity: MaAnimEditor, private val a : AnimCE, private val p : Part) : StableArrayAdapter<IntArray>(activity, R.layout.maanim_part_list_layout, p.moves) {
+class PartListAdapter(private val activity: MaAnimEditor, private val a : AnimCE, private val p : Part) : RecyclerView.Adapter<PartListAdapter.ViewHolder>() {
 
     companion object {
         val eases = arrayOf("0 - Linear", "1 - Instant", "2 - Exponential", "3 - Polynomial", "4 - Sinusoidal")
     }
-    internal class ViewHolder(row: View) {
-        val ifr: EditText = row.findViewById(R.id.mapart_frame)
-        val idat: EditText = row.findViewById(R.id.mapart_mod)
+    class ViewHolder(row: View) : RecyclerView.ViewHolder(row) {
+        val ifr: WatcherEditText = row.findViewById(R.id.mapart_frame)
+        val idat: WatcherEditText = row.findViewById(R.id.mapart_mod)
         val iea: Spinner = row.findViewById(R.id.mapart_ease)
-        val ipa: EditText = row.findViewById(R.id.mapart_param)
-        val ire: FloatingActionButton = row.findViewById(R.id.mapart_delete)
+        val ipa: WatcherEditText = row.findViewById(R.id.mapart_param)
+        val del: FloatingActionButton = row.findViewById(R.id.mapart_delete)
 
         fun setData(ma : IntArray) {
             ifr.text = SpannableStringBuilder(ma[0].toString())
@@ -44,40 +42,43 @@ class PartListAdapter(private val activity: MaAnimEditor, private val a : AnimCE
         }
     }
 
-    override fun getView(position: Int, view: View?, parent: ViewGroup): View {
-        val holder: ViewHolder
-        val row: View
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
+        val row = LayoutInflater.from(activity).inflate(R.layout.maanim_part_list_layout, viewGroup, false)
+        return ViewHolder(row)
+    }
 
-        if (view == null) {
-            val inf = LayoutInflater.from(context)
-            row = inf.inflate(R.layout.maanim_part_list_layout, parent, false)
-            holder = ViewHolder(row)
-            row.tag = holder
-        } else {
-            row = view
-            holder = row.tag as ViewHolder
-        }
+    override fun getItemCount(): Int {
+        return p.n
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, i: Int) {
+        val position = holder.bindingAdapterPosition
         val pa = p.moves[position]
         holder.iea.setPopupBackgroundResource(R.drawable.spinner_popup)
         holder.iea.adapter = ArrayAdapter(activity, R.layout.spinneradapter, eases)
         holder.setData(pa)
+        val manim = activity.getAnim(a)
 
         val voo = activity.findViewById<AnimationEditView>(R.id.animationView)
-        holder.ifr.doAfterTextChanged {
+        holder.ifr.setWatcher {
             if (!holder.ifr.hasFocus())
-                return@doAfterTextChanged
-            pa[0] = CommonStatic.parseIntN(holder.ifr.text.toString())
+                return@setWatcher
+            pa[0] = CommonStatic.parseIntN(holder.ifr.text!!.toString())
             p.check(a)
+            p.validate()
+            manim.validate()
             activity.unSave(a,"maanim change part move $position frame")
-            voo.animationChanged()
+            activity.animationChanged(voo)
         }
-        holder.idat.doAfterTextChanged {
+        holder.idat.setWatcher {
             if (!holder.idat.hasFocus())
-                return@doAfterTextChanged
-            pa[1] = CommonStatic.parseIntN(holder.idat.text.toString())
+                return@setWatcher
+            pa[1] = CommonStatic.parseIntN(holder.idat.text!!.toString())
             p.check(a)
+            p.validate()
+            manim.validate()
             activity.unSave(a,"maanim change part move $position effect")
-            voo.animationChanged()
+            activity.animationChanged(voo)
         }
         holder.iea.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, v: View?, position: Int, id: Long) {
@@ -94,28 +95,28 @@ class PartListAdapter(private val activity: MaAnimEditor, private val a : AnimCE
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-        holder.ipa.doAfterTextChanged {
+        holder.ipa.setWatcher {
             if (!holder.ipa.hasFocus())
-                return@doAfterTextChanged
-            pa[3] = CommonStatic.parseIntN(holder.ipa.text.toString())
+                return@setWatcher
+            pa[3] = CommonStatic.parseIntN(holder.ipa.text!!.toString())
             p.check(a)
             activity.unSave(a,"maanim change part move $position effect")
             voo.animationChanged()
         }
-        holder.ire.setOnClickListener {
-            val ma : MaAnim = activity.getAnim(a)
-            val data: Array<Part?> = ma.parts
+        holder.del.setOnClickListener {
+            val data: Array<IntArray?> = p.moves
             data[position] = null
-            ma.parts = arrayOfNulls<Part>(--ma.n)
+            p.moves = arrayOfNulls(--p.n)
             var ind = 0
             for (datum in data)
                 if (datum != null)
-                    ma.parts[ind++] = datum
-            ma.validate()
+                    p.moves[ind++] = datum
+            p.check(a)
+            p.validate()
+            manim.validate()
             activity.unSave(a,"maanim remove part")
-            remove(position)
-            voo.animationChanged()
+            activity.animationChanged(voo)
+            notifyItemRemoved(position)
         }
-        return row
     }
 }

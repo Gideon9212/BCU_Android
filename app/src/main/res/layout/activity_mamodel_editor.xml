@@ -185,14 +185,12 @@
             android:layout_below="@id/mamodelCfgHide"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="8dp">
+            android:layout_marginTop="2dp">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="1"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -203,9 +201,9 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="1"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -216,9 +214,9 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="1"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -229,9 +227,9 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="1"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -242,9 +240,9 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.225"
+                android:layout_weight="2"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -255,9 +253,9 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.225"
+                android:layout_weight="2"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -268,9 +266,9 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.225"
+                android:layout_weight="2"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -281,9 +279,9 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="1"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -294,9 +292,22 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:text="@string/def_opa"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -307,9 +318,9 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="1"
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -319,30 +330,16 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                android:background="@drawable/cell_shape"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:textColor="?attr/TextPrimary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
         </TableRow>
 
-        <com.g2.bcu.androidutil.supports.DynamicListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mamodelvalList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/mamodeltable"
             android:layout_below="@id/mamodelvalues"
             android:layout_marginBottom="4dp"
-            android:choiceMode="singleChoice">
-
-        </com.g2.bcu.androidutil.supports.DynamicListView>
+            android:choiceMode="singleChoice" />
 
         <TableRow
             android:id="@+id/mamodeltable"
@@ -373,19 +370,6 @@
                 android:layout_weight="0.5"
                 android:backgroundTint="?attr/ButtonPrimary"
                 android:text="@string/imgcut_import"
-                android:textAllCaps="false"
-                android:textColor="?attr/TextPrimary"
-                tools:ignore="ButtonStyle" />
-
-            <Button
-                android:id="@+id/mamodelexport"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="0.5"
-                android:backgroundTint="?attr/ButtonPrimary"
-                android:text="@string/imgcut_export"
                 android:textAllCaps="false"
                 android:textColor="?attr/TextPrimary"
                 tools:ignore="ButtonStyle" />

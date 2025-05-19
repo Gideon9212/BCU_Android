@@ -2,7 +2,6 @@ package com.g2.bcu
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
@@ -14,9 +13,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.g2.bcu.androidutil.Definer
+import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.pack.adapters.PackCreationAdapter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
@@ -54,6 +55,7 @@ class PackCreation : AppCompatActivity() {
         LeakCanaryManager.initCanary(shared, application)
         DefineItf.check(this)
         AContext.check()
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         (CommonStatic.ctx as AContext).updateActivity(this)
 
         setContentView(R.layout.activity_pack_creation)
@@ -86,8 +88,6 @@ class PackCreation : AppCompatActivity() {
 
             bck.setOnClickListener {
                 Workspace.saveWorkspace(false)
-                val intent = Intent(this@PackCreation, MainActivity::class.java)
-                startActivity(intent)
                 finish()
             }
             onBackPressedDispatcher.addCallback(this@PackCreation, object : OnBackPressedCallback(true) {
@@ -99,5 +99,12 @@ class PackCreation : AppCompatActivity() {
             StaticStore.setDisappear(st, prog)
             StaticStore.setAppear(list, more)
         }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
+        val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
+        super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 }

@@ -5,9 +5,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.SharedPreferences.Editor
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -64,7 +61,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 
@@ -82,10 +78,8 @@ class LineUpScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val shared = getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val ed: Editor
-
         if (!shared.contains("initial")) {
-            ed = shared.edit()
+            val ed = shared.edit()
             ed.putBoolean("initial", true)
             ed.putBoolean("theme", true)
             ed.apply()
@@ -104,23 +98,16 @@ class LineUpScreen : AppCompatActivity() {
         AContext.check()
 
         (CommonStatic.ctx as AContext).updateActivity(this)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_line_up_screen)
 
         val result = intent
         val extra = result.extras
 
-        val stage = if (extra != null) {
-            if (extra.containsKey("stage")) {
-                val data = StaticStore.transformIdentifier<Stage>(extra.getString("stage"))
-
-                data?.get()
-            } else {
-                null
-            }
-        } else {
+        val stage = if (extra != null && extra.containsKey("stage"))
+            StaticStore.transformIdentifier<Stage>(extra.getString("stage"))?.get()
+        else
             null
-        }
 
         val star = extra?.getInt("star", 0) ?: 0
 
@@ -165,11 +152,10 @@ class LineUpScreen : AppCompatActivity() {
                     StaticStore.ludata.clear()
 
                     for(p in UserProfile.getAllPacks()) {
-                        for(i in p.units.list.indices) {
-                            val unit = p.units.list[i]
-
+                        for(unit in p.units.list)
                             StaticStore.ludata.add(unit.id)
-                        }
+                        for (runi in p.randUnits.list)
+                            StaticStore.ludata.add(runi.id)
                     }
                 }
             }
@@ -924,26 +910,9 @@ class LineUpScreen : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 

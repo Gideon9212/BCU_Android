@@ -6,8 +6,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences.Editor
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Build
@@ -51,6 +49,7 @@ import com.g2.bcu.androidutil.fakeandroid.AndroidKeys
 import com.g2.bcu.androidutil.fakeandroid.CVGraphics
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import com.g2.bcu.androidutil.supports.StageBitmapGenerator
@@ -65,9 +64,7 @@ import common.io.json.JsonDecoder
 import common.io.json.JsonEncoder
 import common.pack.Identifier
 import common.pack.Source.ResourceLocation
-import common.pack.UserProfile
 import common.system.P
-import common.util.anim.AnimCE
 import common.util.lang.MultiLangCont
 import common.util.stage.Replay
 import common.util.stage.Stage
@@ -75,7 +72,6 @@ import common.util.unit.Form
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -111,7 +107,7 @@ class BattleSimulation : AppCompatActivity() {
         AContext.check()
 
         (CommonStatic.ctx as AContext).updateActivity(this)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_battle_simulation)
 
         SoundHandler.initializePlayer(this@BattleSimulation, directPlay = SoundHandler.musicPlay)
@@ -149,7 +145,7 @@ class BattleSimulation : AppCompatActivity() {
                 val res = JsonDecoder.decode(JsonParser.parseString(bundle.getString("replay")), ResourceLocation::class.java)
                 res.replay
             } else null
-
+            
             lifecycleScope.launch {
                 //Prepare
                 val pauseButton= findViewById<FloatingActionButton>(R.id.battlepause)
@@ -172,7 +168,7 @@ class BattleSimulation : AppCompatActivity() {
                 val layout = findViewById<LinearLayout>(R.id.battlelayout)
                 val retry = findViewById<Button>(R.id.battleretry)
                 val replay = findViewById<Button>(R.id.battlereplay)
-
+                
                 pauseButton.hide()
                 fast.hide()
                 slow.hide()
@@ -573,7 +569,7 @@ class BattleSimulation : AppCompatActivity() {
                             dialog.show()
                         }
                     } else if (battleView.painter.bf is SBCtrl) {
-                        //TODO: Load battle from replay after replay support is added but not my TODO
+                        //TODO: Load battle from replay after replay support is added
                     }
                 }
 
@@ -898,26 +894,9 @@ class BattleSimulation : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 

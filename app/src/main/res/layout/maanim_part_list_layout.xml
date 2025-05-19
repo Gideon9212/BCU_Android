@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
-        <EditText
+        <com.g2.bcu.androidutil.supports.WatcherEditText
             android:id="@+id/mapart_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -18,7 +18,7 @@
             android:ems="10"
             android:inputType="numberSigned" />
 
-        <EditText
+        <com.g2.bcu.androidutil.supports.WatcherEditText
             android:id="@+id/mapart_mod"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -34,7 +34,7 @@
             android:layout_weight="1"
             android:background="@drawable/cell_spinner" />
 
-        <EditText
+        <com.g2.bcu.androidutil.supports.WatcherEditText
             android:id="@+id/mapart_param"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

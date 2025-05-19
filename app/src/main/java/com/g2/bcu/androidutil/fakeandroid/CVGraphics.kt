@@ -296,25 +296,21 @@ class CVGraphics : FakeGraphics {
                 when (p1) {
                     0 -> {
                         bitmapPaint.xfermode = src
-                        bitmapPaint.alpha = alpha
                     }
                     1 -> {
                         bitmapPaint.xfermode = add
-                        bitmapPaint.alpha = alpha
                     }
                     2 -> {
                         bitmapPaint.xfermode = multi
-                        bitmapPaint.alpha = alpha
                     }
                     3 -> {
                         bitmapPaint.xfermode = screen
-                        bitmapPaint.alpha = alpha
                     }
                     -1 -> {
                         bitmapPaint.xfermode = darken
-                        bitmapPaint.alpha = alpha
                     }
                 }
+                bitmapPaint.alpha = alpha
             }
             FakeGraphics.GRAY -> {
                 neg = true

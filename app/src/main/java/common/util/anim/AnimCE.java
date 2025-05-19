@@ -289,7 +289,7 @@ public class AnimCE extends AnimCI {
 					for (BackgroundEffect bge : pack.bgEffects)
 						if (bge instanceof CustomBGEffect && ((CustomBGEffect)bge).anim == this)
 							list.add(((CustomBGEffect) bge).anim);
-				if (list.size() == 0)
+				if (list.isEmpty())
 					continue;
 				ResourceLocation rl = new ResourceLocation(pack.getSID(), id.id, id.base);
 				Workspace.validate(rl);
@@ -540,6 +540,7 @@ public class AnimCE extends AnimCI {
 			AnimU<?> au = (AnimU<?>) ori;
 			setEdi(au.getEdi());
 			setUni(au.getUni());
+			setPreview(au.getPreviewIcon());
 		}
 		standardize();
 		saved = false;

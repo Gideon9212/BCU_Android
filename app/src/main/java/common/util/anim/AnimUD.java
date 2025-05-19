@@ -20,16 +20,17 @@ public class AnimUD extends AnimU<AnimUD.DefImgLoader> {
 
 	static class DefImgLoader implements AnimU.ImageKeeper {
 		private final String spath;
-		private final VFile fnum, fedi, funi;
+		private final VFile fnum, fedi, funi, fico;
 		private FileData dnum;
 		private FakeImage num;
-		private VImg edi, uni;
+		private VImg edi, uni, icon;
 
 		private DefImgLoader(String path, String str, String sedi, String suni) {
 			spath = path + str;
 			fnum = VFile.get(spath + ".png");
 			fedi = sedi == null ? null : VFile.get(path + sedi);
 			funi = suni == null ? null : VFile.get(path + suni);
+			fico = suni != null || sedi == null ? null : VFile.get(path + sedi.replace("di", "nemy_icon"));
 		}
 
 		@Override
@@ -37,6 +38,13 @@ public class AnimUD extends AnimU<AnimUD.DefImgLoader> {
 			if (edi != null && edi.getImg() != null && edi.getImg().bimg() != null && edi.getImg().isValid())
 				return edi;
 			return fedi == null ? null : (edi = new VImg(fedi).mark(Marker.EDI));
+		}
+
+		@Override
+		public VImg getPreviewIcon() {
+			if (icon != null && icon.getImg() != null && icon.getImg().bimg() != null && icon.getImg().isValid())
+				return icon;
+			return fico == null ? null : (icon = new VImg(fico).mark(Marker.ICO));
 		}
 
 		@Override

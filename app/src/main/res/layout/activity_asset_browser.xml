@@ -29,7 +29,7 @@
         app:layout_constraintTop_toBottomOf="@+id/prog" />
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/cussenetoolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -52,7 +52,7 @@
         app:borderWidth="0dp"
         app:elevation="0dp"
         app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toBottomOf="@+id/cussenetoolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/back_button" />
@@ -65,7 +65,7 @@
         android:layout_marginEnd="16dp"
         android:textColor="?attr/TextPrimary"
         app:layout_constraintBottom_toBottomOf="@+id/assetbck"
-        app:layout_constraintEnd_toEndOf="@+id/toolbar"
+        app:layout_constraintEnd_toEndOf="@+id/cussenetoolbar"
         app:layout_constraintStart_toEndOf="@+id/assetbck"
         app:layout_constraintTop_toTopOf="@+id/assetbck" />
 
@@ -76,5 +76,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/cussenetoolbar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

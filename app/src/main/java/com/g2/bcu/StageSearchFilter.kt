@@ -5,8 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -44,7 +42,6 @@ import common.util.Data
 import common.util.lang.MultiLangCont
 import common.util.unit.AbEnemy
 import common.util.unit.Enemy
-import java.util.Locale
 
 class StageSearchFilter : AppCompatActivity() {
     companion object {
@@ -116,7 +113,7 @@ class StageSearchFilter : AppCompatActivity() {
         AContext.check()
 
         (CommonStatic.ctx as AContext).updateActivity(this)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_stage_search_filter)
 
         val bck = findViewById<FloatingActionButton>(R.id.statschbck)
@@ -200,10 +197,7 @@ class StageSearchFilter : AppCompatActivity() {
             mdata.add(Identifier.DEF+" - "+number(i))
         }
 
-        for(i in UserProfile.getAllPacks()) {
-            if(i is PackData.DefPack)
-                continue
-
+        for(i in UserProfile.getUserPacks()) {
             val ms = i.musics
 
             for(j in ms.list) {
@@ -246,13 +240,7 @@ class StageSearchFilter : AppCompatActivity() {
             bdata.add(Identifier.DEF+" - "+number(i.id.id))
         }
 
-        for(i in UserProfile.getAllPacks()) {
-            if(i is PackData.DefPack)
-                continue
-
-            if(i !is PackData.UserPack)
-                continue
-
+        for(i in UserProfile.getUserPacks()) {
             val bg = i.bgs.list
 
             for(b in bg) {
@@ -498,26 +486,9 @@ class StageSearchFilter : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 

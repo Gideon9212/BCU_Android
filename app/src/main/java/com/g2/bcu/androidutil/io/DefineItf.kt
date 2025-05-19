@@ -59,7 +59,7 @@ class DefineItf : Itf {
     }
 
     override fun getUILang(m: Int, s: String?): String {
-        TODO("Not yet implemented")
+        return "${m} / ${s}"
     }
 
     override fun lvText(f: AbForm?, lv: Level?): Array<String> {

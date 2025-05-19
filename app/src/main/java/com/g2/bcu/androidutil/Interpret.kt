@@ -86,7 +86,7 @@ object Interpret : Data() {
         val c = Formatter.Context(isEnemy, useSecond, magnif, du.traits)
 
         for (i in PROCIND.indices) {
-            if (isValidProc(i, du.proc) && (common || du.proc.sharable(P_INDEX[i].toInt()))) {
+            if (isValidProc(i, du.proc) && (common || Proc.sharable(P_INDEX[i].toInt()))) {
                 val f = ProcLang.get().get(PROCIND[i]).format
                 val item = du.proc.get(PROCIND[i])
                 val ans = if ((P_INDEX[i] == P_DMGINC || P_INDEX[i] == P_DEFINC)) {
@@ -105,7 +105,7 @@ object Interpret : Data() {
             for (k in 0 until StaticJava.getAtkModel(du, atk).size) {
                 val ma = StaticJava.getAtkModel(du, atk)[k]
                 for (i in PROCIND.indices) {
-                    if (isValidProc(i, ma.proc) && !ma.proc.sharable(P_INDEX[i].toInt())) {
+                    if (isValidProc(i, ma.proc) && !Proc.sharable(P_INDEX[i].toInt())) {
                         val mf = ProcLang.get().get(PROCIND[i]).format
                         val item = ma.proc.get(PROCIND[i])
                         val ans = if ((P_INDEX[i] == P_DMGINC || P_INDEX[i] == P_DEFINC)) {

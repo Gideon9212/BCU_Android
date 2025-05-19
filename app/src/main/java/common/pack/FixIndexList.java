@@ -115,6 +115,12 @@ public class FixIndexList<T> extends Data {
 				if (arr[id] != null)
 					return arr[id];
 			}
+			return getFromID(id);
+		}
+
+		public T getFromID(int id) {
+			if (id >= 0 && id < size && arr[order[id]].getID().id == id)
+				return arr[order[id]];
 
 			for (int i = size - 1; i >= 0; i--)
 				if (arr[order[i]].getID().id == id)

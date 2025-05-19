@@ -64,8 +64,8 @@ public class CommonStatic {
 		// Background resources
 		public final List<ImgCut> iclist = new ArrayList<>();
 
-		// Available data for orb, will be used for GUI
-		// Map<Type, Map<Trait, Grades>>
+		/** Available data for orb, will be used for GUI.
+		 * Format: Map<\Type, Map<\Trait, Grades>>**/
 		public final Map<Byte, Map<Integer, List<Byte>>> ORB = new TreeMap<>();
 		public final Map<Byte, Integer> DATA = new HashMap<>();
 		public final SortedPackSet<DemonSoul> demonSouls = new SortedPackSet<>();
@@ -113,17 +113,14 @@ public class CommonStatic {
 		public int[] ints = new int[] { 1, 1, 1, 2 };
 		@JsonField(defval = "true")
 		public boolean ref = true, twoRow = true;
-		@JsonField(defval = "false")
 		public boolean battle = false, icon = false;
 		/**
 		 * Use this variable to unlock plus level for aku outbreak
 		 */
-		@JsonField(defval = "false")
 		public boolean plus = false;
 		/**
 		 * Use this variable to adjust level limit for aku outbreak
 		 */
-		@JsonField(defval = "0")
 		public int levelLimit = 0;
 		@JsonField(defval = "this.defaultLangOrder")
 		public Lang.Locale[] langs = Lang.Locale.values();
@@ -170,13 +167,11 @@ public class CommonStatic {
 		/**
 		 * Make BCU show ex stage continuation pop-up if true
 		 */
-		@JsonField(defval = "false")
 		public boolean exContinuation = false;
 
 		/**
 		 * Make EX stage pop-up shown considering real chance
 		 */
-		@JsonField(defval = "false")
 		public boolean realEx = false;
 
 		/**
@@ -200,7 +195,6 @@ public class CommonStatic {
 		/**
 		 * Perform BC levelings
 		 */
-		@JsonField(defval = "false")
 		public boolean realLevel = false;
 
 		/**
@@ -210,6 +204,11 @@ public class CommonStatic {
 		public boolean rawDamage = true;
 
 		/**
+		 * Packs in this list will not be loaded when the app starts
+		 */
+		@JsonField(generic = { String.class }, defval = "isEmpty")
+		public HashSet<String> skipLoad = new HashSet<>();
+		/**
 		 * Store whether to apply the combos from a given pack or not
 		 */
 		@JsonField(generic = { String.class }, defval = "isEmpty")
@@ -218,19 +217,16 @@ public class CommonStatic {
 		/**setLvs
 		 * Use progression mode to store save data
 		 */
-		@JsonField(defval = "false")
 		public boolean prog = false;
 
 		/**
 		 * 60 fps mode
 		 */
-		@JsonField(defval = "false")
 		public boolean fps60 = false;
 
 		/**
 		 * Stat
 		 */
-		@JsonField(defval = "false")
 		public boolean stat = false;
 	}
 
@@ -334,7 +330,7 @@ public class CommonStatic {
 			FR("fr", "Français"),
 			ES("es", "Español"),
 			IT("it", "Italiano"),
-			TH("th", "Thai");
+			TH("th", "ภาษาไทย");
 
 			public final String code, name;
 
@@ -483,7 +479,12 @@ public class CommonStatic {
 		}
 		int[] ans = new int[lstr.size()];
 		for (int i = 0; i < lstr.size(); i++)
-			ans[i] = safeParseInt(lstr.get(i));
+			try {
+				ans[i] = safeParseInt(lstr.get(i));
+			} catch (IllegalStateException e) {
+				CommonStatic.ctx.noticeErr(e, Context.ErrType.INFO, "Couldn't parse " + lstr.get(i) + " as int");
+				ans[i] = -1;
+			}
 		return ans;
 	}
 
@@ -609,6 +610,8 @@ public class CommonStatic {
 	 * Gets the minimum position value for a custom enemy.
 	 */
 	public static float customEnemyMinPos(MaModel model) {
+		if (model.confs.length == 0)//Failsafe
+			return 2.5f * ((-1f * model.parts[0][6] * model.parts[0][8]) / model.ints[0]);
 		int x = ((model.confs[0][2] - model.parts[0][6]) * model.parts[0][8]) / model.ints[0];
 		return 2.5f * x;
 	}

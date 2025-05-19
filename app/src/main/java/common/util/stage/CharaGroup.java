@@ -28,11 +28,9 @@ import java.util.LinkedList;
 @JsonClass(noTag = NoTag.LOAD)
 @JCGeneric(Identifier.class)
 public class CharaGroup extends Data implements Indexable<PackData, CharaGroup>, Comparable<CharaGroup> {
-	@JsonField(defval = "isEmpty")
 	public String name = "";
 	@JCIdentifier
 	public final Identifier<CharaGroup> id;
-	@JsonField(defval = "0")
 	public int type = 0;
 
 	@JsonField(generic = Form.class, alias = AbForm.AbFormJson.class, backCompat = JsonField.CompatType.FORK, defval = "isEmpty")

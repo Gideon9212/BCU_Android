@@ -62,7 +62,7 @@ public class Combo extends Data implements IndexContainer.Indexable<IndexContain
 	@JsonField
 	public Identifier<Combo> id;
 
-	@JsonField(defval = "0")
+	@JsonField
 	public int lv, type;
 
 	@JsonField(alias = AbForm.AbFormJson.class)

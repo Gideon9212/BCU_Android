@@ -30,42 +30,62 @@ import java.io.IOException
 import java.util.function.Consumer
 
 object Definer {
+    /** Value which tells if file paths are added to memory  */
+    private var init : Boolean = false
+    private var animRead : Boolean = false
+    /** Value which tells if app already read BC data or not */
+    private var bcRead = false
+    /** Value which tells if app already read pack or not */
+    var packRead : Boolean = false
+
+    /** Value which tells if Unit language data is loaded  */
+    var unitlang = false
+    /** Value which tells if Enemy language data is loaded  */
+    var enemylang = false
+    /** Value which tells if Stage language data is loaded  */
+    var stagelang = false
+    /** Value which tells if Medal language data is loaded  */
+    var medallang = false
+
+    @Synchronized
+    fun init(context: Context, text: Consumer<String>) {
+        if (init)
+            return
+        StaticStore.clear()
+        val shared2 = context.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
+        StaticStore.setLang(shared2.getInt("Language", 0))
+        ImageBuilder.builder = BMBuilder()
+        DefineItf().init(context)
+        AContext.check()
+        CommonStatic.ctx.initProfile()
+
+        text.accept(context.getString(R.string.main_file_read))
+        init = true
+    }
     @Synchronized
     fun define(context: Context, prog: Consumer<Double>, text: Consumer<String>) {
         try {
-            if (!StaticStore.init) {
-                StaticStore.clear()
-                val shared2 = context.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-                StaticStore.setLang(shared2.getInt("Language", 0))
-                ImageBuilder.builder = BMBuilder()
-                DefineItf().init(context)
-                AContext.check()
-                CommonStatic.ctx.initProfile()
-
-                text.accept(context.getString(R.string.main_file_read))
-
+            init(context, text)
+            if (!bcRead) {
                 try {
                     AssetLoader.load(prog)
-
                     println("Read asset loader properly\n${VFile.getBCFileTree().list()}")
 
                     UserProfile.getBCData().load({ t -> text.accept(StaticStore.getLoadingText(context, t)) }, prog)
+                    bcRead = true
                 } catch (e: Exception) {
                     throw AssetException(e, "E/Definer::define - Failed to read asset")
                 }
-
-                StaticStore.init = true
             }
 
-            if(!StaticStore.packRead) {
+            if(!packRead) {
                 text.accept(context.getString(R.string.main_pack))
                 (CommonStatic.ctx as AContext).prog = prog
                 (CommonStatic.ctx as AContext).sprg = text
-                Workspace.loadAnimations(null)
                 UserProfile.loadPacks(true)
                 PackConflict.filterConflict()
 
-                StaticStore.packRead = true
+                packRead = true
 
                 val f = File(StaticStore.getExternalPath(context)+"pack/")
 
@@ -95,17 +115,12 @@ object Definer {
                 StaticStore.readTreasureIcon()
 
             try {
-                if (StaticStore.unitlang == 1) {
+                if (!unitlang)
                     LangLoader.readUnitLang(context)
-                }
-
-                if(StaticStore.enemeylang == 1) {
+                if(!enemylang)
                     LangLoader.readEnemyLang(context)
-                }
-
-                if(StaticStore.stagelang == 1) {
+                if(!stagelang)
                     LangLoader.readStageLang(context)
-                }
             } catch (e: NumberFormatException) {
                 throw LanguageException(e, "E/Definer::define - failed to read language")
             }
@@ -170,39 +185,34 @@ object Definer {
 
                 val lit = vf.list()
 
-                if(lit != null) {
+                if(lit != null)
                     StaticStore.medalnumber = lit.size
-                }
             }
-
-            try {
-                if(StaticStore.medalnumber != 0 && StaticStore.medallang == 1) {
-                    LangLoader.readMedalLang(context)
-                }
-            } catch (e: NumberFormatException) {
-                throw LanguageException(e, "E/Definer::define - failed to read language")
-            }
-
-            if(SoundHandler.play.isEmpty()) {
+            if(SoundHandler.play.isEmpty())
                 SoundHandler.play = BooleanArray(UserProfile.getBCData().musics.list.size)
-            }
-
-            if (StaticStore.eicons == null) {
-                StaticStore.eicons = Array(UserProfile.getBCData().enemies.list.size) { i ->
-                    val shortPath = "./org/enemy/" + Data.trio(i) + "/enemy_icon_" + Data.trio(i) + ".png"
-                    val vf = VFile.get(shortPath) ?: return@Array StaticStore.empty(context, 18f, 18f)
-
-                    val icon = vf.data.img.bimg() ?: return@Array StaticStore.empty(context, 18f, 18f)
-
-                    StaticStore.getResizeb(icon as Bitmap, context, 36f)
-                }
-            }
 
             text.accept(context.getString(R.string.load_process))
         } catch (e: IOException) {
             e.printStackTrace()
 
             ErrorLogWriter.writeLog(e)
+        }
+    }
+    fun defineAnimations(context: Context, prog: Consumer<Double>, text: Consumer<String>) {
+        init(context, text)
+        if (animRead)
+            return
+        Workspace.loadAnimations(null)
+        animRead = true
+    }
+    fun defineMedals(context: Context, text: Consumer<String>) {
+        init(context, text)
+        try {
+            if(StaticStore.medalnumber != 0 && !medallang) {
+                LangLoader.readMedalLang(context)
+            }
+        } catch (e: NumberFormatException) {
+            throw LanguageException(e, "E/Definer::define - failed to read language")
         }
     }
 
@@ -213,45 +223,38 @@ object Definer {
         ProcLang.clear()
     }
 
-    private fun handlePacks(c: Context) {
+    fun handlePacks(c: Context) {
         val shared = c.getSharedPreferences(StaticStore.PACK, Context.MODE_PRIVATE)
         val editor = shared.edit()
         val checked = ArrayList<String>()
 
-        for(p in UserProfile.getAllPacks()) {
-            if(p is PackData.DefPack)
-                continue
+        for(p in UserProfile.getUserPacks()) {
+            p ?: continue
+            if(!shared.contains(p.sid)) {
+                //New Pack detected
+                editor.putString(p.sid, "${p.desc.names} - ${p.desc.version}")
+                editor.apply()
+                extractMusic(p, shared)
+            } else {
+                val info = shared.getString(p.sid, "")
+                val newInfo = "${p.desc.names} - ${p.desc.version}"
 
-            if(p is PackData.UserPack) {
-                if(!shared.contains(p.sid)) {
-                    //New Pack detected
+                if(info != newInfo) {
+                    //Update detected
                     editor.putString(p.sid, "${p.desc.names} - ${p.desc.version}")
                     editor.apply()
                     extractMusic(p, shared)
-                } else {
-                    val info = shared.getString(p.sid, "")
-                    val newInfo = "${p.desc.names} - ${p.desc.version}"
-
-                    if(info != newInfo) {
-                        //Update detected
-                        editor.putString(p.sid, "${p.desc.names} - ${p.desc.version}")
-                        editor.apply()
-                        extractMusic(p, shared)
-                    }
                 }
-
-                checked.add(p.sid)
             }
+            checked.add(p.sid)
         }
 
         //Check if unchecked pack ID in shared preferences
 
         val notExisting = ArrayList<String>()
-
         for(any in shared.all) {
             if(any.value !is String)
                 continue
-
             val value = any.key
 
             if(realNotExisting(notExisting, checked, value)) {
@@ -262,38 +265,29 @@ object Definer {
                         Log.w("Definer::extractMusic", "Invalid music file format : $info")
 
                         continue
-                    } else {
+                    } else
                         CommonStatic.parseIntN(info[1])
-                    }
-                } else {
+                } else
                     notExisting.add(value)
-                }
             }
         }
 
-        Log.i("Definer::handlePacks", "Not existing pack list : $notExisting")
-
+        Log.i("Definer::handlePacks", "Nonexistent pack list : $notExisting")
         //Then perform removing music files
-
-        for(p in notExisting) {
-            for(key in shared.all.keys) {
+        for(p in notExisting)
+            for(key in shared.all.keys)
                 if(key.startsWith(p)) {
                     if(key.contains("-")) {
                         val f = File(StaticStore.dataPath+"music/", key)
 
-                        if(f.exists()) {
+                        if(f.exists())
                             f.delete()
-                        } else {
-                            Log.i("Definer::handlePacks", "??? File is not existing : ${f.absolutePath}")
-                        }
+                        else
+                            Log.i("Definer::handlePacks", "??? File doesn't exist : ${f.absolutePath}")
                     }
-
                     editor.remove(key)
-
                     editor.apply()
                 }
-            }
-        }
     }
 
     fun initializeConfiguration(shared: SharedPreferences, c: Context) {
@@ -354,16 +348,6 @@ object Definer {
 
         if (shared.contains("Skip_Text")) {
             ed.remove("Skip_Text")
-            ed.apply()
-        }
-
-        if (!shared.contains("upload")) {
-            ed.putBoolean("upload", false)
-            ed.apply()
-        }
-
-        if (!shared.contains("ask_upload")) {
-            ed.putBoolean("ask_upload", true)
             ed.apply()
         }
 
@@ -512,7 +496,6 @@ object Definer {
         else
             0f
 
-        StaticStore.upload = shared.getBoolean("upload", false) || shared.getBoolean("ask_upload", true)
         StaticStore.showResult = shared.getBoolean("showres", true)
 
         CommonStatic.getConfig().twoRow = shared.getBoolean("rowlayout", true)

@@ -35,7 +35,7 @@ public abstract class BackgroundEffect extends Data implements IndexContainer.In
      */
     @SuppressWarnings("unused")
     public static Object construct(JsonElement elem) {
-        if (elem.getAsJsonObject().has("spacer"))
+        if (elem.getAsJsonObject().has("anim"))
             return JsonDecoder.decode(elem, CustomBGEffect.class);
         return JsonDecoder.decode(elem, MixedBGEffect.class);
     }

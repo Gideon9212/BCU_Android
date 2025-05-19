@@ -10,7 +10,7 @@ import common.util.pack.EffAnim;
 public class DoorCont extends EAnimCont {
 
     private final StageBasis bas;
-    private final Entity ent;
+    public final Entity ent;
     private boolean entLeft;
     public boolean drawn;
 
@@ -53,7 +53,7 @@ public class DoorCont extends EAnimCont {
         return entLeft ? 0 : ent.data.getWill() + 1;
     }
 
-    public boolean ECheck(Entity e) {
-        return !drawn && e.layer >= layer;
+    public boolean ECheck(int lay) {
+        return !drawn && lay >= layer;
     }
 }

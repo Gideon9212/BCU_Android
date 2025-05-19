@@ -42,7 +42,7 @@ public class ApkUpdateChecker {
             return desc;
         }
     }
-    private static final String JAR_CHECK_URL = "https://raw.githubusercontent.com/Gideon9212/bcu-assets/main/apk/check.json";
+    private static final String JAR_CHECK_URL = "https://raw.githubusercontent.com/Gideon9212/bcu-assets/master/apk/check.json";
 
     public static ApkJson getUpdateJson() {
         try {

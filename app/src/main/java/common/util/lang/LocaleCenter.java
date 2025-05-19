@@ -15,6 +15,10 @@ public class LocaleCenter {
 
 		String getToolTipValue();
 
+		default String[] getOptionValues() {
+			return null;
+		}
+
 		Binder refresh();
 
 		void setNameValue(String str);
@@ -29,6 +33,10 @@ public class LocaleCenter {
 
 		String getTooltip();
 
+		default String[] getOptions() {
+			return null;
+		}
+
 		void setName(String str);
 
 		void setTooltip(String str);
@@ -38,6 +46,7 @@ public class LocaleCenter {
 	@JsonClass(noTag = NoTag.LOAD)
 	public static class DisplayItem implements Displayable {
 		public String name, tooltip;
+		public String[] options;
 
 		@Override
 		public String getName() {
@@ -47,6 +56,11 @@ public class LocaleCenter {
 		@Override
 		public String getTooltip() {
 			return tooltip == null ? null : "<html><p width=\"500\">" + tooltip + "</p></html>";
+		}
+
+		@Override
+		public String[] getOptions() {
+			return options;
 		}
 
 		@Override
@@ -97,6 +111,11 @@ public class LocaleCenter {
 		@Override
 		public String getToolTipValue() {
 			return item.getTooltip();
+		}
+
+		@Override
+		public String[] getOptionValues() {
+			return item.getOptions();
 		}
 
 		@Override

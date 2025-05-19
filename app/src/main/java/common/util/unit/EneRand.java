@@ -27,7 +27,7 @@ public class EneRand extends Data implements AbEnemy {
 
 	public final Map<StageBasis, ELock> map = new HashMap<>();
 
-	@JsonField(defval = "0")
+	@JsonField
 	public int type = 0;
 
 	public void updateCopy(StageBasis sb, Object o) {
@@ -53,7 +53,7 @@ public class EneRand extends Data implements AbEnemy {
 		for (EREnt e : list)
 			tot += e.share;
 		if (tot > 0) {
-			int r = (int) (sb.r.nextDouble() * tot);
+			int r = sb.r.nextInt(tot);
 			for (EREnt ent : list) {
 				r -= ent.share;
 				if (r < 0)
@@ -67,7 +67,7 @@ public class EneRand extends Data implements AbEnemy {
 	@JsonField
 	public final Identifier<AbEnemy> id;
 
-	@JsonField(defval = "isEmpty")
+	@JsonField
 	public String name = "";
 	public VImg icon = null;
 

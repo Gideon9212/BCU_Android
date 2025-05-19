@@ -45,7 +45,7 @@ public class SaveData {
                 cSt.put(st.getCont(), clm = 1);
             else
                 clm = -1;
-        else if (clm == st.getCont().list.indexOf(st))
+        else if (clm == st.id())
             cSt.replace(st.getCont(), ++clm);
 
         if (clm == st.getCont().list.size()) {//StageMap fully cleared
@@ -182,12 +182,12 @@ public class SaveData {
 
     public HashMap<AbForm, Stage> getUnlockedsBeforeStage(Stage st, boolean includeRandom) {
         HashMap<AbForm, Stage> ulK = new HashMap<>();
-        for (int i = st.getCont().list.indexOf(st) - 1; i >= 0; i--)
+        for (int i = st.id() - 1; i >= 0; i--)
             if (st.getCont().list.get(i).info instanceof CustomStageInfo) {
                 CustomStageInfo csi = (CustomStageInfo)st.getCont().list.get(i).info;
                 for (Form f : csi.rewards)
                     for (int j = f.fid; j >= 0; j--)
-                        ulK.put(f.unit.forms[j], st);
+                        ulK.put(f.unit.forms[j], st.getCont().list.get(i));
             }
         for (StageMap uchp : st.getCont().unlockReq)
             locRec(ulK, uchp);

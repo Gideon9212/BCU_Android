@@ -19,9 +19,9 @@ public class Music implements Indexable<PackData, Music>, Comparable<Music> {
 	@JsonField
 	@JsonClass.JCIdentifier
 	public final Identifier<Music> id;
-	@JsonField(defval = "0")
+	@JsonField
 	public long loop;
-	@JsonField(defval = "isEmpty")
+	@JsonField
 	public String name = "";
 
 	public FileData data;

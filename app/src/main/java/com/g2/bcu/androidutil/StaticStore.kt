@@ -69,10 +69,10 @@ import kotlin.math.ln
 object StaticStore {
     //System & IO variables
     /**Version of Application */
-    const val VER = "0.20.09"
+    const val VER = "0.20.15"
 
     /**Locale codes list */
-    val lang = arrayOf("", "en", "zh", "ko", "ja", "ru", "de", "fr", "nl", "es", "it", "th")
+    val lang = arrayOf("", "en", "zh", "ko", "ja", "ru", "de", "fr", "es", "it", "th")
 
     /**List of language files */
     val langfile = arrayOf("EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt")
@@ -106,35 +106,14 @@ object StaticStore {
      */
     const val INFO_INTERVAL: Long = 350
 
-    /** Value which tells if Unit language data is loaded  */
-    var unitlang = 1
-
-    /** Value which tells if Enemy language data is loaded  */
-    var enemeylang = 1
-
-    /** Value which tells if Stage language data is loaded  */
-    var stagelang = 1
-
-    /** Value which tells if Medal language data is loaded  */
-    var medallang = 1
-
     /** Boolean which tells if error log dialog is already opened once  */
     var dialogisShowed = false
-
-    /** Boolean which tells if user allowed auto error log uploading  */
-    var upload = false
 
     /**
      * Toast which is used in every activity<br></br>
      * Must be null when activity is destroyed to prevent memory leaks
      */
     var toast: Toast? = null
-
-    /** Value which tells if file paths are added to memory  */
-    var init = false
-
-    /** Value which tells if app already read pack or not */
-    var packRead = false
 
     /** Initial vector used when encrypt/decrypt images  */
     @JvmField
@@ -180,7 +159,6 @@ object StaticStore {
     val bcMapNames = intArrayOf(R.string.stage_sol, R.string.stage_event, R.string.stage_collabo, R.string.stage_eoc, R.string.stage_ex, R.string.stage_dojo, R.string.stage_heavenly, R.string.stage_ranking, R.string.stage_challenge, R.string.stage_uncanny, R.string.stage_night, R.string.stage_baron, R.string.stage_enigma, R.string.stage_CA, R.string.stage_Q, R.string.stage_L, R.string.stage_ND, R.string.stage_SR, R.string.stage_G)
     val BCMapCodes: ArrayList<String> = ArrayList(listOf("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027", "000031", "000033", "000034", "000036", "000037"))
     val allMCs: ArrayList<String> = ArrayList()//Like the one above, but includes custom maps
-    var eicons: Array<Bitmap>? = null
     var maplistClick = SystemClock.elapsedRealtime()
     var stglistClick = SystemClock.elapsedRealtime()
     var infoClick = SystemClock.elapsedRealtime()
@@ -268,10 +246,10 @@ object StaticStore {
      * It will also reset whole data of BCU
      */
     fun clear() {
-        unitlang = 1
-        enemeylang = 1
-        stagelang = 1
-        medallang = 1
+        Definer.unitlang = false
+        Definer.enemylang = false
+        Definer.stagelang = false
+        Definer.medallang = false
         toast = null
         img15 = null
         sicons = null
@@ -291,7 +269,6 @@ object StaticStore {
         musicnames.clear()
         musicData.clear()
         durations.clear()
-        eicons = null
         maplistClick = SystemClock.elapsedRealtime()
         stglistClick = SystemClock.elapsedRealtime()
         infoClick = SystemClock.elapsedRealtime()
@@ -338,7 +315,7 @@ object StaticStore {
 
         allMCs.clear()
         PackConflict.conflicts.clear()
-        packRead = false
+        Definer.packRead = false
     }
 
     fun getResize(drawable: Drawable, context: Context, dp: Float): Bitmap {
@@ -527,14 +504,14 @@ object StaticStore {
         var ind : Int
         if (lan == 0) {
             val language: String = Resources.getSystem().configuration.locales[0].language
-            val languages = listOf(*lang)
-            ind = if (languages.contains(language))
-                languages.indexOf(language) - 1
-            else
-                0
+            ind = listOf(*lang).indexOf(language) - 1
             CommonStatic.getConfig().langs[0] = CommonStatic.Lang.Locale.values()[ind]
         } else {
             ind = lan - 1
+            if (ind >= CommonStatic.Lang.Locale.values().size) {
+                setLang(0)
+                return
+            }
             CommonStatic.getConfig().langs[0] = CommonStatic.Lang.Locale.values()[ind]
         }
         if (l != CommonStatic.getConfig().langs[0]) {
@@ -1195,18 +1172,18 @@ object StaticStore {
      */
     fun getLoadingText(ac: Context, info: String) : String {
         return when(info) {
-            "loading basic images" -> ac.getString(R.string.load_bascimg)
-            "loading enemies" -> ac.getString(R.string.load_enemy)
-            "loading units" -> ac.getString(R.string.load_unit)
-            "loading auxiliary data" -> ac.getString(R.string.load_aux)
-            "loading effects" -> ac.getString(R.string.load_effect)
-            "loading backgrounds" -> ac.getString(R.string.load_bg)
-            "loading cat castles" -> ac.getString(R.string.load_castle)
-            "loading souls" -> ac.getString(R.string.load_soul)
-            "loading stages" -> ac.getString(R.string.load_stage)
-            "loading orbs" -> ac.getString(R.string.load_orb)
-            "loading musics" -> ac.getString(R.string.load_music)
-            "process data" -> ac.getString(R.string.load_process)
+            "Loading basic Images" -> ac.getString(R.string.load_bascimg)
+            "Loading enemies" -> ac.getString(R.string.load_enemy)
+            "Loading units" -> ac.getString(R.string.load_unit)
+            "Loading auxiliary data" -> ac.getString(R.string.load_aux)
+            "Loading effects" -> ac.getString(R.string.load_effect)
+            "Loading backgrounds" -> ac.getString(R.string.load_bg)
+            "Loading cat castles" -> ac.getString(R.string.load_castle)
+            "Loading souls" -> ac.getString(R.string.load_soul)
+            "Loading stages" -> ac.getString(R.string.load_stage)
+            "Loading orbs" -> ac.getString(R.string.load_orb)
+            "Loading musics" -> ac.getString(R.string.load_music)
+            "Processing data" -> ac.getString(R.string.load_process)
             else -> info
         }
     }

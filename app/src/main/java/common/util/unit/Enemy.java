@@ -150,34 +150,31 @@ public class Enemy extends Character implements AbEnemy {
 		enemy.pack = this;
 
 		PackData.UserPack pack = (PackData.UserPack) getCont();
-		if (pack.desc.FORK_VERSION < 9) {
-			inject(pack, jobj.getAsJsonObject("de"), enemy);
-			//Updates stuff to match this fork without core version issues
-			if (pack.desc.FORK_VERSION < 1) {
-				Proc proc = enemy.getProc();
-				AtkDataModel[] atks = enemy.getAllAtkModels();
-
-				if (UserProfile.isOlderPack(pack, "0.6.4.0")) {
-					if (UserProfile.isOlderPack(pack, "0.6.1.0")) {
-						if (UserProfile.isOlderPack(pack, "0.5.4.0"))
-							enemy.limit = CommonStatic.customEnemyMinPos(anim.loader.getMM());
-						//Finish 0.5.4.0 check
-						proc.DMGCUT.type.traitIgnore = true;
-						proc.DMGCAP.type.traitIgnore = true;
-					} //Finish 0.6.1.0 check
-					names.put(jobj.get("name").getAsString());
-					if (jobj.has("desc"))
-						description.put(jobj.get("desc").getAsString().replace("<br>", "\n"));
-				} //Finish 6.4.0 check
-				for (AtkDataModel ma : atks)
-					if (ma.getProc().SUMMON.prob > 0) {
-						if (ma.getProc().SUMMON.id != null && !AbEnemy.class.isAssignableFrom(ma.getProc().SUMMON.id.cls))
-							ma.getProc().SUMMON.type.fix_buff = true;
-						if (ma.getProc().SUMMON.id == null || !AbEnemy.class.isAssignableFrom(ma.getProc().SUMMON.id.cls))
-							ma.getProc().SUMMON.form = 1; //There for imports
-					}
-			} //Finish FORK_VERSION 1 checks
-		} //Finish FORK_VERSION 6 checks
+		//Updates stuff to match this fork without core version issues
+		if (pack.desc.FORK_VERSION >= 12)
+			return;
+		inject(pack, jobj.getAsJsonObject("de"), enemy);
+		if (pack.desc.FORK_VERSION >= 1)
+			return;
+		AtkDataModel[] atks = enemy.getAllAtkModels();
+		for (AtkDataModel ma : atks)
+			if (ma.getProc().SUMMON.prob > 0) {
+				if (ma.getProc().SUMMON.id != null && !AbEnemy.class.isAssignableFrom(ma.getProc().SUMMON.id.cls))
+					ma.getProc().SUMMON.fix_buff = true;
+				if (ma.getProc().SUMMON.id == null || !AbEnemy.class.isAssignableFrom(ma.getProc().SUMMON.id.cls))
+					ma.getProc().SUMMON.form = 1; //There for imports
+			}
+		if (!UserProfile.isOlderPack(pack, "0.6.4.0"))
+			return;
+		if (jobj.has("desc"))
+			description.put(jobj.get("desc").getAsString().replace("<br>", "\n"));
+		if (!UserProfile.isOlderPack(pack, "0.6.1.0"))
+			return;
+		Proc proc = enemy.getProc();
+		proc.DMGCUT.traitIgnore = true;
+		proc.DMGCAP.traitIgnore = true;
+		if (UserProfile.isOlderPack(pack, "0.5.4.0"))
+			enemy.limit = CommonStatic.customEnemyMinPos(anim.loader.getMM());
 	}
 
 	@JsonDecoder.PostLoad

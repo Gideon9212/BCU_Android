@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences.Editor
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +26,7 @@ import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.stage.adapters.EnemyListRecycle
 import com.g2.bcu.androidutil.stage.adapters.StageRecycle
 import com.g2.bcu.androidutil.supports.AnimatorConst
@@ -42,7 +41,6 @@ import common.util.stage.Stage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
 
 class StageInfo : AppCompatActivity() {
     private var custom = false
@@ -71,6 +69,7 @@ class StageInfo : AppCompatActivity() {
         DefineItf.check(this)
         AContext.check()
         (CommonStatic.ctx as AContext).updateActivity(this)
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_stage_info)
 
         val bck = findViewById<FloatingActionButton>(R.id.stginfobck)
@@ -198,26 +197,9 @@ class StageInfo : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 

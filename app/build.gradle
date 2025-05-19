@@ -6,20 +6,20 @@ plugins {
 
 android {
     /*signingConfigs {
-        release {
-            storePassword 'battlecatsultimate'
-            keyAlias 'key0'
-            keyPassword 'battlecatsultimate'
-            storeFile file("keystore.jks")
-        }
-    }*/
+     release {
+         storePassword 'battlecatsultimate'
+         keyAlias 'key0'
+         keyPassword 'battlecatsultimate'
+         storeFile file("keystore.jks")
+     }
+ }*/
     compileSdkVersion 34
     defaultConfig {
         applicationId "com.g2.bcu"
         minSdkVersion 24
         targetSdkVersion 34
         versionCode 1
-        versionName "0.20.25"
+        versionName "0.20.34"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         android.buildFeatures.buildConfig = true

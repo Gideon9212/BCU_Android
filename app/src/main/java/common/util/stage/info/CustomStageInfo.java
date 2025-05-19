@@ -36,9 +36,9 @@ public class CustomStageInfo implements StageInfo {
     @JsonField(generic = Float.class, defval = "isEmpty")
     public final ArrayList<Float> chances = new ArrayList<>();
     public short totalChance;
-    @JsonField(alias = Form.AbFormJson.class, backCompat = JsonField.CompatType.FORK, defval = "null")
+    @JsonField(alias = Form.AbFormJson.class, backCompat = JsonField.CompatType.FORK)
     public Form ubase;
-    @JsonField(defval = "null")
+    @JsonField
     public Level lv;
     @JsonField(generic = Form.class, alias = Form.AbFormJson.class, backCompat = JsonField.CompatType.FORK, defval = "isEmpty")
     public final SortedPackSet<Form> rewards = new SortedPackSet<>();
@@ -109,7 +109,7 @@ public class CustomStageInfo implements StageInfo {
      * @param checkFirst Verify if the StageInfo doesn't have anything that can contribute to the stage before destroying it
      */
     public void destroy(boolean checkFirst) {
-        if (checkFirst && (!stages.isEmpty() || ubase != null || !rewards.isEmpty()))
+        if (checkFirst && !useless())
             return;
         stages.clear();
         chances.clear();
@@ -118,8 +118,11 @@ public class CustomStageInfo implements StageInfo {
         ((PackMapColc)st.getMC()).si.remove(this);
         st.info = null;
 
-        if (!checkFirst && st.getMC().getSave(true).cSt.getOrDefault(st.getCont(), -1) > st.getCont().list.indexOf(st))
+        if (!checkFirst && st.getMC().getSave(true).cSt.getOrDefault(st.getCont(), -1) > st.id())
             st.getMC().getSave(true).resetUnlockedUnits();
+    }
+    public boolean useless() {
+        return stages.isEmpty() && ubase == null && rewards.isEmpty();
     }
 
     @JsonDecoder.OnInjected

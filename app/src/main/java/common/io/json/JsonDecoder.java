@@ -135,8 +135,10 @@ public class JsonDecoder {
 	}
 
 	private static boolean getBoolean(JsonElement elem) throws JsonException {
-		if (!elem.isJsonPrimitive() || !((JsonPrimitive) elem).isBoolean())
+		if (!elem.isJsonPrimitive() || !(((JsonPrimitive) elem).isBoolean() || ((JsonPrimitive)elem).isNumber()))
 			throw new JsonException(true, elem, "this element is not boolean");
+		if (((JsonPrimitive)elem).isNumber())
+			return elem.getAsInt() != 0;//For behemoth slayer
 		return elem.getAsBoolean();
 	}
 
@@ -454,11 +456,8 @@ public class JsonDecoder {
 			String tag = curjfld.tag();
 			if (tag.isEmpty())
 				tag = f.getName();
-			if (!jobj.has(tag)) {
-				if (!curjfld.defval().isEmpty())
-					defVal(obj, f, curjfld.defval());
+			if (!jobj.has(tag))
 				continue;
-			}
 			JsonElement elem = jobj.get(tag);
 			f.setAccessible(true);
 			curfld = f;
@@ -484,34 +483,5 @@ public class JsonDecoder {
 
 	private JsonDecoder getInvoker() {
 		return tarjcls.bypass() ? par : this;
-	}
-
-	private void defVal(Object val, Field f, String str) {
-		if (Modifier.isFinal(f.getModifiers()) || str.startsWith("this.") || str.equals("null") || str.equals("isEmpty"))
-			return;
-		try {
-			f.setAccessible(true);
-			if (f.getType() == byte.class)
-				f.setByte(val, Byte.parseByte(str));
-			else if (f.getType() == int.class)
-				f.setInt(val, Integer.parseInt(str));
-			else if (f.getType() == long.class)
-				f.setLong(val, Long.parseLong(str));
-			else if (f.getType() == float.class)
-				f.setFloat(val, Float.parseFloat(str));
-			else if (f.getType() == double.class)
-				f.setDouble(val, Double.parseDouble(str));
-			else if (f.getType() == boolean.class)
-				f.setBoolean(val, Boolean.parseBoolean(str));
-			else if (f.getType() == String.class)
-				f.set(val, str);
-			else if (str.contains(" ")) {
-				Object nvar = f.get(val);
-				Field nf = nvar.getClass().getField(str.substring(0, str.indexOf(" ")));
-				defVal(nvar, nf, str.substring(str.indexOf(" ") + 1));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();//Nothing else
-		}
 	}
 }

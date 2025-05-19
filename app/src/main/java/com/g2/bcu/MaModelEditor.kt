@@ -1,6 +1,7 @@
 package com.g2.bcu
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -19,25 +20,28 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.get
-import androidx.core.view.size
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionValues
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.gson.JsonParser
+import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.animation.AnimationEditView
 import com.g2.bcu.androidutil.animation.adapter.MaModelListAdapter
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
-import com.g2.bcu.androidutil.supports.DynamicListView
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import common.CommonStatic
@@ -47,15 +51,14 @@ import common.pack.Source.ResourceLocation
 import common.pack.UserProfile
 import common.system.P
 import common.system.files.FDFile
-import common.system.files.VFile
 import common.util.anim.AnimCE
 import common.util.anim.MaModel
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
-import java.io.FileOutputStream
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.sin
 
 
@@ -64,7 +67,6 @@ class MaModelEditor : AppCompatActivity() {
 
     companion object {
         private var tempFunc : ((input: MaModel) -> Unit)? = null
-        private var tempFile : VFile? = null
     }
 
     val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -104,51 +106,6 @@ class MaModelEditor : AppCompatActivity() {
             }
         }
     }
-    private val exportLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(result.resultCode == RESULT_OK) {
-            val data = result.data
-
-            if(data != null) {
-                val file = tempFile
-                val uri = data.data
-
-                if(uri == null || file == null) {
-                    StaticStore.showShortMessage(this, getString(R.string.file_extract_cant))
-                } else {
-                    val pfd = contentResolver.openFileDescriptor(uri, "w")
-
-                    if(pfd != null) {
-                        val fos = FileOutputStream(pfd.fileDescriptor)
-                        val ins = file.data.stream
-
-                        val b = ByteArray(65536)
-                        var len: Int
-                        while(ins.read(b).also { len = it } != -1)
-                            fos.write(b, 0, len)
-
-                        ins.close()
-                        fos.close()
-
-                        val path = uri.path
-                        if(path == null) {
-                            StaticStore.showShortMessage(this, getString(R.string.file_extract_semi).replace("_",file.name))
-                            return@registerForActivityResult
-                        }
-
-                        val f = File(path)
-                        if(f.absolutePath.contains(":")) {
-                            val p = f.absolutePath.split(":")[1]
-                            StaticStore.showShortMessage(this,
-                                getString(R.string.file_extract_success).replace("_", file.name)
-                                    .replace("-", p))
-                        } else
-                            StaticStore.showShortMessage(this, getString(R.string.file_extract_semi).replace("_",file.name))
-                    } else
-                        StaticStore.showShortMessage(this, getString(R.string.file_extract_cant))
-                }
-            }
-        }
-    }
     enum class MOVEMODE {
         NONE,
         POSITION,
@@ -177,6 +134,7 @@ class MaModelEditor : AppCompatActivity() {
         DefineItf.check(this)
         AContext.check()
         (CommonStatic.ctx as AContext).updateActivity(this)
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_mamodel_editor)
 
         val result = intent
@@ -208,7 +166,7 @@ class MaModelEditor : AppCompatActivity() {
                 UserProfile.getUserPack(res.pack)?.source?.loadAnimation(res.id, res.base) as AnimCE?
             if (anim == null)
                 return@launch
-            anim.load()
+            anim.check()
 
             val cfgShowT = MaterialContainerTransform().apply {
                 startView = cfgBtn
@@ -244,35 +202,105 @@ class MaModelEditor : AppCompatActivity() {
                     cfgMenu.visibility = View.GONE
                 }
             })
-            val list = findViewById<DynamicListView>(R.id.mamodelvalList)
+            val list = findViewById<RecyclerView>(R.id.mamodelvalList)
+            list.layoutManager = LinearLayoutManager(this@MaModelEditor)
             val adp = MaModelListAdapter(this@MaModelEditor, anim)
             list.adapter = adp
-            val view = findViewById<AnimationEditView>(R.id.animationView)
-            list.setSwapListener { from, to ->
-                val s = anim.mamodel.strs0
-                val tempe = s[from]
-                s[from] = s[to]
-                s[to] = tempe
-
-                val p = anim.mamodel.parts
-                val temp = p[from]
-                p[from] = p[to]
-                p[to] = temp
-                for (ma in anim.anims)
-                    for (pt in ma.parts) {
-                        if (pt.ints[0] == from)
-                            pt.ints[0] = to
-                        else if (pt.ints[0] == to)
-                            pt.ints[0] = from
-                    }
-                unSave(anim,"mamodel sort")
-                view.animationChanged()
-            }
 
             val viewer = AnimationEditView(this@MaModelEditor, anim, !shared.getBoolean("theme", false), shared.getBoolean("Axis", true)).apply {
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             }
             viewer.id = R.id.animationView
+            val touch = ItemTouchHelper(object: ItemTouchHelper.Callback() {
+                var moved : Boolean = false
+
+                override fun getMovementFlags(p0: RecyclerView, p1: RecyclerView.ViewHolder): Int {
+                    return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.END)
+                }
+
+                override fun canDropOver(recyclerView: RecyclerView, current: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                    return current.itemViewType == target.itemViewType
+                }
+
+                override fun onMove(view: RecyclerView, src: RecyclerView.ViewHolder, dest: RecyclerView.ViewHolder): Boolean {
+                    val from = src.bindingAdapterPosition
+                    val to = dest.bindingAdapterPosition
+                    val s = anim.mamodel.strs0
+                    val tempe = s[from]
+                    s[from] = s[to]
+                    s[to] = tempe
+
+                    val p = anim.mamodel.parts
+                    val temp = p[from]
+                    p[from] = p[to]
+                    p[to] = temp
+                    for (i in p.indices)
+                        if (p[i][0] == from || p[i][0] == to) {
+                            p[i][0] = if (p[i][0] == from) to else from
+                            adp.notifyItemChanged(i)
+                        }
+                    for (ma in anim.anims)
+                        for (pt in ma.parts) {
+                            if (pt.ints[0] == from)
+                                pt.ints[0] = to
+                            else if (pt.ints[0] == to)
+                                pt.ints[0] = from
+                        }
+                    moved = true
+                    viewer.animationChanged()
+                    adp.notifyItemMoved(from, to)
+                    (src as MaModelListAdapter.ViewHolder).setID(to, viewer)
+                    (dest as MaModelListAdapter.ViewHolder).setID(from, viewer)
+                    return false
+                }
+
+                override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                    super.clearView(recyclerView, viewHolder)
+                    // Action finished
+                    if (moved)
+                        unSave(anim,"mamodel sort")
+                    moved = false
+                }
+
+                override fun onSwiped(holder: RecyclerView.ViewHolder, j: Int) {
+                    val pos = holder.bindingAdapterPosition
+                    val parts = StringBuilder()
+                    for (i in anim.mamodel.parts.indices)
+                        if (anim.mamodel.parts[i][0] == pos)
+                            parts.append("MaModel ").append(getString(R.string.def_part)).append(" $i (").append(anim.mamodel.strs0[i]).append(")\n")
+                    for (i in anim.anims.indices)
+                        for (part in anim.anims[i].parts)
+                            if (part.ints[0] == pos) {
+                                parts.append("MaAnim: ${anim.types[i]}").append("\n")
+                                break
+                            }
+                    if (parts.isBlank())
+                        adp.removePart(viewer, pos)
+                    else {
+                        val delPop = Dialog(this@MaModelEditor)
+                        delPop.setContentView(R.layout.animation_part_delete_confirm)
+                        delPop.setCancelable(true)
+
+                        val parList = delPop.findViewById<TextView>(R.id.usedPartList)
+                        parList.text = parts.toString()
+                        val del = delPop.findViewById<Button>(R.id.part_delete_tree)
+                        del.setOnClickListener {
+                            adp.removePart(viewer, pos)
+                            adp.notifyDataSetChanged()
+                            delPop.dismiss()
+                        }
+                        val cancel = delPop.findViewById<Button>(R.id.part_nodelete)
+                        cancel.setOnClickListener {
+                            delPop.dismiss()
+                            adp.notifyItemChanged(pos)
+                        }
+                        if (!isDestroyed && !isFinishing)
+                            delPop.show()
+                    }
+                }
+            })
+            touch.attachToRecyclerView(list)
+
             val scaleListener = ScaleListener(viewer, anim)
             val detector = ScaleGestureDetector(this@MaModelEditor, scaleListener)
             viewer.setOnTouchListener(object : OnTouchListener {
@@ -308,6 +336,7 @@ class MaModelEditor : AppCompatActivity() {
                                     val r = viewer.getPartRect(i)
                                     if (r.inBox(x, y)) {
                                         viewer.anim.sele = i
+                                        scaleListener.setModel(mo.parts[i])
                                         list.smoothScrollToPosition(i)
                                         spriteSelected = true
                                         viewer.invalidate()
@@ -316,7 +345,6 @@ class MaModelEditor : AppCompatActivity() {
                                 }
                             }
                         }
-                        list.setSelection(viewer.anim.sele)
                     } else if (event.action == MotionEvent.ACTION_MOVE) {
                         if (event.pointerCount == 1 && id == preid) {
                             var dx = x - preX
@@ -334,8 +362,8 @@ class MaModelEditor : AppCompatActivity() {
                                 val sA = atan2(y - ps.y, x - ps.x)
                                 part[10] += ((sA - sB) * 1800 / Math.PI).toInt()
                                 part[10] %= 3600
-                                partMoved(anim.mamodel.parts[viewer.anim.sele], viewer.anim.sele)
                                 viewer.animationChanged()
+                                adp.notifyItemChanged(viewer.anim.sele)
                             } else {
                                 val mo = anim.mamodel
                                 val movePivot = move == MOVEMODE.PIVOT
@@ -354,8 +382,8 @@ class MaModelEditor : AppCompatActivity() {
                                 anim.mamodel.parts[viewer.anim.sele][if (movePivot || viewer.anim.sele == 0) 6 else 4] -= ((dx * cos) + (dy * sin)).toInt()
                                 anim.mamodel.parts[viewer.anim.sele][if (movePivot || viewer.anim.sele == 0) 7 else 5] -= ((dy * cos) + (dx * sin)).toInt()
                                 if (dx != 0f || dy != 0f) {
-                                    partMoved(anim.mamodel.parts[viewer.anim.sele], viewer.anim.sele)
                                     viewer.animationChanged()
+                                    adp.notifyItemChanged(viewer.anim.sele)
                                 }
                             }
                         }
@@ -380,7 +408,6 @@ class MaModelEditor : AppCompatActivity() {
                             viewer.anim.sele = selected
                             if (selected != -1)
                                 list.smoothScrollToPosition(selected)
-                            list.setSelection(selected)
                             viewer.invalidate()
                         } else if (move != MOVEMODE.NONE && viewer.anim.sele != -1 && scaleListener.scaled())
                             unSave(anim,"mamodel scale part ${viewer.anim.sele}")
@@ -398,11 +425,16 @@ class MaModelEditor : AppCompatActivity() {
 
             val addl = findViewById<Button>(R.id.mamodelpadd)
             addl.setOnClickListener {
-                val ind = if (viewer.anim.sele == -1) anim.mamodel.n else viewer.anim.sele
+                val ind = max(1, if (viewer.anim.sele == -1) anim.mamodel.n else viewer.anim.sele)
                 anim.addMMline(ind, 0)
-                adp.insert(anim.mamodel.parts[ind], ind)
                 unSave(anim,"initial")
                 viewer.animationChanged()
+                adp.notifyItemInserted(ind)
+                adp.notifyDataSetChanged()
+                //for (i in man.findFirstVisibleItemPosition()..man.findLastVisibleItemPosition())
+                //    adp.notifyItemChanged(i)
+                //for (i in max(ind, man.findFirstVisibleItemPosition())..man.findLastVisibleItemPosition())
+                //    (list.getChildViewHolder(list.getChildAt(i)) as MaModelListAdapter.ViewHolder).iid.text = (i+1).toString()
             }
             val impr = findViewById<Button>(R.id.mamodelimport)
             impr.setOnClickListener {
@@ -413,21 +445,11 @@ class MaModelEditor : AppCompatActivity() {
 
                 tempFunc = fun(f : MaModel) {
                     anim.mamodel = f
-                    adp.setTo(*f.parts)
                     unSave(anim,"Import mamodel")
                     viewer.animationChanged()
+                    adp.notifyDataSetChanged()
                 }
                 resultLauncher.launch(Intent.createChooser(intent, "Choose Directory"))
-            }
-            val expr = findViewById<Button>(R.id.mamodelexport)
-            expr.setOnClickListener {
-                anim.save()
-                tempFile = VFile.getFile(CommonStatic.ctx.getWorkspaceFile(anim.id.path.substring(1) + "/mamodel.txt"))
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                    .addCategory(Intent.CATEGORY_OPENABLE)
-                    .setType("*/*")
-                intent.putExtra(Intent.EXTRA_TITLE, tempFile?.name ?: "")
-                exportLauncher.launch(intent)
             }
 
             val undo = findViewById<FloatingActionButton>(R.id.anim_Undo)
@@ -439,9 +461,17 @@ class MaModelEditor : AppCompatActivity() {
                 else
                     View.VISIBLE
                 redo.visibility = View.VISIBLE
-                adp.setTo(*anim.mamodel.parts)
                 viewer.animationChanged()
+                adp.notifyDataSetChanged()
             }
+            undo.setOnLongClickListener {
+                StaticStore.showShortMessage(this@MaModelEditor, anim.undo)
+                false
+            }
+            undo.visibility = if (anim.undo == "initial")
+                View.GONE
+            else
+                View.VISIBLE
             redo.setOnClickListener {
                 anim.redo()
                 redo.visibility = if (anim.getRedo() == "nothing")
@@ -449,13 +479,13 @@ class MaModelEditor : AppCompatActivity() {
                 else
                     View.VISIBLE
                 undo.visibility = View.VISIBLE
-                adp.setTo(*anim.mamodel.parts)
                 viewer.animationChanged()
+                adp.notifyDataSetChanged()
             }
-            undo.visibility = if (anim.undo == "initial")
-                View.GONE
-            else
-                View.VISIBLE
+            redo.setOnLongClickListener {
+                StaticStore.showShortMessage(this@MaModelEditor, anim.getRedo())
+                false
+            }
             redo.visibility = if (anim.getRedo() == "nothing")
                 View.GONE
             else
@@ -464,6 +494,7 @@ class MaModelEditor : AppCompatActivity() {
             val bck = findViewById<Button>(R.id.mamodelexit)
             bck.setOnClickListener {
                 anim.save()
+                anim.unload()
                 finish()
             }
             onBackPressedDispatcher.addCallback(this@MaModelEditor, object : OnBackPressedCallback(true) {
@@ -474,6 +505,7 @@ class MaModelEditor : AppCompatActivity() {
 
             val imgcutBtn = findViewById<Button>(R.id.mamo_imgcut_btn)
             imgcutBtn.setOnClickListener {
+                anim.check()
                 anim.save()
                 val intent = Intent(this@MaModelEditor, ImgCutEditor::class.java)
                 intent.putExtra("Data", JsonEncoder.encode(anim.id).toString())
@@ -483,6 +515,7 @@ class MaModelEditor : AppCompatActivity() {
             }
             val maanimBtn = findViewById<Button>(R.id.mamo_maanim_btn)
             maanimBtn.setOnClickListener {
+                anim.check()
                 anim.save()
                 val intent = Intent(this@MaModelEditor, MaAnimEditor::class.java)
                 intent.putExtra("Data", JsonEncoder.encode(anim.id).toString())
@@ -492,6 +525,7 @@ class MaModelEditor : AppCompatActivity() {
             }
             val viewBtn = findViewById<Button>(R.id.mamo_view_anim)
             viewBtn.setOnClickListener {
+                anim.check()
                 anim.save()
                 val intent = Intent(this@MaModelEditor, ImageViewer::class.java)
                 intent.putExtra("Data", JsonEncoder.encode(anim.id).toString())
@@ -504,12 +538,6 @@ class MaModelEditor : AppCompatActivity() {
         }
     }
 
-    fun partMoved(mo : IntArray, i : Int) {
-        val list = findViewById<DynamicListView>(R.id.mamodelvalList)
-        if (list.size > i)
-            (list[i].tag as MaModelListAdapter.ViewHolder).setData(mo)
-    }
-
     fun unSave(a : AnimCE, str : String) {
         a.unSave(str)
 
@@ -517,6 +545,13 @@ class MaModelEditor : AppCompatActivity() {
         val redo = findViewById<FloatingActionButton>(R.id.anim_Redo)
         undo.visibility = View.VISIBLE
         redo.visibility = View.GONE
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
+        val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
+        super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 
     inner class ScaleListener(private val cView : AnimationEditView, private val anim : AnimCE) : ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -549,9 +584,7 @@ class MaModelEditor : AppCompatActivity() {
         override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
             if (updateScale) {
                 if (move != MOVEMODE.NONE && cView.anim.sele != -1) {
-                    val model = anim.mamodel.parts[cView.anim.sele]
-                    realFX = model[9].toFloat()
-                    realFY = model[10].toFloat()
+                    setModel(anim.mamodel.parts[cView.anim.sele])
                 } else {
                     realFX = detector.focusX - cView.width / 2f
                     previousX = cView.pos.x
@@ -563,6 +596,11 @@ class MaModelEditor : AppCompatActivity() {
                 updateScale = false
             }
             return super.onScaleBegin(detector)
+        }
+
+        fun setModel(model : IntArray) {
+            realFX = model[9].toFloat()
+            realFY = model[10].toFloat()
         }
 
         fun scaled() : Boolean {

@@ -6,8 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -31,6 +29,7 @@ import com.g2.bcu.androidutil.Revalidater
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.pack.PackConflict
 import com.g2.bcu.androidutil.pack.adapters.PackManagementAdapter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
@@ -98,7 +97,6 @@ class PackManagement : AppCompatActivity() {
                             val fos = FileOutputStream(pack)
 
                             pack.createNewFile()
-
                             showWritingDialog(ins, fos, pack)
                         } catch (_: FileNotFoundException) {
                             StaticStore.showShortMessage(this, R.string.pack_import_nofile)
@@ -107,19 +105,16 @@ class PackManagement : AppCompatActivity() {
                         }
                     } else {
                         StaticStore.fixOrientation(this)
-
                         val dialog = AlertDialog.Builder(this)
 
                         dialog.setTitle(R.string.pack_import_exist)
                         dialog.setMessage(R.string.pack_import_exist_msg)
-
                         dialog.setPositiveButton(R.string.replace) { _, _ ->
                             try {
                                 val ins = resolver.openInputStream(path) ?: return@setPositiveButton
                                 val fos = FileOutputStream(pack)
 
                                 pack.createNewFile()
-
                                 showWritingDialog(ins, fos, pack)
                             } catch (_: FileNotFoundException) {
                                 StaticStore.showShortMessage(this, R.string.pack_import_nofile)
@@ -131,15 +126,10 @@ class PackManagement : AppCompatActivity() {
                         dialog.setNegativeButton(R.string.main_file_cancel) {_, _ ->
                             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
                         }
-
-                        if (!isDestroyed && !isFinishing) {
+                        if (!isDestroyed && !isFinishing)
                             dialog.show()
-                        }
                     }
-
-
                 }
-
                 cursor.close()
             }
         }
@@ -174,7 +164,7 @@ class PackManagement : AppCompatActivity() {
         AContext.check()
 
         (CommonStatic.ctx as AContext).updateActivity(this)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_pack_management)
 
         lifecycleScope.launch {
@@ -206,13 +196,11 @@ class PackManagement : AppCompatActivity() {
             })
 
             val packList = ArrayList<PackData.UserPack>()
-
-            for(pack in UserProfile.getUserPacks()) {
-                packList.add(pack)
-            }
+            for(pack in UserProfile.getUserPacks())
+                if (!pack.editable)
+                    packList.add(pack)
 
             list.adapter = PackManagementAdapter(this@PackManagement, packList)
-
             prog.isIndeterminate = true
 
             swipe.setColorSchemeColors(StaticStore.getAttributeColor(this@PackManagement, R.attr.colorAccent))
@@ -220,19 +208,20 @@ class PackManagement : AppCompatActivity() {
             swipe.setOnRefreshListener {
                 handlingPacks = true
                 StaticStore.fixOrientation(this@PackManagement)
-
                 reloadPack(swipe, list)
             }
 
             bck.setOnClickListener {
                 if(!handlingPacks && !needReload) {
-                    val intent = Intent(this@PackManagement, MainActivity::class.java)
-
-                    startActivity(intent)
-
-                    finish()
-
-                    return@setOnClickListener
+                    if(PackConflict.conflicts.isNotEmpty()) {
+                        val intent = Intent(this@PackManagement, PackConflictSolve::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        val intent = Intent(this@PackManagement, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
                 }
 
                 val dialog = Dialog(this@PackManagement)
@@ -317,31 +306,13 @@ class PackManagement : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 
     private fun showWritingDialog(ins: InputStream, fos: FileOutputStream, pack: File) {
-        needReload = true
 
         val swipe = findViewById<SwipeRefreshLayout>(R.id.pmanrefresh)
         val list = findViewById<ListView>(R.id.pmanlist)
@@ -378,36 +349,25 @@ class PackManagement : AppCompatActivity() {
 
                 while(ins.read(b).also { len = it } != -1) {
                     fos.write(b, 0, len)
-
                     prog += len
 
                     val msg = if(total >= 50000000) {
                         "${byteToMB(prog, df)} MB / ${byteToMB(total, df)} MB (${(prog*100.0/total).toInt()}%)"
-                    } else {
+                    } else
                         "${byteToKB(prog, df)} KB / ${byteToKB(total, df)} KB (${(prog*100.0/total).toInt()}%)"
-                    }
 
-                    runOnUiThread {
-                        progress.text = msg
-                    }
+                    runOnUiThread { progress.text = msg }
                 }
-
                 ins.close()
                 fos.close()
 
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
-
                 handlingPacks = false
 
-                withContext(Dispatchers.Main) {
-                    title.setText(R.string.pack_reload)
-
-                    progress.visibility = View.GONE
-                }
-
-                StaticStore.resetUserPacks()
-
-                Definer.define(this@PackManagement, { _ -> }, this@PackManagement::updateText)
+                val pk = UserProfile.addExternalPack(pack) ?: return@withContext
+                Definer.handlePacks(this@PackManagement)
+                StaticStore.allMCs.add(pk.sid)
+                PackConflict.filterConflict()
 
                 Locale.getDefault().language
                 Revalidater.validate(this@PackManagement)
@@ -416,29 +376,28 @@ class PackManagement : AppCompatActivity() {
                     dialog.dismiss()
 
                 val packList = ArrayList<PackData.UserPack>()
-
-                for(p in UserProfile.getUserPacks()) {
-                    packList.add(p)
-                }
-
+                for(p in UserProfile.getUserPacks())
+                    if (!p.editable)
+                        packList.add(p)
                 withContext(Dispatchers.Main) {
                     list.adapter = PackManagementAdapter(this@PackManagement, packList)
                 }
 
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
                 handlingPacks = false
+                needReload = false
 
                 withContext(Dispatchers.Main) {
                     swipe?.isRefreshing = false
 
-                    if(PackConflict.conflicts.isNotEmpty()) {
+                    if(PackConflict.conflicts.isNotEmpty())
                         StaticStore.showShortSnack(findViewById(R.id.pmanlayout), R.string.pack_manage_warn)
-                    }
                 }
             }
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun reloadPack(swipe: SwipeRefreshLayout?, list: ListView) {
         needReload = true
 
@@ -464,7 +423,7 @@ class PackManagement : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             StaticStore.resetUserPacks()
 
-            Definer.define(this@PackManagement, { _ -> }, this@PackManagement::updateText)
+            Definer.define(this@PackManagement, { progress.text = "$it%"  }, {title.text = it})
 
             Locale.getDefault().language
             Revalidater.validate(this@PackManagement)
@@ -473,10 +432,9 @@ class PackManagement : AppCompatActivity() {
                 dialog.dismiss()
 
             val packList = ArrayList<PackData.UserPack>()
-
-            for(pack in UserProfile.getUserPacks()) {
-                packList.add(pack)
-            }
+            for(pack in UserProfile.getUserPacks())
+                if (!pack.editable)
+                    packList.add(pack)
 
             runOnUiThread {
                 list.adapter = PackManagementAdapter(this@PackManagement, packList)
@@ -484,6 +442,7 @@ class PackManagement : AppCompatActivity() {
 
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
             handlingPacks = false
+            needReload = false
 
             runOnUiThread {
                 swipe?.isRefreshing = false

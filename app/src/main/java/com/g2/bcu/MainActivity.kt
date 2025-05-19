@@ -3,8 +3,6 @@ package com.g2.bcu
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
@@ -31,7 +29,6 @@ import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import common.CommonStatic
 import java.io.File
-import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         deleter(File(Environment.getDataDirectory().absolutePath+"/data/com.g2.bcu/temp/"))
         deleter(File(StaticStore.getExternalTemp(this)))
 
-        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter("${StaticStore.getPublicDirectory()}logs"))
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_main)
 
         SoundHandler.musicPlay = shared.getBoolean("music", true)
@@ -98,7 +95,6 @@ class MainActivity : AppCompatActivity() {
             (0.01f + shared.getInt("ui_vol", 99)) * 0.85f
         else
             0.5f
-        StaticStore.upload = shared.getBoolean("upload", false) || shared.getBoolean("ask_upload", true)
         CommonStatic.getConfig().twoRow = shared.getBoolean("rowlayout", true)
         CommonStatic.getConfig().levelLimit = shared.getInt("levelLimit", 0)
         CommonStatic.getConfig().plus = shared.getBoolean("unlockPlus", true)
@@ -283,26 +279,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 

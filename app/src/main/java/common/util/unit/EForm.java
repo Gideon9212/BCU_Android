@@ -58,7 +58,7 @@ public class EForm extends Data implements IForm {
 		if (spirit.anim.getAtkCount() == 0)
 			return new ESpirit(b, spirit.du, spirit.getEAnim(AnimU.SOUL[0]), d, du.getFront(), du.getBack(), level, index); //For BC-Accurate Spirits
 		EUnit esp = new EUnit(b, spirit.du, spirit.getEAnim(AnimU.SOUL[0]), d, du.getFront(), du.getBack(), level, spirit.du.getPCoin(), index, false);
-		if (du.getProc().SPIRIT.type.inv)
+		if (du.getProc().SPIRIT.inv)
 			esp.status.inv[0] = -1;
 		return esp; //For Custom Units with spirits
 	}

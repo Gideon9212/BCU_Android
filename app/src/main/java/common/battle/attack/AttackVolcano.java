@@ -21,11 +21,13 @@ public class AttackVolcano extends AttackAb {
 		pid = id;
 		raw = model instanceof AtkModelEntity ? ((AtkModelEntity)model).getDefAtk(matk) : atk;
 		if(dire == 1 && model.b.canon.deco == DECO_BASE_WATER)
-			raw *= model.b.b.t().getDecorationMagnification(model.b.canon.deco);
+			raw = (int)(raw * model.b.b.t().getDecorationMagnification(model.b.canon.deco));
 	}
 
 	public void capture() {
 		List<AbEntity> le = model.b.inRange(touch, attacker.status.rage > 0 ? 2 : dire, sta, end, excludeRightEdge);
+		if (attacker.status.rage > 0 || attacker.status.hypno > 0)
+			le.remove(attacker);
 		capt.clear();
 
 		for (AbEntity e : le)
@@ -34,8 +36,6 @@ public class AttackVolcano extends AttackAb {
 	}
 
 	public void excuse() {
-		process();
-
 		if (volcTime <= 0) {
 			volcTime = VOLC_ITV;
 			vcapt.clear();
@@ -44,6 +44,7 @@ public class AttackVolcano extends AttackAb {
 
 		if(attacker != null)
 			atk = ((AtkModelEntity)model).getEffMult(raw);
+		process();
 
 		for (AbEntity e : capt) {
 			e.damaged(this);

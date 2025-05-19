@@ -17,10 +17,8 @@ import common.util.pack.EffAnim.DefEff;
 import common.util.pack.bgeffect.BackgroundEffect;
 import common.util.stage.*;
 import common.util.stage.MapColc.DefMapColc;
-import common.util.unit.AbForm;
-import common.util.unit.EForm;
-import common.util.unit.Enemy;
-import common.util.unit.IForm;
+import common.util.unit.*;
+import common.util.unit.Character;
 
 import java.util.*;
 
@@ -30,10 +28,8 @@ public class StageBasis extends BattleObj {
 	public final Stage st;
 	public final EStage est;
 	public final ELineUp elu;
-	public final long[][] totalDamageTaken = new long[2][5];
-	public final long[][] totalDamageGiven = new long[2][5];
-	public final int[][] totalSpawned = new int[2][5];
-	public final TreeMap<Enemy, long[]> enemyStatistics = new TreeMap<>();
+	public final HashMap<Character, Integer> spawns = new HashMap<>();
+	public final HashMap<Character, long[]> dmgStatistics = new HashMap<>();
 	public final int[] nyc;
 	public final boolean[][] locks = new boolean[2][5];
 	public final AbEntity ebase, ubase;
@@ -61,7 +57,7 @@ public class StageBasis extends BattleObj {
 	public final float boss_spawn;
 	public final int[] shakeCoolDown = {0, 0};
 
-	public float siz;
+	public float siz, shockP = 700f;
 	public int work_lv, money, maxMoney, maxCannon, upgradeCost, max_num, pos;
 	public int frontLineup = 0;
 	public boolean lineupChanging = false;
@@ -85,7 +81,7 @@ public class StageBasis extends BattleObj {
 	public float themeTime;
 	private Identifier<Background> theme = null;
 	public Identifier<Music> mus = null;
-	private THEME.TYPE themeType;
+	private THEME themeType;
 	private boolean bgEffectInitialized = false;
 	public int baseBarrier = 0, rem_spawns;
 
@@ -107,16 +103,11 @@ public class StageBasis extends BattleObj {
 			ebase = ee;
 			shock = ee.mark == -2;
 			ebase.added(1, shock ? boss_spawn : 700);
-			enemyStatistics.put((Enemy)ee.data.getPack(), new long[]{0, 0, -1});
 		} else {
 			ebase = new ECastle(this);
 			ebase.added(1, 800);
 		}
 		EUnit eu = est.ubase(this);
-		if (eu != null) {
-			totalDamageGiven[1] = new long[6];
-			totalDamageTaken[1] = new long[6];
-		}
 		ubase = eu != null ? eu : new ECastle(this, bas);
 		ubase.added(-1, st.len - 800);
 		if (st.preset != null && st.preset.baseHealthBoost) {
@@ -207,7 +198,7 @@ public class StageBasis extends BattleObj {
 		theme = th.id;
 		mus = th.mus;
 		themeTime = th.time;
-		themeType = th.type;
+		themeType = th;
 	}
 
 	public void changeWorkerLv(int lv) {
@@ -231,9 +222,10 @@ public class StageBasis extends BattleObj {
 		while (b.lu.efs[totUni >= 5 ? 1 : 0][totUni % 5] != null && totUni < 10)
 			totUni++;
 		if (slot == -1 || b.lu.efs[Math.floorDiv(slot, 5)][slot % 5] == null)
-			slot = (int) (r.nextFloat() * totUni); //Pick random unit if chosen one isn't there
+			slot = r.nextInt(totUni); //Pick random unit if chosen one isn't there
 
-		CDChange(amount, slot / 5, slot % 5, type);
+		if (CDChange(amount, slot / 5, slot % 5, type))
+			CommonStatic.setSE(amount < 0 ? SE_P_RESEARCHUP : SE_P_RESEARCHDOWN);
 	}
 	public void changeUnitsCooldown(int amount, int type) {
 		for (byte s = 0; s < 10; s++) {
@@ -275,7 +267,7 @@ public class StageBasis extends BattleObj {
 		return ans;
 	}
 	public boolean cantDeploy(int rare, int wp) {
-		if (rare != -1 && est.lim.stageLimit != null && est.lim.stageLimit.rarityDeployLimit[rare] != -1) {
+		if (rare != -1 && est.lim.stageLimit != null && est.lim.stageLimit.rarityDeployLimit[rare] > 0) {
 			int ans = wp;
 			for (Entity ent : le)
 				if (ent.dire == -1 && !ent.dead && ((MaskUnit) ent.data).getPack().unit.rarity == rare)
@@ -528,7 +520,6 @@ public class StageBasis extends BattleObj {
 			CommonStatic.setSE(SE_SPEND_SUC);
 			elu.resetCD(i, j);
 			elu.smnd[i][j] = true;
-			totalSpawned[i][j]++;
 			rem_spawns--;
 			eu.added(-1, st.len - 700);
 
@@ -601,11 +592,14 @@ public class StageBasis extends BattleObj {
 		}
 
 		tempe.removeIf(e -> {
-			if (e.t <= 0)
-				le.add(e.ent);
+			if (e.t <= 0) {
+				if (e.door == null)
+					le.add(e.ent);
+				else
+					doors.add(e.door);
+			}
 			return e.t <= 0;
 		});
-
 		if (timeFlow > 0 || (ebase.getAbi() & AB_TIMEI) != 0) {
 			ebase.preUpdate();
 			ebase.update();
@@ -624,14 +618,9 @@ public class StageBasis extends BattleObj {
 				EEnemy e = est.allow();
 
 				if (e != null) {
-					e.added(1, (e.mark >= 1 ? boss_spawn : 700f) + (st.len - 800 - ebase.pos) * e.door / 100);
+					e.added(1, (e.mark >= 1 ? boss_spawn : 700f) + e.door);
 
-					if (!enemyStatistics.containsKey((Enemy)e.data.getPack()))
-						enemyStatistics.put((Enemy)e.data.getPack(), new long[]{0, 0, 1});
-					else
-						enemyStatistics.get((Enemy)e.data.getPack())[2]++;
-
-					if (e.door > 0 && !e.getAnim().anim().getEAnim(AnimU.TYPEDEF[AnimU.WALK]).unusable())
+					if (e.door != 0 && e.getAnim().type != AnimU.TYPEDEF[AnimU.ENTRY] && !e.getAnim().anim().getEAnim(AnimU.TYPEDEF[AnimU.WALK]).unusable())
 						doors.add(new DoorCont(this, e));
 					else
 						le.add(e);
@@ -719,8 +708,8 @@ public class StageBasis extends BattleObj {
 						entity.kill(false);
 
 				if(ebaseSmoke.size() <= 7 && time % 2 == 0) {
-					int x = (int) (ebase.pos + 50 - 500 * r.irDouble());
-					int y = (int) (-288 * r.irDouble());
+					float x = ebase.pos + 50f - 500f * r.irFloat();
+					float y = r.irFloat() * -288;
 
 					ebaseSmoke.add(new EAnimCont(x, 0, EffAnim.effas().A_ATK_SMOKE.getEAnim(DefEff.DEF), y));
 				}
@@ -731,8 +720,8 @@ public class StageBasis extends BattleObj {
 						le.get(i).kill(false);
 
 				if(ubaseSmoke.size() <= 7 && time % 2 == 0) {
-					int x = (int) (ubase.pos - 50 + 500 * r.irDouble());
-					int y = (int) (-288 * r.irDouble());
+					float x = ubase.pos - 50f + 500f * r.irFloat();
+					float y = r.irFloat() * -288;
 
 					ubaseSmoke.add(new EAnimCont(x, 0, EffAnim.effas().A_ATK_SMOKE.getEAnim(DefEff.DEF), y));
 				}
@@ -748,9 +737,10 @@ public class StageBasis extends BattleObj {
 					entity.interrupt(INT_SW, KB_DIS[INT_SW]);
 					entity.postUpdate();
 				}
-			lea.add(new EAnimCont(700, 9, effas().A_SHOCKWAVE.getEAnim(DefEff.DEF)));
+			lea.add(new EAnimCont(shockP, 9, effas().A_SHOCKWAVE.getEAnim(DefEff.DEF)));
 			CommonStatic.setSE(SE_BOSS);
 			shock = false;
+			shockP = 700;
 		}
 
 		if (timeFlow > 0) {
@@ -853,6 +843,7 @@ public class StageBasis extends BattleObj {
 				tlw.clear();
 				lea.clear();
 				tempe.removeIf(e -> (e.ent.getAbi() & AB_THEMEI) == 0);
+				doors.removeIf(d -> (d.ent.getAbi() & AB_THEMEI) == 0);
 			}
 			theme = null;
 		}
@@ -917,6 +908,12 @@ public class StageBasis extends BattleObj {
 		if (est.lim.stageLimit == null)
 			return new int[]{0, 0};
 		return new int[]{est.lim.stageLimit.deployDuplicationTimes[rarity], est.lim.stageLimit.deployDuplicationDelay[rarity]};
+	}
+
+	public float speedLimit(boolean isEnemy) {
+		if (est.lim.stageLimit == null)
+			return -1;
+		return isEnemy ? est.lim.stageLimit.enemySpeedLimit : est.lim.stageLimit.unitSpeedLimit;
 	}
 
 	public BattleList<EUnit> getAllOf(int i, int j) {

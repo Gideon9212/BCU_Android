@@ -68,21 +68,18 @@ class EnemyListPager : Fragment() {
             val adapter = EnemyListAdapter(cont, numbers)
 
             list.adapter = adapter
-
             val ac = requireActivity()
 
-            when(mode) {
-                EnemyList.Mode.INFO -> {
-                    list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        if (SystemClock.elapsedRealtime() - StaticStore.enemyinflistClick < StaticStore.INTERVAL) return@OnItemClickListener
-                        StaticStore.enemyinflistClick = SystemClock.elapsedRealtime()
+            list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                if (SystemClock.elapsedRealtime() - StaticStore.enemyinflistClick < StaticStore.INTERVAL) return@OnItemClickListener
+                StaticStore.enemyinflistClick = SystemClock.elapsedRealtime()
+                when(mode) {
+                    EnemyList.Mode.INFO -> {
                         val result = Intent(ac, EnemyInfo::class.java)
                         result.putExtra("Data", JsonEncoder.encode(numbers[position]).toString())
                         ac.startActivity(result)
                     }
-                }
-                EnemyList.Mode.SELECTION -> {
-                    list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                    EnemyList.Mode.SELECTION -> {
                         val intent = Intent()
                         intent.putExtra("Data", JsonEncoder.encode(numbers[position]).toString())
                         ac.setResult(Activity.RESULT_OK, intent)
@@ -90,6 +87,13 @@ class EnemyListPager : Fragment() {
                     }
                 }
             }
+            if (mode == EnemyList.Mode.SELECTION)
+                list.onItemLongClickListener = AdapterView.OnItemLongClickListener { _, _, position, _ ->
+                    val result = Intent(ac, EnemyInfo::class.java)
+                    result.putExtra("Data", JsonEncoder.encode(numbers[position]).toString())
+                    ac.startActivity(result)
+                    true
+                }
         } else {
             nores.visibility = View.VISIBLE
             list.visibility = View.GONE
@@ -124,18 +128,16 @@ class EnemyListPager : Fragment() {
 
             val ac = activity ?: return
 
-            when(mode) {
-                EnemyList.Mode.INFO -> {
-                    list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        if (SystemClock.elapsedRealtime() - StaticStore.enemyinflistClick < StaticStore.INTERVAL) return@OnItemClickListener
-                        StaticStore.enemyinflistClick = SystemClock.elapsedRealtime()
+            list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                if (SystemClock.elapsedRealtime() - StaticStore.enemyinflistClick < StaticStore.INTERVAL) return@OnItemClickListener
+                StaticStore.enemyinflistClick = SystemClock.elapsedRealtime()
+                when(mode) {
+                    EnemyList.Mode.INFO -> {
                         val result = Intent(ac, EnemyInfo::class.java)
                         result.putExtra("Data", JsonEncoder.encode(numbers[position]).toString())
                         ac.startActivity(result)
                     }
-                }
-                EnemyList.Mode.SELECTION -> {
-                    list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                    EnemyList.Mode.SELECTION -> {
                         val intent = Intent()
                         intent.putExtra("Data", JsonEncoder.encode(numbers[position]).toString())
                         ac.setResult(Activity.RESULT_OK, intent)
@@ -143,6 +145,13 @@ class EnemyListPager : Fragment() {
                     }
                 }
             }
+            if (mode == EnemyList.Mode.SELECTION)
+                list.onItemLongClickListener = AdapterView.OnItemLongClickListener { _, _, position, _ ->
+                    val result = Intent(ac, EnemyInfo::class.java)
+                    result.putExtra("Data", JsonEncoder.encode(numbers[position]).toString())
+                    ac.startActivity(result)
+                    true
+                }
         } else {
             withContext(Dispatchers.Main) {
                 nores.visibility = View.VISIBLE

@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences.Editor
 import android.content.res.Configuration
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -28,19 +27,20 @@ import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import com.g2.bcu.androidutil.supports.adapter.SearchAbilityAdapter
 import com.g2.bcu.androidutil.supports.adapter.SearchTraitAdapter
 import common.CommonStatic
 import common.pack.Identifier
+import common.pack.PackData.UserPack
 import common.pack.UserProfile
 import common.util.Data
 import common.util.unit.Trait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 class SearchFilter : AppCompatActivity() {
     private val rareid = intArrayOf(R.id.schchba, R.id.schchex, R.id.schchr, R.id.schchsr, R.id.schchur, R.id.schchlr)
@@ -49,13 +49,11 @@ class SearchFilter : AppCompatActivity() {
     private val atkid = intArrayOf(R.id.schchld, R.id.schchom, R.id.schchmu)
     private val atks = arrayOf("2", "4", "3")
 
-    private val tgToolID = intArrayOf(R.string.sch_red, R.string.sch_fl, R.string.sch_bla, R.string.sch_me, R.string.sch_an, R.string.sch_al, R.string.sch_zo, R.string.sch_de, R.string.sch_re, R.string.sch_wh)
-
     private val abils = arrayOf(intArrayOf(R.string.sch_abi_we, 1, Data.P_WEAK.toInt()), intArrayOf(R.string.sch_abi_fr, 1, Data.P_STOP.toInt()),
         intArrayOf(R.string.sch_abi_sl, 1, Data.P_SLOW.toInt()), intArrayOf(R.string.sch_abi_ao, 0, Data.AB_ONLY.toInt()), intArrayOf(R.string.sch_abi_st, 1, Data.P_DMGINC.toInt(), 0, 100, 300),
         intArrayOf(R.string.sch_abi_re,1, Data.P_DEFINC.toInt(), 0, 400, 600), intArrayOf(R.string.sch_abi_it, 1, Data.P_DEFINC.toInt(), 0, 600), intArrayOf(R.string.sch_abi_md, 1, Data.P_DMGINC.toInt(), 0, 300, 500),
         intArrayOf(R.string.sch_abi_id,  1, Data.P_DMGINC.toInt(), 0, 500), intArrayOf(R.string.sch_abi_kb, 1, Data.P_KB.toInt()), intArrayOf(R.string.sch_abi_wa, 1, Data.P_WARP.toInt()),
-        intArrayOf(R.string.sch_abi_cu, 1, Data.P_CURSE.toInt()), intArrayOf(R.string.sch_abi_iv, 1, Data.P_IMUATK.toInt()), intArrayOf(R.string.sch_abi_str, 1, Data.P_STRONG.toInt()),
+        intArrayOf(R.string.sch_abi_cu, 1, Data.P_CURSE.toInt()), intArrayOf(R.string.sch_abi_iv, 1, Data.P_IMUATK.toInt()), intArrayOf(R.string.sch_abi_str, 1, Data.P_STRONG.toInt()), intArrayOf(R.string.sch_abi_speedup, 1, Data.P_SPEEDUP.toInt()),
         intArrayOf(R.string.sch_abi_su, 1, Data.P_LETHAL.toInt()), intArrayOf(R.string.sch_abi_bd, 1, Data.P_ATKBASE.toInt()), intArrayOf(R.string.sch_abi_cr, 1, Data.P_CRIT.toInt()), intArrayOf(R.string.sch_abi_mk, 1, Data.P_METALKILL.toInt()),
         intArrayOf(R.string.sch_abi_zk, 0, Data.AB_ZKILL.toInt()), intArrayOf(R.string.sch_abi_ck, 0, Data.AB_CKILL.toInt()), intArrayOf(R.string.sch_abi_bb, 1, Data.P_BREAK.toInt()),
         intArrayOf(R.string.sch_abi_shb, 1, Data.P_SHIELDBREAK.toInt()), intArrayOf(R.string.sch_abi_sb, 1, Data.P_SATK.toInt()), intArrayOf(R.string.sch_abi_em, 1, Data.P_BOUNTY.toInt()),
@@ -66,13 +64,14 @@ class SearchFilter : AppCompatActivity() {
         intArrayOf(R.string.sch_abi_iwv, 1, Data.P_IMUWAVE.toInt(), 1, -1, 100), intArrayOf(R.string.sch_abi_imsu, 1, Data.P_IMUVOLC.toInt()), intArrayOf(R.string.sch_abi_iexp, 1, Data.P_IMUBLAST.toInt()), intArrayOf(R.string.sch_abi_iwa, 1, Data.P_IMUWARP.toInt()),
         intArrayOf(R.string.sch_abi_ic, 1, Data.P_IMUCURSE.toInt()), intArrayOf(R.string.sch_abi_impoi, 1, Data.P_IMUPOIATK.toInt()), intArrayOf(R.string.sch_abi_wk, 0, Data.AB_WKILL.toInt()),
         intArrayOf(R.string.sch_abi_eva, 0, Data.AB_EKILL.toInt()), intArrayOf(R.string.sch_abi_poi, 1, Data.P_POIATK.toInt()), intArrayOf(R.string.enem_info_barrier, 1, Data.P_BARRIER.toInt()),
-        intArrayOf(R.string.sch_abi_ds, 1, Data.P_DEMONSHIELD.toInt()), intArrayOf(R.string.sch_abi_sd,  1, Data.P_DEATHSURGE.toInt()), intArrayOf(R.string.sch_abi_rms,  1, Data.P_REMOTESHIELD.toInt()), intArrayOf(R.string.sch_abi_tps,  1, Data.P_RANGESHIELD.toInt()),
+        intArrayOf(R.string.sch_abi_ds, 1, Data.P_DEMONSHIELD.toInt()), intArrayOf(R.string.sch_abi_sd,  1, Data.P_DEATHSURGE.toInt()), intArrayOf(R.string.sch_abi_msd, 1, Data.P_MINIDEATHSURGE.toInt()),
+        intArrayOf(R.string.sch_abi_rfn, 1, Data.P_REFUND.toInt()), intArrayOf(R.string.sch_abi_rms,  1, Data.P_REMOTESHIELD.toInt()), intArrayOf(R.string.sch_abi_tps,  1, Data.P_RANGESHIELD.toInt()),
         intArrayOf(R.string.abi_sui, 0, Data.AB_GLASS.toInt()), intArrayOf(R.string.abi_bu, 1, Data.P_BURROW.toInt()), intArrayOf(R.string.abi_rev, 1, Data.P_REVIVE.toInt()),
-        intArrayOf(R.string.abi_gh, 0, Data.AB_GHOST.toInt()), intArrayOf(R.string.abi_snk, 1, Data.P_SNIPER.toInt()), intArrayOf(R.string.abi_seal, 1, Data.P_SEAL.toInt()),
+        intArrayOf(R.string.abi_gh, 0, Data.AB_GHOST.toInt()), intArrayOf(R.string.abi_snk, 1, Data.P_SNIPER.toInt()), intArrayOf(R.string.abi_seal, 1, Data.P_SEAL.toInt()), intArrayOf(R.string.abi_bles, 1, Data.P_BLESS.toInt()),
         intArrayOf(R.string.abi_stt, 1, Data.P_TIME.toInt()), intArrayOf(R.string.abi_sum, 1, Data.P_SUMMON.toInt()), intArrayOf(R.string.abi_mvatk, 1, Data.P_MOVEWAVE.toInt()),
         intArrayOf(R.string.abi_thch, 1, Data.P_THEME.toInt()), intArrayOf(R.string.abi_poi, 1, Data.P_POISON.toInt()), intArrayOf(R.string.abi_boswv, 1, Data.P_BOSS.toInt()),
         intArrayOf(R.string.abi_armbr, 1, Data.P_ARMOR.toInt()), intArrayOf(R.string.abi_hast, 1, Data.P_SPEED.toInt()), intArrayOf(R.string.sch_abi_ltg, 1, Data.P_LETHARGY.toInt()),
-        intArrayOf(R.string.sch_abi_rg, 1, Data.P_RAGE.toInt()),intArrayOf(R.string.sch_abi_hy, 1, Data.P_HYPNO.toInt()), intArrayOf(R.string.sch_abi_cou, 1, Data.P_COUNTER.toInt()),
+        intArrayOf(R.string.abi_drn, 1, Data.P_DRAIN.toInt()), intArrayOf(R.string.sch_abi_rg, 1, Data.P_RAGE.toInt()),intArrayOf(R.string.sch_abi_hy, 1, Data.P_HYPNO.toInt()), intArrayOf(R.string.sch_abi_cou, 1, Data.P_COUNTER.toInt()),
         intArrayOf(R.string.sch_abi_cap, 1, Data.P_DMGCAP.toInt()), intArrayOf(R.string.sch_abi_cut, 1, Data.P_DMGCUT.toInt()), intArrayOf(R.string.abi_imvatk, 1, Data.P_IMUMOVING.toInt()),
         intArrayOf(R.string.abi_isnk, 0, Data.AB_SNIPERI.toInt()), intArrayOf(R.string.abi_istt, 0, Data.AB_TIMEI.toInt()), intArrayOf(R.string.abi_ipoi, 1, Data.P_IMUPOI.toInt()),
         intArrayOf(R.string.abi_ithch, 0, Data.AB_THEMEI.toInt()), intArrayOf(R.string.abi_iseal, 1, Data.P_IMUSEAL.toInt()), intArrayOf(R.string.abi_iboswv, 0, Data.AB_IMUSW.toInt()),
@@ -119,7 +118,7 @@ class SearchFilter : AppCompatActivity() {
         AContext.check()
 
         (CommonStatic.ctx as AContext).updateActivity(this)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_search_filter)
 
         lifecycleScope.launch {
@@ -176,7 +175,8 @@ class SearchFilter : AppCompatActivity() {
             abilAdapter = SearchAbilityAdapter(this@SearchFilter, abils)
             abilAdapter.setHasStableIds(true)
 
-            traitAdapter = SearchTraitAdapter(this@SearchFilter, generateTraitToolTip(), generateTraitArray())
+            val pack = UserProfile.getUserPack(intent.extras?.getString("pack") ?: "")
+            traitAdapter = SearchTraitAdapter(this@SearchFilter, generateTraitArray(pack))
             traitAdapter.setHasStableIds(true)
 
             abilityList.layoutManager = LinearLayoutManager(this@SearchFilter)
@@ -341,26 +341,9 @@ class SearchFilter : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 
@@ -378,39 +361,30 @@ class SearchFilter : AppCompatActivity() {
         super.onResume()
     }
 
-    private fun generateTraitArray() : Array<Identifier<Trait>> {
+    private fun generateTraitArray(pack : UserPack?) : Array<Identifier<Trait>> {
         val traits = ArrayList<Identifier<Trait>>()
-
-        for(i in 0 until 10) {
+        for(i in 0 until Data.TRAIT_EVA)
             traits.add(UserProfile.getBCData().traits.list[i].id)
-        }
 
-        for(userPack in UserProfile.getUserPacks()) {
-            for(tr in userPack.traits.list) {
+        if (pack != null) {
+            for (tr in pack.traits.list) {
                 tr ?: continue
-
                 traits.add(tr.id)
             }
-        }
-
-        return traits.toTypedArray()
-    }
-
-    private fun generateTraitToolTip() : Array<String> {
-        val tool = ArrayList<String>()
-
-        for(i in tgToolID) {
-            tool.add(getText(i).toString())
-        }
-
-        for(userPack in UserProfile.getUserPacks()) {
-            for(tr in userPack.traits.list) {
-                tr ?: continue
-
-                tool.add(tr.name)
+            for (str in pack.desc.dependency) {
+                val p = UserProfile.getUserPack(str)
+                for (tr in p.traits.list) {
+                    tr ?: continue
+                    traits.add(tr.id)
+                }
             }
+        } else {
+            for (userPack in UserProfile.getUserPacks())
+                for (tr in userPack.traits.list) {
+                    tr ?: continue
+                    traits.add(tr.id)
+                }
         }
-
-        return tool.toTypedArray()
+        return traits.toTypedArray()
     }
 }

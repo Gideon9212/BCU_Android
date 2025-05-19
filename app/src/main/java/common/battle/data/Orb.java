@@ -20,8 +20,11 @@ public class Orb extends Data {
 
 	public static final byte[] orbTrait = {
 			Data.TRAIT_RED, Data.TRAIT_FLOAT, Data.TRAIT_BLACK, Data.TRAIT_METAL, Data.TRAIT_ANGEL, Data.TRAIT_ALIEN,
-			Data.TRAIT_ZOMBIE, Data.TRAIT_RELIC, Data.TRAIT_WHITE, Data.TRAIT_EVA, Data.TRAIT_WITCH, Data.TRAIT_DEMON
+			Data.TRAIT_ZOMBIE, Data.TRAIT_RELIC, Data.TRAIT_WHITE, Data.TRAIT_EVA, Data.TRAIT_WITCH, Data.TRAIT_DEMON, -1//This one is no trait anyway
 	};
+	/** Gets trait magnification data from BC.
+	 * Format: Map< Type, Map< Grade, Effects > >*/
+	public static final Map<Byte, Map<Byte, int[]>> EFFECT = new TreeMap<>();
 
 	public static void read() {
 		BCAuxAssets aux = CommonStatic.getBCAssets();
@@ -62,30 +65,28 @@ public class Orb extends Data {
 					continue;
 
 				JSONObject obj = (JSONObject) lists.get(i);
-				byte trait = (byte)obj.getInt("attribute");
 				byte type = (byte)obj.getInt("content");
 				byte grade = (byte)obj.getInt("gradeID");
+				byte trait = obj.has("attribute") ? (byte)obj.getInt("attribute") : (byte)(aux.DATA.size() - 1);//No trait
 
-				Map<Integer, List<Byte>> orb;
-
-				if(aux.ORB.containsKey(type))
-					orb = aux.ORB.get(type);
-				else
-					orb = new TreeMap<>();
-
-				List<Byte> grades;
-
-				if(orb.containsKey(aux.DATA.get(trait)))
-					grades = orb.get(aux.DATA.get(trait));
-				else
-					grades = new ArrayList<>();
+				Map<Integer, List<Byte>> orb = aux.ORB.getOrDefault(type, new TreeMap<>());
+				List<Byte> grades = orb.getOrDefault(aux.DATA.get(trait), new ArrayList<>());
 
 				if(!grades.contains(grade))
 					grades.add(grade);
-
 				orb.put(aux.DATA.get(trait), grades);
-
 				aux.ORB.put(type, orb);
+
+				Map<Byte, int[]> effs = EFFECT.getOrDefault(type, new TreeMap<>());
+				if (effs.containsKey(grade))
+					continue;
+				JSONArray value = obj.getJSONArray("value");
+				int[] values = new int[value.length()];
+				for (int j = 0; j < values.length; j++)
+					values[j] = value.getInt(j);
+
+				effs.put(grade, values);
+				EFFECT.put(type, effs);
 			}
 
 			Queue<String> units = VFile.readLine("./org/data/equipmentslot.csv");
@@ -152,6 +153,18 @@ public class Orb extends Data {
 		return -1;
 	}
 
+	public static int[] get(byte type, byte grade) {
+		return EFFECT.get(type).get(grade);
+	}
+
+	private static final int[] oneOnly = { Data.ORB_MINIDEATHSURGE, Data.ORB_REFUND, Data.ORB_SOLBUFF, Data.ORB_BAKILL};
+	public static boolean onlyOne(int type) {
+		for (int one : oneOnly)
+			if (type == one)
+				return true;
+		return false;
+	}
+
 	private final int slots;
 	private final int[] limit;
 
@@ -180,11 +193,11 @@ public class Orb extends Data {
 	}
 
 	public int getAtk(int grade, int atk) {
-		return ORB_ATK_MULTI[grade] * atk / 100;
+		return get(ORB_ATK, (byte)grade)[0] * atk / 100;
 	}
 
 	public int getRes(int grade, int atk) {
-		return (100-ORB_RES_MULTI[grade]) * atk / 100;
+		return (100-get(ORB_RES,(byte)grade)[0]) * atk / 100;
 	}
 
 	public int getSlots() {

@@ -227,6 +227,8 @@ public class Res extends ImgCore {
 		aux.icon[1][P_SPEED] = new VImg("./org/page/icons/Speed.png");
 		aux.icon[1][P_BLAST] = new VImg(parts[335]);
 		aux.icon[1][P_IMUBLAST] = new VImg(parts[337]);
+		aux.icon[1][P_MINIDEATHSURGE] = new VImg(parts[332]);//TODO
+		aux.icon[1][P_REFUND] = new VImg(parts[205]);
 
 		aux.icon[1][P_IMUSUMMON] = new VImg("./org/page/icons/SummonX.png");
 		aux.icon[1][P_DMGCUT] = new VImg("./org/page/icons/DmgCut.png");
@@ -265,6 +267,7 @@ public class Res extends ImgCore {
 		aux.icon[1][P_RANGESHIELD] = new VImg("./org/page/icons/TargetShield.png");
 		aux.icon[1][P_DRAIN] = new VImg("./org/page/icons/Drain.png");
 		aux.icon[1][P_BLESS] = new VImg("./org/page/icons/Blessing.png");
+		aux.icon[1][P_SPEEDUP] = new VImg("./org/page/icons/Speed.png");
 
 		langIcons();
 		//Trait icons that remain the same regardless of language

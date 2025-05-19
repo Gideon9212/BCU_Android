@@ -18,6 +18,7 @@ import common.util.Data
 import common.util.lang.MultiLangCont
 import common.util.stage.Stage
 import common.util.unit.AbUnit
+import common.util.unit.UniRand
 
 class LUUnitListAdapter(context: Context, private val numbers: ArrayList<Identifier<AbUnit>>, private val stage: Stage? = null, star: Int = 0) : ArrayAdapter<Identifier<AbUnit>>(context, R.layout.listlayout, numbers.toTypedArray()) {
     inner class ViewHolder(row: View) {
@@ -31,7 +32,6 @@ class LUUnitListAdapter(context: Context, private val numbers: ArrayList<Identif
             val u = Identifier.get(numbers[position]) ?: return
 
             val unusable = isUnusableInStage(position)
-
             if (unusable > 0) {
                 if (unusable == u.forms.size) {
                     layout.setBackgroundColor(StaticStore.getAttributeColor(context, R.attr.SemiWarningPrimary))
@@ -55,11 +55,17 @@ class LUUnitListAdapter(context: Context, private val numbers: ArrayList<Identif
                 return
             }
 
-            val icon = u.forms[0].anim.uni?.img?.bimg()
+            val icon = if (u is UniRand)
+                u.deployIcon?.img?.bimg()
+            else
+                u.forms[0].anim.uni?.img?.bimg()
 
             id.text = generateID(numbers[position])
 
-            title.text = MultiLangCont.get(u.forms[0]) ?: u.forms[0].names.toString()
+            title.text = if (u is UniRand)
+                u.name
+            else
+                MultiLangCont.get(u.forms[0]) ?: u.forms[0].names.toString()
 
             if(icon != null) {
                 image.setImageBitmap(StaticStore.makeIcon(context, icon as Bitmap , 48f))

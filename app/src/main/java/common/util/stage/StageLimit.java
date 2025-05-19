@@ -10,7 +10,6 @@ import java.util.HashSet;
 @JsonClass(noTag = JsonClass.NoTag.LOAD)
 public class StageLimit extends Data implements BattleStatic {
 
-    @JsonField(defval = "0")
     public int maxMoney = 0, globalCooldown = 0, globalCost = 0, maxUnitSpawn = 0;
     @JsonField(defval = "this.defCD")
     public int[] cooldownMultiplier = { 100, 100, 100, 100, 100, 100 };
@@ -24,10 +23,14 @@ public class StageLimit extends Data implements BattleStatic {
     @JsonField(defval = "this.defDupe")
     public int[] deployDuplicationDelay = { 0, 0, 0, 0, 0, 0 }; // unit is frame
 
-    @JsonField(defval = "false")
     public boolean coolStart = false;
     @JsonField(generic = Integer.class, defval = "isEmpty")
     public HashSet<Integer> bannedCatCombo = new HashSet<>();
+
+    @JsonField(defval = "100")
+    public int cannonMultiplier = 100; // percentage
+    @JsonField(defval = "-1")
+    public int unitSpeedLimit = -1, enemySpeedLimit = -1; // -1 for deactivated
 
     public boolean defCD() {
         for (int cd : cooldownMultiplier)
@@ -43,7 +46,7 @@ public class StageLimit extends Data implements BattleStatic {
     }
     public boolean defDeploy() {
         for (int d : rarityDeployLimit)
-            if (d != -1)
+            if (d > 0)
                 return false;
         return true;
     }
@@ -58,13 +61,7 @@ public class StageLimit extends Data implements BattleStatic {
     }
 
     public StageLimit clone() {
-        StageLimit sl;
-        try {
-            sl = (StageLimit) super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            sl = new StageLimit();
-        }
+        StageLimit sl = new StageLimit();
 
         sl.maxMoney = maxMoney;
         sl.maxUnitSpawn = maxUnitSpawn;
@@ -98,6 +95,7 @@ public class StageLimit extends Data implements BattleStatic {
     }
 
     public boolean isBlank() {
-        return maxMoney == 0 && globalCooldown == 0 && globalCost == 0 && maxUnitSpawn == 0 && defCD() && defMoney() && defDeploy() && !coolStart && bannedCatCombo.isEmpty() && defDupe();
+        return !coolStart && maxMoney == 0 && globalCooldown == 0 && globalCost == 0 && maxUnitSpawn == 0 && unitSpeedLimit == -1
+                && enemySpeedLimit == -1 && cannonMultiplier == 100 && defCD() && defMoney() && defDeploy() && bannedCatCombo.isEmpty() && defDupe();
     }
 }

@@ -95,7 +95,8 @@ class GetStrings(private val c: Context) {
             R.string.sch_abi_bk, //63: Colossus Slayer
             R.string.sch_abi_bh, //64: Behemoth Hunter
             R.string.sch_abi_ms, //65: Mini Surge
-            R.string.sch_abi_sh //66: Super Sage Slayer
+            R.string.sch_abi_sh, //66: Super Sage Slayer
+            R.string.sch_abi_expl //67: BAJA BLAST
         )
         private val cusTalent = intArrayOf(
             -1,
@@ -141,7 +142,11 @@ class GetStrings(private val c: Context) {
             R.string.sch_abi_st,
             R.string.sch_abi_re,
             R.string.sch_abi_tps,
-            R.string.sch_abi_ss
+            R.string.sch_abi_ss,
+            R.string.abi_drn,
+            R.string.sch_abi_speedup,
+            R.string.sch_abi_rfn,
+            R.string.sch_abi_msd
         )
         private lateinit var talTool: Array<String>
         private val mapcolcid = arrayOf("N", "S", "C", "CH", "E", "T", "V", "R", "M", "A", "B", "RA", "H", "CA", "Q", "L", "ND", "SR", "G")
@@ -190,11 +195,9 @@ class GetStrings(private val c: Context) {
         val atks = StaticJava.getAtkModel(ch.mask, index)
         val result = StringBuilder()
         for (i in atks.indices) {
-            if (i < atks.size - 1) {
-                if (atks[i].canProc()) result.append(c.getString(R.string.unit_info_true)).append(" / ") else result.append(c.getString(R.string.unit_info_false)).append(" / ")
-            } else {
-                if (atks[i].canProc()) result.append(c.getString(R.string.unit_info_true)) else result.append(c.getString(R.string.unit_info_false))
-            }
+            result.append(getBoolean(atks[i].canProc()))
+            if (i < atks.size - 1)
+                result.append(" / ")
         }//TODO: Remove this
         return result.toString()
     }
@@ -618,7 +621,10 @@ class GetStrings(private val c: Context) {
     }
 
     fun getBaseHealth(data: SCDef.Line): String {
-        return data.castle_0.toString() + "%"
+        return if(data.castle_0 == data.castle_1 || data.castle_1 == 0) {
+            "${data.castle_0}%"
+        } else
+            "${data.castle_0}% / ${data.castle_1}%"
     }
 
     fun getMultiply(data: SCDef.Line, multi: Int): String {
@@ -637,10 +643,12 @@ class GetStrings(private val c: Context) {
     }
 
     fun getStart(data: SCDef.Line, frse: Boolean): String {
-        return if (frse)
-            data.spawn_0.toString() + "f"
-        else
-            DecimalFormat("#.##").format(data.spawn_0.toFloat() / 30.toDouble()) + "s"
+        return if (data.spawn_0 == data.spawn_1 || data.spawn_1 == 0) {
+            if (frse) data.spawn_0.toString() + "f"
+            else DecimalFormat("#.##").format(data.spawn_0.toFloat() / 30.toDouble()) + "s"
+        } else if (frse)
+            data.spawn_0.toString() + "f ~ " + data.spawn_1 + "f"
+        else DecimalFormat("#.##").format(data.spawn_0.toFloat() / 30.toDouble()) + "s ~ " + DecimalFormat("#.##").format(data.spawn_1.toFloat() / 30.toDouble()) + "s"
     }
 
     fun getLimit(l: Limit?): LinkedHashMap<String, String> {
@@ -649,7 +657,7 @@ class GetStrings(private val c: Context) {
 
         val limits: LinkedHashMap<String, String> = LinkedHashMap()
         if (l.line != 0) {
-            val result = c.getString(R.string.limit_line) + " : " + c.getString(R.string.limit_line2)
+            val result = c.getString(R.string.limit_line) + " : " + c.getString(if (l.line == 2) R.string.limit_line3 else R.string.limit_line2)
             limits[c.getString(R.string.limit_line)] = result
         }
         if (l.max != 0) {
@@ -738,9 +746,16 @@ class GetStrings(private val c: Context) {
                 if (!l.stageLimit.defDeploy()) {
                     val str = StringBuilder(c.getString(R.string.limit_rspn)).append(" : [")
                     for (i in rid.indices)
-                        if (l.stageLimit.rarityDeployLimit[i] != 100)
+                        if (l.stageLimit.rarityDeployLimit[i] != -1)
                             str.append(c.getString(rid[i])).append(": ").append(l.stageLimit.rarityDeployLimit[i]).append(", ")
                     limits[c.getString(R.string.limit_rspn)] = str.substring(0, str.length - 2) + "]"
+                }
+                if (!l.stageLimit.defDupe()) {
+                    val str = StringBuilder(c.getString(R.string.limit_dpspwn)).append(" : [")
+                    for (i in rid.indices)
+                        if (l.stageLimit.deployDuplicationTimes[i] != 0)
+                            str.append(c.getString(rid[i])).append(": ").append(l.stageLimit.deployDuplicationTimes[i]).append(" / ").append(l.stageLimit.deployDuplicationDelay[i]).append("f, ")
+                    limits[c.getString(R.string.limit_dpspwn)] = str.substring(0, str.length - 2) + "]"
                 }
             }
         }
@@ -784,5 +799,17 @@ class GetStrings(private val c: Context) {
             res.add(c.getString(R.string.stg_info_nocpu))
 
         return res
+    }
+
+    fun getStrings(vararg ids : Int) : Array<String> {
+        return Array(ids.size) {c.getString(ids[it])}
+    }
+
+    fun getAStrings(ids : IntArray) : Array<String> {
+        return Array(ids.size) {c.getString(ids[it])}
+    }
+
+    fun getBoolean(b : Boolean) : String {
+        return c.getString(if (b) R.string.unit_info_true else R.string.unit_info_false)
     }
 }

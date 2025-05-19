@@ -15,7 +15,6 @@ import common.io.json.JsonField.IOType;
 import common.pack.UserProfile;
 import common.util.Data;
 import common.util.Data.Proc;
-import common.util.Data.Proc.IntType;
 import common.util.lang.LocaleCenter.Binder;
 import common.util.lang.LocaleCenter.DisplayItem;
 import common.util.lang.LocaleCenter.ObjBinder;
@@ -75,23 +74,15 @@ public class ProcLang {
 		}
 
 		private void fill(JsonObject ans, String pre, Class<?> c) {
-			for (Field f : FieldOrder.getFields(c)) {
-				if (IntType.class.isAssignableFrom(f.getType()))
-					fill(ans, f.getName() + ".", f.getType());
-				else
-					ans.add(pre + f.getName(), JsonEncoder.encode(map.get(pre + f.getName())));
-			}
+			for (Field f : FieldOrder.getFields(c))
+				ans.add(pre + f.getName(), JsonEncoder.encode(map.get(pre + f.getName())));
 		}
 
 		private void fill(String pre, Class<?> c, JsonObject obj) {
 			for (Field f : FieldOrder.getFields(c)) {
-				if (IntType.class.isAssignableFrom(f.getType())) {
-					fill(f.getName() + ".", f.getType(), obj);
-				} else {
-					JsonElement elem = obj == null ? null : obj.get(pre + f.getName());
-					DisplayItem pf = elem == null ? new DisplayItem() : JsonDecoder.decode(elem, DisplayItem.class);
-					map.put(pre + f.getName(), pf);
-				}
+				JsonElement elem = obj == null ? null : obj.get(pre + f.getName());
+				DisplayItem pf = elem == null ? new DisplayItem() : JsonDecoder.decode(elem, DisplayItem.class);
+				map.put(pre + f.getName(), pf);
 			}
 		}
 

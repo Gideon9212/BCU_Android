@@ -69,7 +69,6 @@ public class DataEnemy extends DefaultData implements MaskEnemy {
 		} else {
 			proc.MINIWAVE.prob = ints[27];
 			proc.MINIWAVE.lv = ints[28];
-			proc.MINIWAVE.multi = 20;
 		}
 		proc.WEAK.prob = ints[29];
 		proc.WEAK.time = ints[30];
@@ -148,7 +147,6 @@ public class DataEnemy extends DefaultData implements MaskEnemy {
 			proc.MINIVOLC.dis_0 = ints[82] / 4;
 			proc.MINIVOLC.dis_1 = ints[83] / 4 + proc.VOLC.dis_0;
 			proc.MINIVOLC.time = ints[84] * VOLC_ITV;
-			proc.MINIVOLC.mult = 20;
 		} else {
 			proc.VOLC.prob = ints[81];
 			proc.VOLC.dis_0 = ints[82] / 4;
@@ -202,8 +200,6 @@ public class DataEnemy extends DefaultData implements MaskEnemy {
 				proc.BLAST.prob = ints[106];
 				proc.BLAST.dis_0 = ints[107] / 4;
 				proc.BLAST.dis_1 = ints[108] / 4 + proc.BLAST.dis_0;
-				proc.BLAST.lv = 3;
-				proc.BLAST.reduction = 30;
 			}
 			if (ints[109] != 0)
 				proc.IMUBLAST.mult = 100;

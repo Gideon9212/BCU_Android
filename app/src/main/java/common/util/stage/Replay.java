@@ -85,15 +85,15 @@ public class Replay extends Data {
 	public ResourceLocation rl;
 	@JsonField
 	public long seed;
-	@JsonField(defval = "0")
+	@JsonField
 	public int cfg, star, len;
 	@JsonField
 	public Identifier<Stage> st;
 	@JsonField
 	public BasisLU lu;
-	@JsonField(defval = "false")
+	@JsonField
 	public boolean buttonDelay = false;
-	@JsonField(defval = "0")
+	@JsonField
 	public byte save;
 	public int[] action;
 	@JsonField(generic = {Integer.class, double[].class})

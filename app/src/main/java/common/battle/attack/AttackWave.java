@@ -38,9 +38,12 @@ public class AttackWave extends AttackAb {
 	@Override
 	public void capture() {
 		List<AbEntity> le = model.b.inRange(touch, attacker != null && attacker.status.rage > 0 ? 2 : dire, sta, end, excludeRightEdge);
-		le.remove(dire == 1 ? model.b.ubase : model.b.ebase);
+		if (waveType != WT_MOVE || !proc.MOVEWAVE.hit_base)
+			le.remove(dire == 1 ? model.b.ubase : model.b.ebase);
+		if (attacker != null && (attacker.status.rage > 0 || attacker.status.hypno > 0))
+			le.remove(attacker);
 		if (incl != null)
-			le.removeIf(incl::contains);
+			le.removeAll(incl);
 		capt.clear();
 		if ((abi & AB_ONLY) == 0)
 			capt.addAll(le);
@@ -52,10 +55,9 @@ public class AttackWave extends AttackAb {
 
 	@Override
 	public void excuse() {
-		process();
-
 		if(attacker != null)
 			atk = ((AtkModelEntity)model).getEffMult(raw);
+		process();
 		for (AbEntity e : capt) {
 			if (e instanceof Entity) {
 				e.damaged(this);

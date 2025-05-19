@@ -13,6 +13,7 @@ import common.pack.IndexContainer;
 import common.pack.PackData.PackDesc;
 import common.pack.PackData.UserPack;
 import common.pack.Source.ResourceLocation;
+import common.pack.UserProfile;
 import common.system.BasedCopable;
 import common.system.files.VFile;
 import common.util.BattleStatic;
@@ -55,7 +56,6 @@ public class Stage extends Data
 	@JsonField(generic = MultiLangData.class, gen = JsonField.GenType.FILL, defval = "empty")
 	public final MultiLangData names = new MultiLangData();
 
-	@JsonField(defval = "false")
 	public boolean non_con, trail, bossGuard;
 	@JsonField(defval = "3000")
 	public int len = 3000;
@@ -63,22 +63,22 @@ public class Stage extends Data
 	public int health = 60000;
 	@JsonField(defval = "8")
 	public int max = 8;
-	@JsonField(defval = "0")
 	public int mush, bgh;
-	@JsonField(backCompat = JsonField.CompatType.FORK, defval = "0")
+	@JsonField(backCompat = JsonField.CompatType.FORK)
 	public int timeLimit = 0;
 	@JsonField(defval = "1")
 	public int minUSpawn = 1, maxUSpawn = 1, minSpawn = 1, maxSpawn = 1;
-	@JsonField(defval = "null")
+	@JsonField
 	public Identifier<CastleImg> castle;
-	@JsonField(defval = "null")
+	@JsonField
 	public Identifier<Background> bg, bg1;
-	@JsonField(defval = "null")
+	@JsonField
 	public Identifier<Music> mus0, mus1;
 	@JsonField(defval = "empty")
 	public SCDef data = new SCDef(0);
 	@JsonField(defval = "none")
 	public Limit lim = new Limit();
+	@JsonField(block = true)
 	public BattlePreset preset;
 	@JsonField(generic = Replay.class, alias = ResourceLocation.class)
 	public ArrayList<Replay> recd = new ArrayList<>();
@@ -173,21 +173,19 @@ public class Stage extends Data
 					for (int i = 0; i < intl; i++)
 						if(i < ss.length)
 							data[i] = Integer.parseInt(ss[i]);
-						else
-							//Handle missing value manually
-							if(i == 9)
+						else if(i == SCDef.M) //Handle missing value manually
 								data[i] = 100;
 
-					data[0] -= 2;
-					data[2] *= 2;
-					data[3] *= 2;
-					data[4] *= 2;
+					data[SCDef.E] -= 2;
+					data[SCDef.S0] *= 2;
+					data[SCDef.R0] *= 2;
+					data[SCDef.R1] *= 2;
 
-					if (timeLimit == 0 && intl > 9 && data[5] > 100 && data[9] == 100) {
-						data[9] = data[5];
-						data[5] = 100;
+					if (timeLimit == 0 && data[SCDef.C0] > 100) {
+						if (intl > 9 && data[SCDef.M] == 100)
+							data[SCDef.M] = data[SCDef.C0];
+						data[SCDef.C0] = 100;
 					}
-
 					if (ss.length > 11 && CommonStatic.isInteger(ss[11])) {
 						data[SCDef.M1] = Integer.parseInt(ss[11]);
 
@@ -198,7 +196,6 @@ public class Stage extends Data
 
 					if(ss.length > 12 && CommonStatic.isInteger(ss[12]) && Integer.parseInt(ss[12]) == 1)
 						data[SCDef.S0] *= -1;
-
 					if(ss.length > 13 && CommonStatic.isInteger(ss[13]))
 						data[SCDef.KC] = Integer.parseInt(ss[13]);
 
@@ -368,6 +365,29 @@ public class Stage extends Data
 		if (jobj.has("name"))
 			names.put(jobj.get("name").getAsString());
 		recd.removeIf(Objects::isNull);
+	}
+
+	@JsonDecoder.PostLoad
+	public void PostLoad() {
+		MapColc.PackMapColc mc = (MapColc.PackMapColc)getMC();
+		if (mc.pack.desc.FORK_VERSION < 12) {
+			if (mc.pack.desc.FORK_VERSION < 11) {
+				if (UserProfile.isOlderPack(mc.pack, "0.7.8.2") && lim.stageLimit != null)
+					lim.stageLimit.coolStart = lim.stageLimit.globalCooldown > 0 || lim.stageLimit.maxMoney > 0;
+				lim.setStar(lim.star); //All star will have to be 0 coz 1 << 0 is 1 though
+				if (mc.pack.desc.FORK_VERSION < 5 && timeLimit > 0)
+					timeLimit *= 60;
+			}
+			int basepos = 800;
+			if (data.datas.length > 0 && data.getSimple(data.datas.length - 1).castle_0 == 0)
+				basepos = data.getSimple(data.datas.length - 1).boss >= 1 ? (int)Math.ceil(Identifier.getOr(castle, CastleImg.class).boss_spawn) : 700;
+
+			for (Line l : data.datas)
+				if (l.doorchance > 0) {
+					l.doordis_0 = (len - 500 - basepos) * l.doordis_0 / 100;
+					l.doordis_1 = (len - 500 - basepos) * l.doordis_1 / 100;
+				}
+		}
 	}
 
 	@JsonField(tag = "timeLimit", io = JsonField.IOType.W, backCompat = JsonField.CompatType.UPST)

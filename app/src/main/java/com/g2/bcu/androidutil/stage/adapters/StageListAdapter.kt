@@ -52,8 +52,8 @@ class StageListAdapter(private val activity: Activity, private val stages: Array
         val ids = getid(st.data)
         holder.enemy.visibility = View.GONE
         if (ids.isEmpty()) discardIcons(holder, 0)
-        else for (i in ids.indices) {
-            val icn = getIcon(ids[i])
+        else for (id in ids) {
+            val icn = id.get()?.preview?.img?.bimg() as Bitmap?
             if (icn == null) {
                 discardIcons(holder, ids.size)
                 break
@@ -75,13 +75,6 @@ class StageListAdapter(private val activity: Activity, private val stages: Array
             getEnemyText(siz, lang)
         } else context.getString(R.string.stg_enem_num).replace("_", siz.toString())
         holder.enemy.text = enemies
-    }
-    private fun getIcon(ene : Identifier<AbEnemy>) : Bitmap? {
-        if (ene.pack == Identifier.DEF) {
-            return if (ene.id < (StaticStore.eicons?.size ?: 0)) StaticStore.eicons?.get(ene.id)// ?: StaticStore.empty()
-            else null//StaticStore.empty(context, 18f, 18f)
-        }
-        return ene.get().preview?.img?.bimg() as Bitmap?
     }
 
     private fun getid(stage: SCDef): List<Identifier<AbEnemy>> {

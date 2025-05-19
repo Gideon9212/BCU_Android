@@ -18,12 +18,11 @@ import common.util.anim.EAnimU;
 import common.util.lang.MultiLangData;
 
 @JsonClass(noTag = JsonClass.NoTag.LOAD)
-public abstract class Character extends Animable<AnimU<?>, AnimU.UType> {
+public abstract class Character extends Animable<AnimU<?>, AnimU.UType> implements AbCharacter {
     @JsonField(generic = MultiLangData.class, gen = JsonField.GenType.FILL, defval = "empty")
     public final MultiLangData names = new MultiLangData();
     @JsonField(generic = MultiLangData.class, gen = JsonField.GenType.FILL, defval = "empty")
     public final MultiLangData description = new MultiLangData();
-    @JsonField(defval = "false")
     public boolean rev = false;
 
     @Override
@@ -35,11 +34,14 @@ public abstract class Character extends Animable<AnimU<?>, AnimU.UType> {
         return a;
     }
 
+    @Override
     public VImg getIcon() {
         if(anim == null)
             return null;
         return anim.getEdi();
     }
+
+    @Override
     public VImg getPreview() {
         if(anim == null)
             return null;
@@ -51,143 +53,146 @@ public abstract class Character extends Animable<AnimU<?>, AnimU.UType> {
     public abstract Identifier<?> getID();
 
     /**
-     * Handles most of the injected parameters of enemies and forms
+     * Handles most of the injected parameters of enemies and forms. Remember that a version check is done in Enemy.class/Form.class
      * @param pack The bcupack
      * @param jdu Json Object containing the data
      * @param ent The customEntity
      */
     protected void inject(UserPack pack, JsonObject jdu, CustomEntity ent) {
-        if (pack.desc.FORK_VERSION < 11) {
-            if (pack.desc.FORK_VERSION < 9) {
-                AtkDataModel[] atks = null;
-                if (pack.desc.FORK_VERSION < 6) {
-                    if (pack.desc.FORK_VERSION < 4) {
-                        if (pack.desc.FORK_VERSION < 3) {
-                            if (pack.desc.FORK_VERSION < 2) {
-                                AtkDataModel[] oldAtks = new localDecoder(jdu.getAsJsonObject("atks"), AtkDataModel[].class, ent).setGen(true).setPool(true).decode();
-                                ent.hits.set(0, oldAtks);
-                            } //Finish FORK_VERSION 2 checks
-                            AtkDataModel oldSpAtk = new localDecoder(jdu.get("rev"), AtkDataModel.class, ent).setGen(true).decode();
-                            if (oldSpAtk != null)
-                                ent.revs = new AtkDataModel[]{oldSpAtk};
-                            oldSpAtk = new localDecoder(jdu.get("res"), AtkDataModel.class, ent).setGen(true).decode();
-                            if (oldSpAtk != null)
-                                ent.ress = new AtkDataModel[]{oldSpAtk};
-                            oldSpAtk = new localDecoder(jdu.get("bur"), AtkDataModel.class, ent).setGen(true).decode();
-                            if (oldSpAtk != null)
-                                ent.burs = new AtkDataModel[]{oldSpAtk};
-                            oldSpAtk = new localDecoder(jdu.get("resu"), AtkDataModel.class, ent).setGen(true).decode();
-                            if (oldSpAtk != null)
-                                ent.resus = new AtkDataModel[]{oldSpAtk};
-                            oldSpAtk = new localDecoder(jdu.get("revi"), AtkDataModel.class, ent).setGen(true).decode();
-                            if (oldSpAtk != null)
-                                ent.revis = new AtkDataModel[]{oldSpAtk};
-                            oldSpAtk = new localDecoder(jdu.get("entr"), AtkDataModel.class, ent).setGen(true).decode();
-                            if (oldSpAtk != null)
-                                ent.entrs = new AtkDataModel[]{oldSpAtk};
+        if (pack.desc.FORK_VERSION < 12) {
+            if (pack.desc.FORK_VERSION < 11) {
+                if (pack.desc.FORK_VERSION < 9) {
+                    AtkDataModel[] atks = null;
+                    if (pack.desc.FORK_VERSION < 6) {
+                        if (pack.desc.FORK_VERSION < 4) {
+                            if (pack.desc.FORK_VERSION < 3) {
+                                if (pack.desc.FORK_VERSION < 2) {
+                                    AtkDataModel[] oldAtks = new localDecoder(jdu.getAsJsonObject("atks"), AtkDataModel[].class, ent).setGen(true).setPool(true).decode();
+                                    ent.hits.set(0, oldAtks);
+                                } //Finish FORK_VERSION 2 checks
+                                AtkDataModel oldSpAtk = new localDecoder(jdu.get("rev"), AtkDataModel.class, ent).setGen(true).decode();
+                                if (oldSpAtk != null)
+                                    ent.revs = new AtkDataModel[]{oldSpAtk};
+                                oldSpAtk = new localDecoder(jdu.get("res"), AtkDataModel.class, ent).setGen(true).decode();
+                                if (oldSpAtk != null)
+                                    ent.ress = new AtkDataModel[]{oldSpAtk};
+                                oldSpAtk = new localDecoder(jdu.get("bur"), AtkDataModel.class, ent).setGen(true).decode();
+                                if (oldSpAtk != null)
+                                    ent.burs = new AtkDataModel[]{oldSpAtk};
+                                oldSpAtk = new localDecoder(jdu.get("resu"), AtkDataModel.class, ent).setGen(true).decode();
+                                if (oldSpAtk != null)
+                                    ent.resus = new AtkDataModel[]{oldSpAtk};
+                                oldSpAtk = new localDecoder(jdu.get("revi"), AtkDataModel.class, ent).setGen(true).decode();
+                                if (oldSpAtk != null)
+                                    ent.revis = new AtkDataModel[]{oldSpAtk};
+                                oldSpAtk = new localDecoder(jdu.get("entr"), AtkDataModel.class, ent).setGen(true).decode();
+                                if (oldSpAtk != null)
+                                    ent.entrs = new AtkDataModel[]{oldSpAtk};
 
-                            atks = ent.getAllAtkModels();
-                            Proc proc = ent.getProc();
-                            //Updates stuff to match this fork without core version issues
-                            if (pack.desc.FORK_VERSION < 1) {
-                                if (UserProfile.isOlderPack(pack, "0.6.6.0")) {
-                                    if (UserProfile.isOlderPack(pack, "0.6.5.0")) {
-                                        if (UserProfile.isOlderPack(pack, "0.6.1.0")) {
-                                            if (UserProfile.isOlderPack(pack, "0.6.0.0")) {
-                                                int type = jdu.get("type").getAsInt();
-                                                if (UserProfile.isOlderPack(pack, "0.5.2.0")) {
-                                                    if (UserProfile.isOlderPack(pack, "0.5.1.0"))
-                                                        type = reorderTrait(type);
-                                                    //Finish 0.5.1.0 check
-                                                    if (ent.tba != 0)
-                                                        ent.tba += ent.getPost(false, 0) + 1;
-                                                } //Finish 0.5.2.0 check
-                                                proc.BARRIER.health = jdu.get("shield").getAsInt();
-                                                ent.traits = Trait.convertType(type, false);
-                                                if ((ent.abi & (1 << 18)) != 0) //Seal Immunity
-                                                    proc.IMUSEAL.mult = 100;
-                                                if ((ent.abi & (1 << 7)) != 0) //Moving atk Immunity
-                                                    proc.IMUMOVING.mult = 100;
-                                                if ((ent.abi & (1 << 12)) != 0) //Poison Immunity
-                                                    proc.IMUPOI.mult = 100;
-                                                ent.abi = reorderAbi(ent.abi, 0);
+                                atks = ent.getAllAtkModels();
+                                Proc proc = ent.getProc();
+                                //Updates stuff to match this fork without core version issues
+                                if (pack.desc.FORK_VERSION < 1) {
+                                    if (UserProfile.isOlderPack(pack, "0.6.6.0")) {
+                                        if (UserProfile.isOlderPack(pack, "0.6.5.0")) {
+                                            if (UserProfile.isOlderPack(pack, "0.6.1.0")) {
+                                                if (UserProfile.isOlderPack(pack, "0.6.0.0")) {
+                                                    int type = jdu.get("type").getAsInt();
+                                                    if (UserProfile.isOlderPack(pack, "0.5.2.0")) {
+                                                        if (UserProfile.isOlderPack(pack, "0.5.1.0"))
+                                                            type = reorderTrait(type);
+                                                        //Finish 0.5.1.0 check
+                                                        if (ent.tba != 0)
+                                                            ent.tba += ent.getPost(false, 0) + 1;
+                                                    } //Finish 0.5.2.0 check
+                                                    proc.BARRIER.health = jdu.get("shield").getAsInt();
+                                                    ent.traits = Trait.convertType(type, false);
+                                                    if ((ent.abi & (1 << 18)) != 0) //Seal Immunity
+                                                        proc.IMUSEAL.mult = 100;
+                                                    if ((ent.abi & (1 << 7)) != 0) //Moving atk Immunity
+                                                        proc.IMUMOVING.mult = 100;
+                                                    if ((ent.abi & (1 << 12)) != 0) //Poison Immunity
+                                                        proc.IMUPOI.mult = 100;
+                                                    ent.abi = reorderAbi(ent.abi, 0);
+                                                    for (AtkDataModel atk : atks)
+                                                        atk.alt = reorderAbi(atk.alt, 0);
+                                                } //Finish 0.6.0.0 check
+                                                proc.DMGCUT.reduction = 100;
                                                 for (AtkDataModel atk : atks)
-                                                    atk.alt = reorderAbi(atk.alt, 0);
-                                            } //Finish 0.6.0.0 check
-                                            proc.DMGCUT.reduction = 100;
-                                            for (AtkDataModel atk : atks)
-                                                if (atk.getProc().POISON.prob > 0)
-                                                    atk.getProc().POISON.type.ignoreMetal = true;
-                                        } //Finish 0.6.1.0 check
-                                        boolean bounty = (ent.abi & 16) > 0;
-                                        boolean atkbase = (ent.abi & 32) > 0;
-                                        for (AtkDataModel atk : atks) {
-                                            atk.alt = reorderAbi(atk.alt, 1);
-                                            if (bounty) //2x money
-                                                atk.getProc().BOUNTY.mult = 100;
-                                            if (atkbase) //base destroyer
-                                                atk.getProc().ATKBASE.mult = 300;
-                                        }
-                                        ent.abi = reorderAbi(ent.abi, 1);
-                                    } //Finish 0.6.5.0 check
+                                                    if (atk.getProc().POISON.prob > 0)
+                                                        atk.getProc().POISON.ignoreMetal = true;
+                                            } //Finish 0.6.1.0 check
+                                            boolean bounty = (ent.abi & 16) > 0;
+                                            boolean atkbase = (ent.abi & 32) > 0;
+                                            for (AtkDataModel atk : atks) {
+                                                atk.alt = reorderAbi(atk.alt, 1);
+                                                if (bounty) //2x money
+                                                    atk.getProc().BOUNTY.mult = 100;
+                                                if (atkbase) //base destroyer
+                                                    atk.getProc().ATKBASE.mult = 300;
+                                            }
+                                            ent.abi = reorderAbi(ent.abi, 1);
+                                        } //Finish 0.6.5.0 check
+                                        for (AtkDataModel atk : atks)
+                                            if (atk.getProc().TIME.prob > 0)
+                                                atk.getProc().TIME.intensity = atk.getProc().TIME.time;
+
+                                        for (AtkDataModel atk : atks)
+                                            if (atk.getProc().SUMMON.prob > 0) {
+                                                atk.getProc().SUMMON.max_dis = atk.getProc().SUMMON.dis;
+                                                atk.getProc().SUMMON.min_layer = -1;
+                                                atk.getProc().SUMMON.max_layer = -1;
+                                            }
+                                    } //Finish 0.6.6.0 check
+                                    if ((ent.abi & 32) > 0)
+                                        proc.IMUWAVE.block = 100;
+                                    if ((ent.abi & 524288) > 0) {
+                                        proc.DEMONVOLC.prob = 100;
+                                        proc.DEMONVOLC.mult = 100;
+                                    }
+                                    ent.abi = reorderAbi(ent.abi, 2);
                                     for (AtkDataModel atk : atks)
-                                        if (atk.getProc().TIME.prob > 0)
-                                            atk.getProc().TIME.intensity = atk.getProc().TIME.time;
+                                        atk.alt = reorderAbi(atk.alt, 2);
+                                } //Finish FORK_VERSION 1 checks
+                            } //Finish FORK_VERSION 3 checks
+                            description.replace("<br>", "\n");
+                        } //Finish FORK_VERSION 4 checks
+                        for (AtkDataModel atk : ent.getAllAtkModels())
+                            if (atk.pre == 0 && atk.str.toLowerCase().startsWith("combo"))
+                                atk.str = "NC- " + atk.str;
+                    } //Finish FORK_VERSION 6 checks
+                    ent.getProc().DMGINC.mult = 100;
+                    ent.getProc().DEFINC.mult = 100;
+                    if ((ent.abi & 1) != 0) {
+                        ent.getProc().DMGINC.mult *= 1.5;
+                        ent.getProc().DEFINC.mult *= 2;
+                    }
+                    if ((ent.abi & 2) != 0)//res
+                        ent.getProc().DEFINC.mult *= 4;
+                    if ((ent.abi & 4) != 0)//mas dmg
+                        ent.getProc().DMGINC.mult *= 3;
+                    if ((ent.abi & 16384) != 0)//ins res
+                        ent.getProc().DEFINC.mult *= 6;
+                    if ((ent.abi & 32768) != 0)//ins dmg
+                        ent.getProc().DMGINC.mult *= 5;
 
-                                    for (AtkDataModel atk : atks)
-                                        if (atk.getProc().SUMMON.prob > 0) {
-                                            atk.getProc().SUMMON.max_dis = atk.getProc().SUMMON.dis;
-                                            atk.getProc().SUMMON.min_layer = -1;
-                                            atk.getProc().SUMMON.max_layer = -1;
-                                        }
-                                } //Finish 0.6.6.0 check
-                                if ((ent.abi & 32) > 0)
-                                    proc.IMUWAVE.block = 100;
-                                if ((ent.abi & 524288) > 0) {
-                                    proc.DEMONVOLC.prob = 100;
-                                    proc.DEMONVOLC.mult = 100;
-                                }
-                                ent.abi = reorderAbi(ent.abi, 2);
-                                for (AtkDataModel atk : atks)
-                                    atk.alt = reorderAbi(atk.alt, 2);
-                            } //Finish FORK_VERSION 1 checks
-                        } //Finish FORK_VERSION 3 checks
-                        description.replace("<br>", "\n");
-                    } //Finish FORK_VERSION 4 checks
-                    for (AtkDataModel atk : ent.getAllAtkModels())
-                        if (atk.pre == 0 && atk.str.toLowerCase().startsWith("combo"))
-                            atk.str = "NC- " + atk.str;
-                } //Finish FORK_VERSION 6 checks
-                ent.getProc().DMGINC.mult = 100;
-                ent.getProc().DEFINC.mult = 100;
-                if ((ent.abi & 1) != 0) {
-                    ent.getProc().DMGINC.mult *= 1.5;
-                    ent.getProc().DEFINC.mult *= 2;
-                }
-                if ((ent.abi & 2) != 0)//res
-                    ent.getProc().DEFINC.mult *= 4;
-                if ((ent.abi & 4) != 0)//mas dmg
-                    ent.getProc().DMGINC.mult *= 3;
-                if ((ent.abi & 16384) != 0)//ins res
-                    ent.getProc().DEFINC.mult *= 6;
-                if ((ent.abi & 32768) != 0)//ins dmg
-                    ent.getProc().DMGINC.mult *= 5;
+                    ent.abi = reorderAbi(ent.abi, 3);
+                    if (atks == null)
+                        atks = ent.getAllAtkModels();
+                    for (AtkDataModel atk : atks)
+                        atk.alt = reorderAbi(atk.alt, 3);
 
-                ent.abi = reorderAbi(ent.abi, 3);
-                if (atks == null)
-                    atks = ent.getAllAtkModels();
-                for (AtkDataModel atk : atks)
-                    atk.alt = reorderAbi(atk.alt, 3);
-
-                if (ent.getProc().DMGINC.mult == 100)
-                    ent.getProc().DMGINC.mult = 0;
-                if (ent.getProc().DEFINC.mult == 100)
-                    ent.getProc().DEFINC.mult = 0;
-            } //Finish FORK_VERSION 9 checks
-            for (AtkDataModel atk : ent.getAllAtkModels())
-                if (atk.getProc().TIME.intensity != 0)
-                    atk.getProc().TIME.intensity = (atk.getProc().TIME.intensity / atk.getProc().TIME.time) * 100;
-        } //Finish FORK_VERSION 11 checks
+                    if (ent.getProc().DMGINC.mult == 100)
+                        ent.getProc().DMGINC.mult = 0;
+                    if (ent.getProc().DEFINC.mult == 100)
+                        ent.getProc().DEFINC.mult = 0;
+                } //Finish FORK_VERSION 9 checks
+                for (AtkDataModel atk : ent.getAllAtkModels())
+                    if (atk.getProc().TIME.intensity != 0 && atk.getProc().TIME.time != 0)
+                        atk.getProc().TIME.intensity = (atk.getProc().TIME.intensity / atk.getProc().TIME.time) * 100;
+            } //Finish FORK_VERSION 11 checks
+            ent.getProc().AI.danger = ent.getProc().AI.retreatSpeed > 0;
+        } //Finish FORK_VERSION 12 checks
     }
 
     public abstract String getExplanation();

@@ -6,8 +6,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences.Editor
 import android.content.pm.ActivityInfo
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -52,6 +50,7 @@ import com.g2.bcu.androidutil.animation.GifSession
 import com.g2.bcu.androidutil.fakeandroid.CVGraphics
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.io.MediaScanner
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
@@ -152,7 +151,7 @@ class ImageViewer : AppCompatActivity() {
         AContext.check()
 
         (CommonStatic.ctx as AContext).updateActivity(this)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_image_viewer)
 
         val result = intent
@@ -1013,6 +1012,7 @@ class ImageViewer : AppCompatActivity() {
             is Soul -> content.anim
             is NyCastle -> content.anim
             is DemonSoul -> content.anim
+            is AnimCE -> content
             else -> throw IllegalStateException("E/ImageViewer::onCreate - Invalid content type : ${content::class.java.name}")
         }
         try {
@@ -1054,49 +1054,18 @@ class ImageViewer : AppCompatActivity() {
             return intArrayOf(0, 0, 0)
 
         return when(mode) {
-            skyUpper -> {
-                val rgb = bg.cs[0] ?: return intArrayOf(0, 0, 0)
-                intArrayOf(rgb[0], rgb[1], rgb[2])
-            }
-            skyBelow -> {
-                val rgb = bg.cs[1] ?: return intArrayOf(0, 0, 0)
-                intArrayOf(rgb[0], rgb[1], rgb[2])
-            }
-            groundUpper -> {
-                val rgb = bg.cs[2] ?: return intArrayOf(0, 0, 0)
-                intArrayOf(rgb[0], rgb[1], rgb[2])
-            }
-            groundBelow -> {
-                val rgb = bg.cs[3] ?: return intArrayOf(0, 0, 0)
-                intArrayOf(rgb[0], rgb[1], rgb[2])
-            }
-            else -> {
-                intArrayOf(0, 0, 0)
-            }
+            skyUpper -> bg.cs[0] ?: return intArrayOf(0, 0, 0)
+            skyBelow -> bg.cs[1] ?: return intArrayOf(0, 0, 0)
+            groundUpper -> bg.cs[2] ?: return intArrayOf(0, 0, 0)
+            groundBelow -> bg.cs[3] ?: return intArrayOf(0, 0, 0)
+            else -> intArrayOf(0, 0, 0)
         }
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 
@@ -1539,30 +1508,27 @@ class ImageViewer : AppCompatActivity() {
             val dateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
             val date = Date()
 
-            when(type) {
+            return when(type) {
                 AnimationCView.AnimationType.UNIT -> {
-                    return dateFormat.format(date) + "-U-" + pack + "-" + id + "-" + form
+                    dateFormat.format(date) + "-U-" + pack + "-" + id + "-" + form
                 }
                 AnimationCView.AnimationType.ENEMY -> {
-                    return dateFormat.format(date) + "-E-" + id
+                    dateFormat.format(date) + "-E-" + id
                 }
                 AnimationCView.AnimationType.EFFECT -> {
-                    return dateFormat.format(date) + "-EFF-" + id
+                    dateFormat.format(date) + "-EFF-" + id
                 }
                 AnimationCView.AnimationType.SOUL -> {
-                    return dateFormat.format(date) + "-S-" + id
+                    dateFormat.format(date) + "-S-" + id
                 }
                 AnimationCView.AnimationType.CANNON -> {
-                    return dateFormat.format(date) + "-C-" + id
+                    dateFormat.format(date) + "-C-" + id
                 }
                 AnimationCView.AnimationType.DEMON_SOUL -> {
-                    return dateFormat.format(date) + "-DS-" + id
+                    dateFormat.format(date) + "-DS-" + id
                 }
                 AnimationCView.AnimationType.CUSTOM -> {
-                    return dateFormat.format(date) + "-A-" + id
-                }
-                else -> {
-                    return dateFormat.format(date)
+                    dateFormat.format(date) + "-A-" + id
                 }
             }
         }

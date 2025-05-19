@@ -116,8 +116,8 @@ public class SBCtrl extends BattleField {
 					}
 				for (byte i = 0; i < 2; i++) {
 					int row = (i + sb.frontLineup) % 2; // check front row first, then back row
-					if ((b0 || b1 || sb.locks[i][j]))
-						if (act_spawn(i, j, (b0 || b1) && row == sb.frontLineup) && (b0 || b1))
+					if (b0 || b1 || sb.locks[row][j])
+						if (act_spawn(row, j, (b0 || b1) && row == sb.frontLineup) && (b0 || b1))
 							rec |= 1 << (i * 5 + j + 13);
 				}
 			}
@@ -135,7 +135,7 @@ class Recorder extends BattleObj {
 	private int num, rep;
 
 	protected void add(int rec) {
-		if (rec == num)
+		if (rec == 0)
 			rep++;
 		else {
 			if (rep > 0) {

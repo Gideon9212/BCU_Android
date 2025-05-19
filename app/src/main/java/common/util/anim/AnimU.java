@@ -19,9 +19,7 @@ public abstract class AnimU<T extends AnimU.ImageKeeper> extends AnimD<AnimU<?>,
 			UNIT
 		}
 
-		default VImg getPreviewIcon() {
-			return null;
-		}
+		VImg getPreviewIcon();
 
 		VImg getEdi();
 

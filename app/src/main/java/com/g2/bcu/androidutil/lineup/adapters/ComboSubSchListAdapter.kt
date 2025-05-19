@@ -97,10 +97,9 @@ class ComboSubSchListAdapter internal constructor(private val activity: Activity
                     for(c in pack.combos.list) {
                         c ?: continue
 
-                        for(l in comid) {
+                        for(l in comid)
                             if(c.type == l)
                                 StaticStore.combos.add(c)
-                        }
                     }
                 }
 

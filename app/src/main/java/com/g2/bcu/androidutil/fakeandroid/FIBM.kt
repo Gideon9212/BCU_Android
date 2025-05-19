@@ -4,14 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.core.graphics.alpha
-import androidx.core.graphics.applyCanvas
 import com.g2.bcu.androidutil.StaticStore
 import common.system.fake.FakeGraphics
 import common.system.fake.FakeImage
 import common.system.fake.ImageBuilder
 import java.io.IOException
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.round
 
 class FIBM : FakeImage {

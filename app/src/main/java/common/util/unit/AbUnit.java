@@ -4,7 +4,7 @@ import common.pack.IndexContainer;
 import common.pack.PackData;
 
 @IndexContainer.IndexCont(PackData.class)
-public interface AbUnit extends Comparable<AbUnit>, IndexContainer.Indexable<PackData, AbUnit> {
+public interface AbUnit extends Comparable<AbUnit>, IndexContainer.Indexable<PackData, AbUnit>, AbCharacter {
 
     @Override
     default int compareTo(AbUnit u) {

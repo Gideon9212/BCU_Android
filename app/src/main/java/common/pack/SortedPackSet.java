@@ -79,11 +79,13 @@ public class SortedPackSet<T extends Comparable<? super T>> implements Set<T>, C
         return indexOf((T)o) != -1;
     }
 
+    @NotNull
     @Override
     public Itr iterator() {
         return new Itr();
     }
 
+    @NotNull
     @Override
     public Object[] toArray() {
         return Arrays.copyOf(arr, size);

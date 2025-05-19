@@ -42,6 +42,15 @@ public class Form extends Character implements BasedCopable<AbForm, AbUnit>, AbF
 		uid = unit.id;
 		orbs = new Orb(-1);
 	}
+	//Used solely to make placeholders
+	public Form(Unit u, MaskUnit d) {
+		du = d;
+		unit = u;
+		uid = unit.id;
+		orbs = new Orb(0);
+		anim = new AnimUD("./org/unit/000/f/", "000_f", "edi000_f.png", "uni000_f00.png");
+		anim.getUni().setCut(CommonStatic.getBCAssets().unicut);
+	}
 
 	public Form(Unit u, int f, String str, AnimU<?> ac, CustomUnit cu) {
 		unit = u;
@@ -128,77 +137,125 @@ public class Form extends Character implements BasedCopable<AbForm, AbUnit>, AbF
 				if (f == this)
 					return false;
 			}
-		//TODO - check for Summon and RandomUnits
+		for (Unit u : pack.units)
+			for (Form f : u.forms) {
+				if (f == this)
+					continue;
+				if (uid.equals(f.du.getProc().SUMMON.id) && fid == f.du.getProc().SUMMON.form - 1)
+					return false;
+				if (uid.equals(f.du.getProc().SPIRIT.id) && fid == f.du.getProc().SPIRIT.form - 1)
+					return false;
+				if (recursiveBlessUsed(f.du.getProc().BLESSING))
+					return false;
+			}
+		for (Enemy e : pack.enemies) {//Just in case since enemies can summon units
+			if (uid.equals(e.de.getProc().SUMMON.id) && fid == e.de.getProc().SUMMON.form - 1)
+				return false;
+			if (uid.equals(e.de.getProc().SPIRIT.id) && fid == e.de.getProc().SPIRIT.form - 1)
+				return false;
+			if (recursiveBlessUsed(e.de.getProc().BLESSING))
+				return false;
+		}
+		for (UniRand ru : pack.randUnits)
+			for (Form f : ru.getForms())
+				if (f == this)
+					return false;
 		return true;
+	}
+
+	private boolean recursiveBlessUsed(Proc.BLESSING bless) {
+		if (bless.procs == null)
+			return false;
+		if (uid.equals(bless.procs.SUMMON.id) && fid == bless.procs.SUMMON.form - 1)
+			return true;
+		if (uid.equals(bless.procs.SPIRIT.id) && fid == bless.procs.SPIRIT.form - 1)
+			return true;
+		return recursiveBlessUsed(bless.procs.BLESSING);
 	}
 
 	@OnInjected
 	public void onInjected(JsonObject jobj) {
-		CustomUnit form = (CustomUnit) du;
+		CustomUnit form = (CustomUnit)du;
 		form.pack = this;
-
-		if ((unit != null || uid != null)) {
-			Unit u = unit == null ? (Unit) uid.get() : unit;
-			PackData.UserPack pack = (PackData.UserPack) u.getCont();
-			if (pack.desc.FORK_VERSION < 9) {
-				inject(pack, jobj.getAsJsonObject("du"), form);
-				if (pack.desc.FORK_VERSION < 7) {
-					if (pack.desc.FORK_VERSION < 1) {
-						AtkDataModel[] atks = form.getAllAtkModels();
-						if (UserProfile.isOlderPack(pack, "0.6.4.0")) {
-							if (UserProfile.isOlderPack(pack, "0.6.0.0"))
-								form.limit = CommonStatic.customFormMinPos(anim.loader.getMM());
-							//Finish 0.6.0.0 check
-							names.put(jobj.get("name").getAsString());
-							if (jobj.has("explanation"))
-								description.put(jobj.get("explanation").getAsString().replace("<br>", "\n"));
-						} //Finish 0.6.4.0 check
-						for (AtkDataModel atk : atks)
-							if (atk.getProc().SUMMON.prob > 0) {
-								if (atk.getProc().SUMMON.form <= 0) {
-									atk.getProc().SUMMON.form = 1;
-									atk.getProc().SUMMON.mult = 1;
-									atk.getProc().SUMMON.type.fix_buff = true;
-								} else if (atk.getProc().SUMMON.id != null && !Unit.class.isAssignableFrom(atk.getProc().SUMMON.id.cls))
-									atk.getProc().SUMMON.type.fix_buff = true;
-							}
-						if (form.getPCoin() != null)
-							for (int[] dat : form.pcoin.info)
-								if (dat.length == 14 && dat[13] == 1)
-									dat[13] = 60;
-						if (form.getProc().SPIRIT.id != null) {
-							form.getProc().SPIRIT.animType = 5;
-							form.getProc().SPIRIT.type.inv = true;
-						}
-					} //Finish FORK_VERSION 1 checks
-					if (form.getPCoin() != null) {
-						form.pcoin.info.replaceAll(data -> {
-							int[] corres = Data.get_CORRES(data[0]);
-							int[] trueArr;
-							switch (corres[0]) {
-								case Data.PC_P:
-									trueArr = Arrays.copyOf(data, 3 + (form.getProc().getArr(corres[1]).getAllFields().length - (corres.length >= 3 ? corres[2] : 0)) * 2);
-									break;
-								case Data.PC_BASE:
-									trueArr = Arrays.copyOf(data, 5);
-									break;
-								default:
-									trueArr = Arrays.copyOf(data, 3);
-							}
-							for (int i = 10; i < trueArr.length - 1; i++)
-								trueArr[i] = 0;//Just in case so mainBCU talents don't get buggy
-							if (data.length == 14)
-								trueArr[trueArr.length - 1] = Math.max(0, data[13]); //super talent lv
-							return trueArr;
-						});
-					}
-				} //Finish FORK_VERSION 7 checks
-			} //Finish FORK_VERSION 9 checks
-		}
+		checkPackVersion(jobj, form);
 		if (form.getPCoin() != null) {
 			form.pcoin.verify();
 			form.pcoin.update();
 		}
+	}
+	private void checkPackVersion(JsonObject jobj, CustomUnit form) {
+		if (unit == null && uid == null)
+			return;
+		Unit u = unit == null ? (Unit) uid.get() : unit;
+		PackData.UserPack pack = (PackData.UserPack) u.getCont();
+		if (pack.desc.FORK_VERSION >= 13)
+			return;
+		inject(pack, jobj.getAsJsonObject("du"), form);
+		if (pack.desc.FORK_VERSION < 1) {
+			AtkDataModel[] atks = form.getAllAtkModels();
+			for (AtkDataModel atk : atks)
+				if (atk.getProc().SUMMON.prob > 0) {
+					if (atk.getProc().SUMMON.form <= 0) {
+						atk.getProc().SUMMON.form = 1;
+						atk.getProc().SUMMON.mult = 1;
+						atk.getProc().SUMMON.fix_buff = true;
+					} else if (atk.getProc().SUMMON.id != null && !Unit.class.isAssignableFrom(atk.getProc().SUMMON.id.cls))
+						atk.getProc().SUMMON.fix_buff = true;
+				}
+			if (form.getPCoin() != null)
+				for (int[] dat : form.pcoin.info)
+					if (dat[dat.length - 1] == 1)
+						dat[13] = 60;
+			if (form.getProc().SPIRIT.id != null) {
+				form.getProc().SPIRIT.animType = Proc.SUMMON_ANIM.ATTACK;
+				form.getProc().SPIRIT.inv = true;
+			}
+		} //Finish FORK_VERSION 1 checks
+		if (pack.desc.FORK_VERSION < 7)
+			if (form.getPCoin() != null) {
+				form.pcoin.info.replaceAll(data -> {
+					int[] corres = Data.get_CORRES(data[0]);
+					int[] trueArr;
+					switch (corres[0]) {
+						case Data.PC_P:
+							trueArr = Arrays.copyOf(data, 3 + (form.getProc().getArr(corres[1]).getDeclaredFields().length - (corres.length >= 3 ? corres[2] : 0)) * 2);
+							if (corres[1] == Data.P_BLAST) {
+								trueArr[8] = trueArr[9] = 3;
+								trueArr[10] = trueArr[11] = 30;
+							}
+							break;
+						case Data.PC_BASE:
+							trueArr = Arrays.copyOf(data, 5);
+							break;
+						default:
+							trueArr = Arrays.copyOf(data, 3);
+					}
+					for (int i = 10; i < trueArr.length - 1; i++)
+						trueArr[i] = 0;//Just in case so mainBCU talents don't get buggy
+					if (data.length == 14)
+						trueArr[trueArr.length - 1] = Math.max(0, data[13]); //super talent lv
+					return trueArr;
+				});
+			}//Finish FORK_VERSION 7 checks
+		//if (pack.desc.FORK_VERSION >= 13)
+		//	return;//for future ver increases
+		if (form.getPCoin() != null)
+			for (int[] dat : form.pcoin.info) {
+				if (dat[0] == 62) {//miniwave
+					dat[6] -= 20;
+					dat[7] -= 20;
+				} else if (dat[0] == 65) {//minisurge
+					dat[10] -= 20;
+					dat[11] -= 20;
+				}
+			}
+		if (!UserProfile.isOlderPack(pack, "0.6.4.0"))
+			return;
+		names.put(jobj.get("name").getAsString());
+		if (jobj.has("explanation"))
+			description.put(jobj.get("explanation").getAsString().replace("<br>", "\n"));
+		if (UserProfile.isOlderPack(pack, "0.6.0.0"))
+			form.limit = CommonStatic.customFormMinPos(anim.loader.getMM());
 	}
 
 	/**

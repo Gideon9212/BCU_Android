@@ -28,7 +28,7 @@ import java.util.TreeMap;
 public class LvRestrict extends Data implements Indexable<PackData, LvRestrict> {
 
 	@StaticPermitted
-	public static final Level MAX = new Level(50, 70, new int[0]);
+	public static final Level MAX = new Level(200, 200, new int[0]);
 
 	@JsonField(generic = { CharaGroup.class, Level.class }, alias = Identifier.class, backCompat = JsonField.CompatType.FORK, defval = "isEmpty")
 	public final TreeMap<CharaGroup, Level> cgl = new TreeMap<>();
@@ -39,7 +39,6 @@ public class LvRestrict extends Data implements Indexable<PackData, LvRestrict> 
 
 	@JCIdentifier
 	public Identifier<LvRestrict> id;
-	@JsonField(defval = "isEmpty")
 	public String name = "";
 
 	@JsonClass.JCConstructor
@@ -133,16 +132,13 @@ public class LvRestrict extends Data implements Indexable<PackData, LvRestrict> 
 
 	public boolean used() {
 		PackData p = getCont();
-
 		if(p instanceof UserPack) {
 			for (StageMap sm : ((UserPack) p).mc.maps)
 				for (Stage st : sm.list)
 					if (st.lim != null && st.lim.lvr == this)
 						return true;
-		} else
-			return p instanceof PackData.DefPack;
-
-		return false;
+		}
+		return p instanceof PackData.DefPack;
 	}
 
 	public Level valid(AbForm f) {

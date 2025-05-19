@@ -23,11 +23,11 @@ public class CastleImg implements Indexable<CastleList, CastleImg> {
 	@JsonClass.JCIdentifier
 	@JsonField
 	public Identifier<CastleImg> id;
-	@JsonField(defval = "0")
+	@JsonField
 	public float boss_spawn = 0;
 	@JsonField(defval = "1000")
 	public int scale = 1000;
-	@JsonField(defval = "0")
+	@JsonField
 	public int center;
 	public VImg img;
 

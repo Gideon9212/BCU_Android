@@ -17,11 +17,11 @@ public class CustomEnemy extends CustomEntity implements MaskEnemy {
 
 	public Enemy pack;
 
-	@JsonField(defval = "0")
+	@JsonField
 	public int star;
 	@JsonField(defval = "100")
 	public int drop = 100;
-	@JsonField(defval = "0")
+	@JsonField
 	public float limit;
 
 	public CustomEnemy() {

@@ -19,8 +19,6 @@ import common.util.anim.AnimU
 import common.util.anim.EAnimI
 import common.util.anim.EAnimS
 import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.sin
 
 @SuppressLint("ViewConstructor")
@@ -188,10 +186,10 @@ class AnimationEditView(private val context : Context, private val data : AnimCE
             var my = 1.0E10f
             var cy = -1.0E10f
             for (c in corners) {
-                mx = min(mx, c.x)
-                cx = max(cx, c.x)
-                my = min(my, c.y)
-                cy = max(cy, c.y)
+                mx = mx.coerceAtMost(c.x)
+                cx = cx.coerceAtLeast(c.x)
+                my = my.coerceAtMost(c.y)
+                cy = cy.coerceAtLeast(c.y)
             }
             if (x < mx || x > cx || y < my || y > cy)
                 return false
@@ -199,10 +197,10 @@ class AnimationEditView(private val context : Context, private val data : AnimCE
         }
 
         private fun checkEdge(x : Float, y : Float, c1 : Int, c2 : Int) : Boolean {
-            val minx = min(corners[c1].x, corners[c2].x)
-            val maxx = max(corners[c1].x, corners[c2].x)
-            val miny = min(corners[c1].y, corners[c2].y)
-            val maxy = max(corners[c1].y, corners[c2].y)
+            val minx = corners[c1].x.coerceAtMost(corners[c2].x)
+            val maxx = corners[c1].x.coerceAtLeast(corners[c2].x)
+            val miny = corners[c1].y.coerceAtMost(corners[c2].y)
+            val maxy = corners[c1].y.coerceAtLeast(corners[c2].y)
             if (minx == maxx || miny == maxy || x !in minx..maxx || y !in miny..maxy)
                 return true
             val px = (x - minx) / (maxx - minx)

@@ -1,6 +1,7 @@
 package com.g2.bcu.androidutil.io
 
 import android.os.Build
+import android.os.Environment
 import android.util.Log
 import com.g2.bcu.androidutil.StaticStore
 import java.io.File
@@ -13,35 +14,44 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ErrorLogWriter(private val path: String?) : Thread.UncaughtExceptionHandler {
+class ErrorLogWriter : Thread.UncaughtExceptionHandler {
     private val errors: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
+    private val path: String
+
+    constructor() {
+        path = LOG_PATH
+    }
+    constructor(p : String) {
+        path = p
+    }
 
     override fun uncaughtException(t: Thread, e: Throwable) {
-        if (path != null)
-            writeToFile(e)
-
+        writeToFile(e)
         errors?.uncaughtException(t, e)
     }
 
     private fun writeToFile(e: Throwable) {
+        if (written)
+            return
         try {
-            if(path == null)
-                return
-
             val f = File(path)
-            if (!f.exists()) {
+            if (!f.exists())
                 f.mkdirs()
-            }
             val dateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
-            val name = dateFormat.format(Date()) + "_" + Build.MODEL + ".txt"
+            val name = "UERR_" + dateFormat.format(Date()) + "_" + Build.MODEL + ".txt"
             val stringbuff: Writer = StringWriter()
             val printWriter = PrintWriter(stringbuff)
             e.printStackTrace(printWriter)
             val current = stringbuff.toString()
             printWriter.close()
 
-            val file = File(path, name)
-            if (!file.exists()) f.createNewFile()
+            var file = File(path, name)
+            if (!file.exists())
+                file.createNewFile()
+            else {
+                file = File(path, getExistingFileName(path, name))
+                file.createNewFile()
+            }
             val fileWriter = FileWriter(file)
             fileWriter.append("VERSION : ").append(StaticStore.VER).append("\r\n")
             fileWriter.append("MODEL : ").append(Build.MANUFACTURER).append(" ").append(Build.MODEL.toString()).append("\r\n")
@@ -50,6 +60,7 @@ class ErrorLogWriter(private val path: String?) : Thread.UncaughtExceptionHandle
             fileWriter.append(current)
             fileWriter.flush()
             fileWriter.close()
+            written = true
         } catch (e1: IOException) {
             e1.printStackTrace()
         }
@@ -57,9 +68,12 @@ class ErrorLogWriter(private val path: String?) : Thread.UncaughtExceptionHandle
 
     companion object {
 
+        private var written = false
+        private val LOG_PATH = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)}/bcu/logs/"
+
         fun writeDriveLog(e: Exception) {
             try {
-                val path = File(StaticStore.getPublicDirectory() + "logs")
+                val path = File(LOG_PATH)
                 if(!path.exists() && !path.mkdirs()) {
                     Log.e("ErrorLogWriter", "Failed to create folder "+path.absolutePath)
                     return
@@ -74,7 +88,7 @@ class ErrorLogWriter(private val path: String?) : Thread.UncaughtExceptionHandle
                 val date = Date()
                 val name = dateFormat.format(date) + "_" + Build.MODEL + ".txt"
 
-                val df = File(StaticStore.getPublicDirectory() + "logs/", name)
+                val df = File(LOG_PATH, name)
                 if (!df.exists()) df.createNewFile()
                 val dfileWriter = FileWriter(df)
                 dfileWriter.append("VERSION : ").append(StaticStore.VER).append("\r\n")
@@ -94,20 +108,19 @@ class ErrorLogWriter(private val path: String?) : Thread.UncaughtExceptionHandle
             error.printStackTrace()
 
             try {
-                val path = StaticStore.getPublicDirectory() + "logs"
-                val f = File(path)
-                if (!f.exists()) {
+                val f = File(LOG_PATH)
+                if (!f.exists())
                     f.mkdirs()
-                }
+
                 val dateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
                 val date = Date()
                 val name = dateFormat.format(date) + "_" + Build.MODEL + ".txt"
-                var file = File(path, name)
+                var file = File(LOG_PATH, name)
                 val stringbuff: Writer = StringWriter()
                 val printWriter = PrintWriter(stringbuff)
                 error.printStackTrace(printWriter)
                 if (!file.exists()) file.createNewFile() else {
-                    file = File(path, getExistingFileName(path, name))
+                    file = File(LOG_PATH, getExistingFileName(LOG_PATH, name))
                     file.createNewFile()
                 }
 

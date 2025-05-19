@@ -158,11 +158,8 @@ class PackManagementAdapter(private val ac: Activity, private val pList: ArrayLi
 
                     dialog.setPositiveButton(R.string.remove) { _, _ ->
                         deletePack(p, f)
-
                         rebuildPackList()
-
                         notifyDataSetChanged()
-
                         StaticStore.showShortMessage(context, R.string.pack_remove_result)
 
                         ac.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
@@ -231,54 +228,40 @@ class PackManagementAdapter(private val ac: Activity, private val pList: ArrayLi
             pack.delete()
 
         val shared = context.getSharedPreferences(StaticStore.PACK, Context.MODE_PRIVATE)
-
         val editor = shared.edit()
-
         val mList = ArrayList<File>()
-
         val fList = File(StaticStore.dataPath+"music/").listFiles() ?: return
 
-        for(f in fList) {
+        for(f in fList)
             if(f.name.startsWith("${p.sid}-"))
                 mList.add(f)
-        }
 
         for(m in mList) {
             Log.i("Definer::extractMusic", "Deleted music : ${m.absolutePath}")
-
             m.delete()
-
             editor.remove(m.name)
         }
-
         editor.remove(p.sid)
         editor.apply()
         UserProfile.unloadPack(p)
     }
 
     private fun cantDelete(p: PackData.UserPack) : Boolean {
-        for(pack in UserProfile.getAllPacks()) {
+        for(pack in UserProfile.getUserPacks()) {
             pack ?: continue
-
-            if(pack is PackData.DefPack || pack.sid == p.sid)
+            if(pack.sid == p.sid)
                 continue
 
-            if(pack is PackData.UserPack) {
-                for(pid in pack.desc.dependency) {
-                    if(pid == p.sid)
-                        return true
-                }
-            }
+            if (pack.desc.dependency.contains(p.sid))
+                return true
         }
-
         return false
     }
 
     private fun rebuildPackList() {
         pList.clear()
-
-        for(pack in UserProfile.getUserPacks()) {
-            pList.add(pack)
-        }
+        for(pack in UserProfile.getUserPacks())
+            if (!pack.editable)
+                pList.add(pack)
     }
 }

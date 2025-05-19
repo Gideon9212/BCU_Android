@@ -10,12 +10,8 @@ import android.graphics.Paint
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
-import com.g2.bcu.ImgCutEditor
 import com.g2.bcu.androidutil.supports.PP
 import common.util.anim.AnimCE
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.time.times
 
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class SpriteView(context: Context, val anim : AnimCE) : View(context) {
@@ -79,6 +75,7 @@ class SpriteView(context: Context, val anim : AnimCE) : View(context) {
 
                             if (x in sx..sw && y in sy..sh) {
                                 sele = i
+                                scaleListener.setCut(cut)
                                 selectionChanged()
                                 spriteSelected = true
                                 limit()
@@ -98,11 +95,12 @@ class SpriteView(context: Context, val anim : AnimCE) : View(context) {
                         } else {
                             dx /= zoom
                             dy /= zoom
-                            spriteMoved = spriteMoved || dx.toInt() != 0 || dy.toInt() != 0
                             anim.imgcut.cuts[sele][0] += dx.toInt()
                             anim.imgcut.cuts[sele][1] += dy.toInt()
-                            if (dx != 0f || dy != 0f)
+                            if (dx.toInt() != 0 || dy.toInt() != 0) {
+                                spriteMoved = true
                                 postMove("")
+                            }
                         }
                         if (dx != 0f || dy != 0f)
                             limit()
@@ -215,12 +213,12 @@ class SpriteView(context: Context, val anim : AnimCE) : View(context) {
         if (pos.x < 0 || width >= spriteW) {
             pos.x = 0f
         } else if (pos.x + width >= spriteW)
-            pos.x = max(0f, (spriteW - width).toFloat())
+            pos.x = (spriteW - width).toFloat().coerceAtLeast(0f)
 
         if (pos.y < 0 || height >= spriteH) {
             pos.y = 0f
         } else if (pos.y + height >= spriteH)
-            pos.y = max(0f, (spriteH - height).toFloat())
+            pos.y = (spriteH - height).toFloat().coerceAtLeast(0f)
         invalidate()
     }
 
@@ -233,7 +231,7 @@ class SpriteView(context: Context, val anim : AnimCE) : View(context) {
         val w = width
         val h = height
 
-        initzoom = min(1f * w / spriteW, 1f * h / spriteH)
+        initzoom = (1f * w / spriteW).coerceAtMost(1f * h / spriteH)
         if (first || zoom == 0f) {
             zoom = initzoom
             limit()
@@ -252,12 +250,14 @@ class SpriteView(context: Context, val anim : AnimCE) : View(context) {
         private var previousScale = 0f
 
         override fun onScale(detector: ScaleGestureDetector): Boolean {
+            if (detector.scaleFactor == 1f)
+                return true
+
             if (cView.sele != -1) {
                 val cut = cView.anim.imgcut
                 cut.cuts[cView.sele][2] = (cut.cuts[cView.sele][2] * detector.scaleFactor).toInt()
                 cut.cuts[cView.sele][3] = (cut.cuts[cView.sele][3] * detector.scaleFactor).toInt()
-                if (detector.scaleFactor != 1f)
-                    cView.postMove("")
+                cView.postMove("")
             } else {
                 cView.zoom *= detector.scaleFactor
                 val diffX = realFX * (cView.zoom / previousScale)
@@ -274,9 +274,7 @@ class SpriteView(context: Context, val anim : AnimCE) : View(context) {
         override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
             if (updateScale) {
                 if (cView.sele != -1) {
-                    val cut = cView.anim.imgcut.cuts[cView.sele]
-                    realFX = cut[2].toFloat()
-                    realFY = cut[3].toFloat()
+                    setCut(cView.anim.imgcut.cuts[cView.sele])
                 } else {
                     realFX = detector.focusX - (cView.width / 2f)
                     previousX = cView.pos.x
@@ -288,6 +286,11 @@ class SpriteView(context: Context, val anim : AnimCE) : View(context) {
                 updateScale = false
             }
             return super.onScaleBegin(detector)
+        }
+
+        fun setCut(cut : IntArray) {
+            realFX = cut[2].toFloat()
+            realFY = cut[3].toFloat()
         }
 
         fun scaled() : Boolean {

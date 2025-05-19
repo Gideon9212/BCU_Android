@@ -37,7 +37,7 @@ public class Trait extends Data implements Indexable<PackData, Trait>, Comparabl
     public Identifier<Trait> id;
     public VImg icon = null;
 
-    @JsonField(defval = "false")
+    @JsonField
     public boolean targetType;
     // Target type will be used to toggle whether Anti-Traited, Anti-Non Metal, or Anti-All units will target this trait or not
 

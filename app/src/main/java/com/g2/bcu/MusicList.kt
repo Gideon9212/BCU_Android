@@ -24,11 +24,13 @@ import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.battle.sound.SoundHandler
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.music.adapters.MusicListPager
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import common.CommonStatic
 import common.pack.Identifier
 import common.pack.PackData
+import common.pack.PackData.UserPack
 import common.pack.UserProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,6 +41,8 @@ import java.util.Locale
 import kotlin.math.round
 
 class MusicList : AppCompatActivity() {
+
+    var pack : UserPack? = null
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +72,9 @@ class MusicList : AppCompatActivity() {
 
         (CommonStatic.ctx as AContext).updateActivity(this)
 
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_music_list)
+        pack = UserProfile.getUserPack(intent.extras?.getString("pack") ?: "")
 
         lifecycleScope.launch {
             //Prepare
@@ -105,15 +111,12 @@ class MusicList : AppCompatActivity() {
 
                         for (j in p.musics.list.indices) {
                             val m = p.musics.list[j]
-
                             while(true) {
                                 val isLoading = withContext(Dispatchers.Main) {
                                     SoundHandler.MUSIC.isLoading
                                 }
-
-                                if(!isLoading) {
+                                if(!isLoading)
                                     break
-                                }
                             }
 
                             withContext(Dispatchers.Main) {
@@ -122,24 +125,15 @@ class MusicList : AppCompatActivity() {
                                         StaticStore.durations.add(SoundHandler.MUSIC.duration)
 
                                         var time = SoundHandler.MUSIC.duration.toFloat() / 1000f
-
                                         var min = (time / 60f).toInt()
-
-                                        time -= min.toFloat() * 60f
-
+                                        time -= min * 60
                                         var sec = round(time).toInt()
 
                                         if (sec == 60) {
                                             min += 1
                                             sec = 0
                                         }
-
-                                        val mins = min.toString()
-
-                                        val secs = if (sec < 10) "0$sec"
-                                        else sec.toString()
-
-                                        names.append(m.id.id, "$mins:$secs")
+                                        names.append(m.id.id, "$m: $min:$sec")
 
                                         StaticStore.musicData.add(m.id)
 
@@ -151,7 +145,7 @@ class MusicList : AppCompatActivity() {
 
                         if(p is PackData.DefPack) {
                             StaticStore.musicnames[Identifier.DEF] = names
-                        } else if(p is PackData.UserPack) {
+                        } else if(p is UserPack) {
                             StaticStore.musicnames[p.desc.id] = names
                         }
                     }
@@ -168,10 +162,9 @@ class MusicList : AppCompatActivity() {
             pager.isSaveEnabled = false
             pager.isSaveFromParentEnabled = false
 
-            pager.adapter = MusicListTab()
-            pager.offscreenPageLimit = existingPackNumber()
-
             val keys = getExistingPack()
+            pager.adapter = MusicListTab()
+            pager.offscreenPageLimit = keys.size
 
             TabLayoutMediator(tab, pager) { t, position ->
                 t.text = if(position == 0) {
@@ -187,7 +180,7 @@ class MusicList : AppCompatActivity() {
                         is PackData.DefPack -> {
                             getString(R.string.pack_default)
                         }
-                        is PackData.UserPack -> {
+                        is UserPack -> {
                             StaticStore.getPackName(pack.sid)
                         }
                         else -> {
@@ -204,7 +197,7 @@ class MusicList : AppCompatActivity() {
             StaticStore.setAppear(pager)
             StaticStore.setDisappear(st, prog)
 
-            if(existingPackNumber() > 1) {
+            if(keys.size > 1) {
                 StaticStore.setAppear(tab)
             } else {
                 val collapse = findViewById<CollapsingToolbarLayout>(R.id.muscollapse)
@@ -219,26 +212,9 @@ class MusicList : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 
@@ -256,33 +232,23 @@ class MusicList : AppCompatActivity() {
         super.onResume()
     }
 
-    private fun existingPackNumber() : Int {
-        val packs = UserProfile.getAllPacks()
-
-        var res = 0
-
-        for(p in packs) {
-            if(p.musics.list.isNotEmpty())
-                res++
-        }
-
-        return res
-    }
-
     private fun getExistingPack() : ArrayList<String> {
-        val packs = UserProfile.getAllPacks()
         val res = ArrayList<String>()
+        res.add(Identifier.DEF)
 
-        for(p in packs) {
-            if(p.musics.list.isNotEmpty()) {
-                if(p is PackData.DefPack) {
-                    res.add(Identifier.DEF)
-                } else if(p is PackData.UserPack) {
-                    res.add(p.sid)
-                }
-            }
+        if (pack != null) {
+            if (!pack!!.musics.isEmpty)
+                res.add(pack!!.sid)
+
+            for(str in pack!!.desc.dependency)
+                if(!UserProfile.getUserPack(str).musics.isEmpty)
+                    res.add(str)
+        } else {
+            val packs = UserProfile.getUserPacks()
+            for(p in packs)
+                if(!p.musics.isEmpty)
+                    res.add(p.desc.id)
         }
-
         return res
     }
 
@@ -294,7 +260,7 @@ class MusicList : AppCompatActivity() {
         }
 
         override fun createFragment(position: Int): Fragment {
-            return MusicListPager.newIntance(keys[position])
+            return MusicListPager.newIntance(keys[position], pack != null)
         }
     }
 }

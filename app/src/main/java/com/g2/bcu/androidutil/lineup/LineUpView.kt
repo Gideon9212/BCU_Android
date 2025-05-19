@@ -339,6 +339,11 @@ class LineUpView : View {
         position.forEachIndexed { x, icons ->
             icons.forEachIndexed { y, coordinate ->
                 c.drawBitmap(units[x][y], coordinate[0], coordinate[1], p)
+                /*if (lu.getLv(lu.fs[x][y]).orbs != null) {
+                    val orbs = lu.getLv(lu.fs[x][y]).orbs
+                    for (k in orbs.indices.reversed())
+                        OrbBox.paintOrb(gra, orbs[k], (120 * j) + 90 - (k * min(24.0, (72f / orbs.size).toDouble())), 100 * i, 24)
+                }*/
                 if (isLocked[x][y])
                     c.drawBitmap(locked, coordinate[0], coordinate[1], p)
                 else if (isUnusable[x][y])

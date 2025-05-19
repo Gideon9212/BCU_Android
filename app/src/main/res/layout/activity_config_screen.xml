@@ -55,48 +55,6 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/configunitinflay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/config_unit_inf_lay"
-                android:textColor="?attr/TextPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/tableRow2"
-                app:layout_constraintTop_toBottomOf="@+id/tableRow2" />
-
-            <TableRow
-                android:id="@+id/tableRow2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linesave">
-
-                <TextView
-                    android:id="@+id/configdeflev"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="0.7"
-                    android:text="@string/config_deflev"
-                    android:textColor="?attr/TextPrimary"
-                    android:textSize="14sp" />
-
-                <Spinner
-                    android:id="@+id/configdeflevsp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
-                    android:popupBackground="?attr/backgroundPrimary" />
-
-            </TableRow>
-
-            <TextView
                 android:id="@+id/configtheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -108,6 +66,19 @@
                 app:layout_constraintBottom_toBottomOf="@+id/configcheckup"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/configcheckup" />
+
+            <Button
+                android:id="@+id/configcheckup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/config_check_up"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <RadioGroup
                 android:id="@+id/configrgtheme"
@@ -184,47 +155,6 @@
                     android:textColor="?attr/TextPrimary" />
             </RadioGroup>
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/apktest"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                android:text="@string/config_testapk"
-                android:textColor="?attr/TextPrimary"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/senderror" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/linesave"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                android:text="@string/config_lazy"
-                android:textColor="?attr/TextPrimary"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/apktest" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/senderror"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/config_send_err"
-                android:textColor="?attr/TextPrimary"
-                app:layout_constraintEnd_toEndOf="@+id/tableRow3"
-                app:layout_constraintStart_toStartOf="@+id/tableRow3"
-                app:layout_constraintTop_toBottomOf="@+id/tableRow3" />
-
             <TableRow
                 android:id="@+id/tableRow3"
                 android:layout_width="0dp"
@@ -252,6 +182,76 @@
                     android:layout_weight="0.4"
                     android:popupBackground="?attr/backgroundPrimary" />
             </TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/apktest"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/config_testapk"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="@id/tableRow3"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@id/tableRow3"
+                app:layout_constraintTop_toBottomOf="@id/tableRow3" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/linesave"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/config_lazy"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/apktest" />
+
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linesave">
+
+                <TextView
+                    android:id="@+id/configdeflev"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.7"
+                    android:text="@string/config_deflev"
+                    android:textColor="?attr/TextPrimary"
+                    android:textSize="14sp" />
+
+                <Spinner
+                    android:id="@+id/configdeflevsp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:popupBackground="?attr/backgroundPrimary" />
+
+            </TableRow>
+
+            <TextView
+                android:id="@+id/configunitinflay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/config_unit_inf_lay"
+                android:textColor="?attr/TextPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/tableRow2"
+                app:layout_constraintTop_toBottomOf="@+id/tableRow2" />
 
             <TextView
                 android:id="@+id/configunitinfland"
@@ -332,19 +332,6 @@
                     android:textColor="?attr/TextPrimary" />
             </RadioGroup>
 
-            <Button
-                android:id="@+id/configcheckup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="24dp"
-                android:backgroundTint="?attr/ButtonPrimary"
-                android:text="@string/config_check_up"
-                android:textAllCaps="false"
-                android:textColor="?attr/TextPrimary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <TextView
                 android:id="@+id/animation"
                 android:layout_width="wrap_content"
@@ -410,6 +397,60 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/configgifsize" />
+
+            <TextView
+                android:id="@+id/viewercolor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/config_viewcol"
+                android:textColor="?attr/TextPrimary"
+                app:layout_constraintStart_toStartOf="@+id/configgif"
+                app:layout_constraintTop_toBottomOf="@+id/configgifseek" />
+
+            <TextView
+                android:id="@+id/viewcolcurr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/config_currcol"
+                android:textColor="?attr/TextPrimary"
+                app:layout_constraintStart_toStartOf="@+id/viewercolor"
+                app:layout_constraintTop_toBottomOf="@+id/viewercolor" />
+
+            <TextView
+                android:id="@+id/viewcurrentcol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/TextPrimary"
+                app:layout_constraintBottom_toBottomOf="@+id/viewcolcurr"
+                app:layout_constraintStart_toEndOf="@+id/viewcolcurr"
+                app:layout_constraintTop_toTopOf="@+id/viewcolcurr" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/viewcolpick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/change"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                app:layout_constraintStart_toEndOf="@+id/viewcolreset"
+                app:layout_constraintTop_toBottomOf="@+id/viewcolcurr" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/viewcolreset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?attr/ButtonPrimary"
+                android:text="@string/reset"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                app:layout_constraintBottom_toBottomOf="@+id/viewcolpick"
+                app:layout_constraintStart_toStartOf="@+id/viewercolor"
+                app:layout_constraintTop_toTopOf="@+id/viewcolpick" />
 
             <TextView
                 android:id="@+id/configperf"
@@ -522,28 +563,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/configui" />
 
             <TextView
-                android:id="@+id/configappname"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/config_app_name"
-                android:textColor="?attr/TextPrimary"
-                app:layout_constraintStart_toStartOf="@+id/configse"
-                app:layout_constraintTop_toTopOf="@+id/configreset" />
-
-            <TextView
-                android:id="@+id/configbuildver"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/config_build_ver"
-                android:textColor="?attr/TextPrimary"
-                app:layout_constraintBottom_toBottomOf="@+id/configreset"
-                app:layout_constraintEnd_toStartOf="@+id/configreset"
-                app:layout_constraintStart_toStartOf="@+id/configappname"
-                app:layout_constraintTop_toBottomOf="@+id/configappname" />
-
-            <TextView
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -577,24 +596,6 @@
                 app:layout_constraintEnd_toEndOf="@id/configrow"
                 app:layout_constraintStart_toStartOf="@id/configrow"
                 app:layout_constraintTop_toBottomOf="@id/configrow" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/configreset"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/config_reset"
-                android:textAllCaps="false"
-                android:textColor="?attr/ErrorPrimary"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/configreallv"
-                app:layout_constraintVertical_bias="0.0"
-                app:strokeColor="?attr/ErrorPrimary" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/configbgeff"
@@ -692,58 +693,44 @@
                 app:layout_constraintTop_toBottomOf="@+id/configshowres" />
 
             <TextView
-                android:id="@+id/viewercolor"
-                android:layout_width="wrap_content"
+                android:id="@+id/configappname"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/config_viewcol"
+                android:text="@string/config_app_name"
                 android:textColor="?attr/TextPrimary"
-                app:layout_constraintStart_toStartOf="@+id/configgif"
-                app:layout_constraintTop_toBottomOf="@+id/configgifseek" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/viewcolpick"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="?attr/ButtonPrimary"
-                android:text="@string/change"
-                android:textAllCaps="false"
-                android:textColor="?attr/TextPrimary"
-                app:layout_constraintStart_toEndOf="@+id/viewcolreset"
-                app:layout_constraintTop_toBottomOf="@+id/viewcolcurr" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/viewcolreset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="?attr/ButtonPrimary"
-                android:text="@string/reset"
-                android:textAllCaps="false"
-                android:textColor="?attr/TextPrimary"
-                app:layout_constraintBottom_toBottomOf="@+id/viewcolpick"
-                app:layout_constraintStart_toStartOf="@+id/viewercolor"
-                app:layout_constraintTop_toTopOf="@+id/viewcolpick" />
+                app:layout_constraintStart_toStartOf="@+id/configse"
+                app:layout_constraintTop_toTopOf="@+id/configreset" />
 
             <TextView
-                android:id="@+id/viewcolcurr"
-                android:layout_width="wrap_content"
+                android:id="@+id/configbuildver"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/config_currcol"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/config_build_ver"
                 android:textColor="?attr/TextPrimary"
-                app:layout_constraintStart_toStartOf="@+id/viewercolor"
-                app:layout_constraintTop_toBottomOf="@+id/viewercolor" />
+                app:layout_constraintBottom_toBottomOf="@+id/configreset"
+                app:layout_constraintEnd_toStartOf="@+id/configreset"
+                app:layout_constraintStart_toStartOf="@+id/configappname"
+                app:layout_constraintTop_toBottomOf="@+id/configappname" />
 
-            <TextView
-                android:id="@+id/viewcurrentcol"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/configreset"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?attr/TextPrimary"
-                app:layout_constraintBottom_toBottomOf="@+id/viewcolcurr"
-                app:layout_constraintStart_toEndOf="@+id/viewcolcurr"
-                app:layout_constraintTop_toTopOf="@+id/viewcolcurr" />
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/config_reset"
+                android:textAllCaps="false"
+                android:textColor="?attr/ErrorPrimary"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/configreallv"
+                app:layout_constraintVertical_bias="0.0"
+                app:strokeColor="?attr/ErrorPrimary" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

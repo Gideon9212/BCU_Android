@@ -229,12 +229,20 @@ class AContext : Context {
 
     override fun getLangFile(file: String): InputStream? {
         val wac = c ?: return null
-
         val a = wac.get() ?: return null
 
-        if(file.startsWith("animation_type") && file.endsWith(".json"))
-            return a.resources.openRawResource(R.raw.animation_type)
-        return a.resources.openRawResource(R.raw.proc)
+        val resource = if (file.startsWith("animation_type") && file.endsWith(".json"))
+            when (CommonStatic.getConfig().langs[0]) {
+                CommonStatic.Lang.Locale.JP -> R.raw.jp_animation_type
+                CommonStatic.Lang.Locale.ES -> R.raw.es_animation_type
+                else -> R.raw.animation_type
+            }
+        else when (CommonStatic.getConfig().langs[0]) {
+            CommonStatic.Lang.Locale.JP -> R.raw.jp_proc
+            CommonStatic.Lang.Locale.ES -> R.raw.es_proc
+            else -> R.raw.proc
+        }
+        return a.resources.openRawResource(resource)
     }
 
     override fun preload(desc: PackLoader.ZipDesc.FileDesc): Boolean {

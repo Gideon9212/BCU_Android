@@ -1,6 +1,7 @@
 package com.g2.bcu.androidutil.io
 
 import android.content.Context
+import com.g2.bcu.androidutil.Definer
 import com.g2.bcu.androidutil.StaticStore
 import common.CommonStatic
 import common.CommonStatic.Lang
@@ -73,8 +74,7 @@ object LangLoader {
                 }
             }
         }
-
-        StaticStore.unitlang = 0
+        Definer.unitlang = true
     }
 
     @Synchronized
@@ -106,7 +106,7 @@ object LangLoader {
                 }
             }
         }
-        StaticStore.enemeylang = 0
+        Definer.enemylang = true
     }
 
     @Synchronized
@@ -243,7 +243,7 @@ object LangLoader {
                 }
             }
         }
-        StaticStore.stagelang = 0
+        Definer.stagelang = true
     }
 
     @Synchronized
@@ -298,8 +298,7 @@ object LangLoader {
                 }
             }
         }
-
-        StaticStore.medallang = 0
+        Definer.medallang = true
     }
 
     private fun getComboViaID(combos: List<Combo>, id: String) : Combo? {

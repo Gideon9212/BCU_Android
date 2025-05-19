@@ -5,6 +5,7 @@ import common.io.json.JsonClass;
 import common.io.json.JsonClass.NoTag;
 import common.io.json.JsonField;
 import common.util.BattleStatic;
+import common.util.Data;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -14,12 +15,10 @@ import java.util.Arrays;
 public class Level implements BattleStatic, LevelInterface {
 	@JsonField(defval = "50")
 	private int level = 50;
-	@JsonField(defval = "0")
 	private int plusLevel;
 	@Nonnull
 	@JsonField(defval = "this.noTalent")
 	private int[] talents = new int[0];
-	@JsonField(defval = "null")
 	private int[][] orbs = null;
 
 	public boolean noTalent() {
@@ -162,6 +161,15 @@ public class Level implements BattleStatic, LevelInterface {
 		}
 		if (valid)
 			orbs = orb;
+	}
+
+	public boolean equippingOrb(int type) {
+		if (orbs == null)
+			return false;
+		for (int[] orb : orbs)
+			if (orb.length == Data.ORB_TOT && orb[Data.ORB_TYPE] == type)
+				return true;
+		return false;
 	}
 
 	@JsonField(tag = "lvs", io = JsonField.IOType.R, generic = Integer.class)

@@ -55,7 +55,7 @@ public interface MaskAtk extends BattleStatic {
 		return -1;
 	}
 
-	default Identifier<Music> getAudio(boolean sec) {
+	default Identifier<Music> getAudio() {
 		return null;
 	}
 

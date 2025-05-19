@@ -5,8 +5,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences.Editor
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -46,6 +44,7 @@ import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.battle.sound.SoundHandler
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.ColorPickerView
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
@@ -60,8 +59,7 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 open class ConfigScreen : AppCompatActivity() {
-    private val langId = intArrayOf(R.string.lang_auto, R.string.def_lang_en, R.string.def_lang_zh, R.string.def_lang_ko, R.string.def_lang_ja, R.string.def_lang_ru, R.string.def_lang_fr, R.string.def_lang_it, R.string.def_lang_es, R.string.def_lang_de, R.string.def_lang_th)
-    private val langCode = arrayOf("","en","zh","ko","ja","ru","fr","it","es","de","th")
+    private val langId = intArrayOf(R.string.lang_auto, R.string.def_lang_en, R.string.def_lang_zh, R.string.def_lang_ko, R.string.def_lang_ja, R.string.def_lang_ru, R.string.def_lang_de, R.string.def_lang_fr, R.string.def_lang_es, R.string.def_lang_it, R.string.def_lang_th)
 
     private val df: DecimalFormat
 
@@ -104,7 +102,7 @@ open class ConfigScreen : AppCompatActivity() {
         (CommonStatic.ctx as AContext).updateActivity(this)
 
         setContentView(R.layout.activity_config_screen)
-
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         val back = findViewById<ImageButton>(R.id.configback)
 
         back.setOnClickListener (object : SingleClick() {
@@ -189,21 +187,9 @@ open class ConfigScreen : AppCompatActivity() {
 
         apktest.isChecked = shared.getBoolean("apktest", false)
 
-        val senderr = findViewById<SwitchCompat>(R.id.senderror)
-
-        senderr.isChecked = shared.getBoolean("upload", false)
-
         val lazylineup = findViewById<SwitchCompat>(R.id.linesave)
 
         lazylineup.isChecked = shared.getBoolean("lazylineup", false)
-
-        senderr.setOnCheckedChangeListener { _, isChecked ->
-            val ed1 = shared.edit()
-            ed1.putBoolean("upload", isChecked)
-            ed1.apply()
-
-            StaticStore.upload = shared.getBoolean("upload",false) || shared.getBoolean("ask_upload",true)
-        }
 
         apktest.setOnCheckedChangeListener { _, isChecked ->
             val ed1 = shared.edit()
@@ -224,38 +210,23 @@ open class ConfigScreen : AppCompatActivity() {
 
         val lang: MutableList<String> = ArrayList()
 
-        for (i1 in langId) {
+        for (i1 in langId)
             lang.add(getString(i1))
-        }
-
         val adapter = ArrayAdapter(this, R.layout.spinneradapter, lang)
 
-        var realSelection = langCode.asList().indexOf(StaticStore.lang[shared.getInt("Language", 0)])
-
-        if(realSelection == -1) {
-            realSelection = 0
-        }
-
         language.adapter = adapter
-        language.setSelection(realSelection, false)
+        val l = shared.getInt("Language", 0)
+        language.setSelection(if (l < lang.size) l else 0, false)
 
         language.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (started) {
                     changed = true
-
                     val ed1 = shared.edit()
-
-                    var l = StaticStore.lang.asList().indexOf(langCode[position])
-
-                    if(l == -1) {
-                        l = 0
-                    }
-
-                    ed1.putInt("Language", l)
+                    ed1.putInt("Language", position)
                     ed1.apply()
 
-                    StaticStore.setLang(l)
+                    StaticStore.setLang(position)
                     Res.langIcons()
 
                     val dialog = Dialog(this@ConfigScreen)
@@ -282,9 +253,7 @@ open class ConfigScreen : AppCompatActivity() {
                         withContext(Dispatchers.IO) {
                             Revalidater.validate(this@ConfigScreen)
                         }
-
                         dialog.dismiss()
-
                         restart()
                     }
                 }
@@ -1008,26 +977,9 @@ open class ConfigScreen : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
         val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
-        val lang = shared?.getInt("Language",0) ?: 0
-
-        val config = Configuration()
-        var language = StaticStore.lang[lang]
-        var country = ""
-
-        if(language == "") {
-            language = Resources.getSystem().configuration.locales.get(0).language
-            country = Resources.getSystem().configuration.locales.get(0).country
-        }
-
-        val loc = if(country.isNotEmpty()) {
-            Locale(language, country)
-        } else {
-            Locale(language)
-        }
-
-        config.setLocale(loc)
-        applyOverrideConfiguration(config)
         super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 

@@ -6,13 +6,14 @@ import common.battle.attack.AtkModelUnit;
 import common.battle.attack.AttackAb;
 import common.battle.data.MaskAtk;
 import common.battle.data.MaskEnemy;
+import common.battle.data.MaskUnit;
+import common.battle.data.Orb;
 import common.pack.SortedPackSet;
 import common.pack.UserProfile;
 import common.util.anim.AnimU;
 import common.util.anim.EAnimU;
 import common.util.pack.EffAnim;
 import common.util.stage.Revival;
-import common.util.unit.Enemy;
 import common.util.unit.Trait;
 
 public class EEnemy extends Entity {
@@ -45,7 +46,7 @@ public class EEnemy extends Entity {
 		}
 		if (rev != null) {
 			rev.triggerRevival(basis, basis.est.mul, layer, group, pos);
-			if (!anim.deathSurge && rev.soul != null)
+			if (anim.deathSurge == 0 && rev.soul != null)
 				anim.dead = rev.soul.get().getEAnim(AnimU.SOUL[0]).len();
 		}
 		if (mark >= 1 && basis.st.bossGuard) {
@@ -72,7 +73,7 @@ public class EEnemy extends Entity {
 				ans *= basis.b.t().getEKAtk(basis.elu.getInc(C_EKILL));
 			if (traits.contains(UserProfile.getBCData().traits.get(TRAIT_BARON)) && (e.getAbi() & AB_BAKILL) > 0)
 				ans *= 1.6;
-			if (traits.contains(UserProfile.getBCData().traits.get(TRAIT_BEAST)) && matk.getProc().BSTHUNT.type.active)
+			if (traits.contains(UserProfile.getBCData().traits.get(TRAIT_BEAST)) && matk.getProc().BSTHUNT.active)
 				ans *= 2.5;
 		}
 		return ans;
@@ -81,7 +82,7 @@ public class EEnemy extends Entity {
 	@Override
 	protected void sumDamage(int atk, boolean raw) {
 		if (CommonStatic.getConfig().rawDamage == raw)
-			basis.enemyStatistics.get((Enemy)data.getPack())[1] += atk;
+			basis.dmgStatistics.get(data.getPack())[1] += atk;
 	}
 
 	@Override
@@ -99,7 +100,7 @@ public class EEnemy extends Entity {
 		if (atk.model instanceof AtkModelUnit) {
 			SortedPackSet<Trait> sharedTraits = traits.inCommon(atk.trait);
 			boolean isAntiTraited = targetTraited(atk.trait);
-			sharedTraits.addIf(traits, t -> !t.BCTrait() && ((t.targetType && isAntiTraited) || t.others.contains(atk.attacker.data.getPack())));//Ignore the warning, atk.attacker will always be an unit
+			sharedTraits.addIf(traits, t -> !t.BCTrait() && ((t.targetType && isAntiTraited) || t.others.contains(((MaskUnit)atk.attacker.data).getPack())));
 
 			if (!sharedTraits.isEmpty()) {
 				if (atk.attacker.status.curse == 0 && atk.attacker.getProc().DMGINC.mult != 0)
@@ -111,9 +112,17 @@ public class EEnemy extends Entity {
 				ans *= basis.b.t().getWKAtk(basis.elu.getInc(C_WKILL));
 			if (traits.contains(UserProfile.getBCData().traits.get(TRAIT_EVA)) && (atk.abi & AB_EKILL) > 0)
 				ans *= basis.b.t().getEKAtk(basis.elu.getInc(C_EKILL));
-			if (traits.contains(UserProfile.getBCData().traits.get(TRAIT_BARON)) && (atk.abi & AB_BAKILL) > 0)
-				ans *= 1.6;
-			if (traits.contains(UserProfile.getBCData().traits.get(TRAIT_BEAST)) && atk.getProc().BSTHUNT.type.active)
+			if (traits.contains(UserProfile.getBCData().traits.get(TRAIT_BARON))) {
+				if ((atk.abi & AB_BAKILL) > 0)
+					ans = (int)(ans * 1.6);
+				if(((MaskUnit)atk.attacker.data).getOrb() != null && ((EUnit)atk.attacker).level.getOrbs() != null) {
+					int[][] levelOrbs = ((EUnit)atk.attacker).level.getOrbs();
+					for (int[] orb : levelOrbs)
+						if (orb.length == ORB_TOT && orb[ORB_TYPE] == ORB_BAKILL)
+							ans = (int)(ans * Orb.get(ORB_BAKILL,(byte)orb[ORB_GRADE])[0] / 100.0);
+				}
+			}
+			if (traits.contains(UserProfile.getBCData().traits.get(TRAIT_BEAST)) && atk.getProc().BSTHUNT.active)
 				ans *= 2.5;
 			if (traits.contains(BCTraits.get(TRAIT_SAGE)) && (atk.abi & AB_SKILL) > 0)
 				ans = (int) (ans * SUPER_SAGE_HUNTER_ATTACK);

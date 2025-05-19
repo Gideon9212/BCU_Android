@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.g2.bcu.androidutil.supports.WatcherEditText
+        android:id="@+id/stagename"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/def_stage_name"
+        android:textColor="?attr/TextPrimary"
+        app:layout_constraintEnd_toStartOf="@id/cusstage_expand"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/enemicon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:descendantFocusability="blocksDescendants"
+        app:alignContent="stretch"
+        app:alignItems="stretch"
+        app:flexWrap="wrap"
+        app:layout_constraintEnd_toStartOf="@id/cusstage_expand"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stagename" />
+
+    <ImageButton
+        android:id="@+id/cusstage_expand"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/cell_shape"
+        android:contentDescription="@string/def_description"
+        android:minWidth="48dp"
+        app:layout_constraintBottom_toTopOf="@id/cusstage_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_expand_less_black_24dp"
+        app:tint="?attr/iconPrimary" />
+
+    <TableLayout
+        android:id="@+id/cusstage_info"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/enemicon">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/ch_stagePlay"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:gravity="center"
+                android:text="@string/battle_preparation"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+            <Button
+                android:id="@+id/ch_stageLimit"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:gravity="center"
+                android:text="@string/packcus_limitEdit"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+            <Button
+                android:id="@+id/ch_stageEnemy"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:gravity="center"
+                android:text="@string/stg_sch_enem"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:id="@+id/ch_sthealth"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:hint="@string/def_minus"
+                android:inputType="number"
+                android:minHeight="40dp"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:id="@+id/ch_stwidth"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:hint="@string/def_minus"
+                android:inputType="number"
+                android:minHeight="40dp"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:id="@+id/ch_stmaxEne"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:hint="@string/def_minus"
+                android:inputType="number"
+                android:minHeight="40dp"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/ch_dojo"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:text="@string/stage_dojo"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+            <Button
+                android:id="@+id/ch_bossguard"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:text="@string/boss_guard"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+            <Button
+                android:id="@+id/ch_nocontinue"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:text="@string/stg_info_cont"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+            <Button
+                android:id="@+id/ch_ect"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:drawablePadding="16dp"
+                android:text="@string/stg_info_ct"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/ch_bg"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="2"
+                android:background="@drawable/button"
+                android:drawablePadding="16dp"
+                android:text="@string/stg_info_bg"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:id="@+id/ch_bghp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.75"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:hint="@string/def_minus"
+                android:inputType="number"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+
+            <Button
+                android:id="@+id/ch_bgh"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:drawablePadding="16dp"
+                android:text="@string/stg_info_bg"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/ch_mus"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="2"
+                android:background="@drawable/button"
+                android:text="@string/stg_info_music"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:id="@+id/ch_mushp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.75"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:hint="@string/def_minus"
+                android:inputType="number"
+                android:minHeight="36dp"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+
+            <Button
+                android:id="@+id/ch_mush"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1"
+                android:background="@drawable/button"
+                android:text="@string/stg_info_music"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:id="@+id/ch_stespwn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:inputType="number"
+                android:minHeight="40dp"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+
+            <com.g2.bcu.androidutil.supports.WatcherEditText
+                android:id="@+id/ch_stuspwn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:ems="10"
+                android:inputType="number"
+                android:minHeight="40dp"
+                android:textColor="?attr/TextPrimary"
+                android:textColorHint="?attr/HintPrimary" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <ImageButton
+                android:id="@+id/ch_stubaseexp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:contentDescription="@string/def_description"
+                app:srcCompat="@drawable/ic_expand_less_black_24dp"
+                app:tint="?attr/iconPrimary" />
+
+            <ImageButton
+                android:id="@+id/ch_stubaseicon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:background="@drawable/cell_shape"
+                android:contentDescription="@string/def_description"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                app:srcCompat="@drawable/ic_castle" />
+
+            <ImageButton
+                android:id="@+id/ch_stubaseinfo"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/cell_shape"
+                android:contentDescription="@string/def_description"
+                android:paddingStart="8dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_info_outline_black_24dp"
+                app:tint="?attr/iconPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/ch_stubaserow"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/ch_stubasefrm"
+                android:layout_width="0dp"
+                android:layout_height="40dip"
+                android:layout_weight="1.5"
+                android:background="@drawable/button"
+                android:text="@string/lineup_ch_form"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:background="@drawable/button_shape"
+                android:gravity="center"
+                android:minHeight="40dp"
+                android:text="@string/lineup_unit_lev"
+                android:textAllCaps="false"
+                android:textColor="?attr/TextPrimary"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/ch_stubaselv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/cell_spinner"
+                android:backgroundTint="?attr/backgroundPrimary"
+                android:popupBackground="?attr/TextPrimary" />
+
+            <TextView
+                android:id="@+id/ch_stubaseplu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:text="@string/unit_info_plus"
+                android:textColor="?attr/TextPrimary" />
+
+            <Spinner
+                android:id="@+id/ch_stubaseplv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/cell_spinner"
+                android:backgroundTint="?attr/backgroundPrimary"
+                android:popupBackground="?attr/TextPrimary" />
+
+        </TableRow>
+
+    </TableLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

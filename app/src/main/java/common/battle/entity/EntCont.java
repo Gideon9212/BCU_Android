@@ -4,12 +4,20 @@ import common.util.BattleObj;
 
 public class EntCont extends BattleObj {
 
-	public Entity ent;
+	public final Entity ent;
+	public final DoorCont door;
 
 	public double t;
 
 	public EntCont(Entity e, int time) {
 		ent = e;
+		door = null;
+		t = time;
+	}
+
+	public EntCont(DoorCont d, int time) {
+		door = d;
+		ent = d.ent;
 		t = time;
 	}
 
@@ -17,5 +25,4 @@ public class EntCont extends BattleObj {
 		if (t > 0)
 			t -= flow;
 	}
-
 }

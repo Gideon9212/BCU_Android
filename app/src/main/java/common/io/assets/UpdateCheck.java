@@ -115,20 +115,21 @@ public class UpdateCheck {
 				"110400", "110403", "110500", "110503", "110504", "110505", "110506", "110600", "110603", "110604",
 				"110700", "110703", "110800", "110900", "110903", "111000", "111003", "111005", "120000", "120100",
 				"120200", "120203", "120300", "120400", "120500", "120503", "120600", "120700", "130000", "130100",
-				"130200", "130300", "fork_essentials"
+				"130200", "130300", "130400", "130500", "130600", "130700", "140000", "140100", "140200", "140300",
+				"140400", "fork_essentials"
 		);
 	}
 
-	public static final String REPO = "Blacksun420/sun-";
+	public static final String REPO = "Gideon9212/";
 	public static final String UPSTREAM = "battlecatsultimate/";
-	public static final String URL_UPDATE = "https://raw.githubusercontent.com/battlecatsultimate/bcu-page/master/api/updateInfo.json";
-	public static final String URL_UPDATE_R = "https://raw.githubusercontent.com/" + REPO + "bcu-assets/master/assets/updateInfo.json";
-	public static final String URL_LIB = "https://github.com/battlecatsultimate/bcu-assets/raw/master/BCU_lib/";
-	public static final String URL_MUSIC = "https://github.com/battlecatsultimate/bcu-assets/raw/master/music/";
-	public static final String URL_NEW = "https://github.com/battlecatsultimate/bcu-assets/raw/master/assets/";
-	public static final String URL_LANG_CHECK = "https://api.github.com/repos/battlecatsultimate/bcu-assets/contents/lang";
-	public static final String URL_MUSIC_CHECK = "https://api.github.com/repos/battlecatsultimate/bcu-assets/contents/music";
-	public static final String URL_FONT = "https://github.com/battlecatsultimate/bcu-assets/raw/master/fonts/stage_font.otf";
+	public static final String URL_UPDATE = "https://raw.githubusercontent.com/" +UPSTREAM+ "bcu-page/master/api/updateInfo.json";
+	public static final String URL_UPDATE_R = "https://raw.githubusercontent.com/" +REPO+ "bcu-assets/master/assets/updateInfo.json";
+	public static final String URL_LIB = "https://github.com/" +UPSTREAM+ "bcu-assets/raw/master/BCU_lib/";
+	public static final String URL_MUSIC = "https://github.com/" +UPSTREAM+ "bcu-assets/raw/master/music/";
+	public static final String URL_NEW = "https://github.com/" +UPSTREAM+ "bcu-assets/raw/master/assets/";
+	public static final String URL_LANG_CHECK = "https://api.github.com/repos/" +UPSTREAM+ "bcu-assets/contents/lang";
+	public static final String URL_MUSIC_CHECK = "https://api.github.com/repos/" +UPSTREAM+ "bcu-assets/contents/music";
+	public static final String URL_FONT = "https://github.com/" +UPSTREAM+ "bcu-assets/raw/master/fonts/stage_font.otf";
 
 	public static void addRequiredAssets(String... str) {
 		Collections.addAll(UserProfile.getPool(REG_REQLIB), str);
@@ -138,7 +139,7 @@ public class UpdateCheck {
 		Set<String> local = AssetLoader.previewAssets();
 		Set<String> req = new HashSet<>(UserProfile.getPool(REG_REQLIB));
 		if(local != null)
-			req.removeIf(id -> local.contains("asset_" + id));
+			req.removeIf(id -> local.contains("asset_" + id.replace("temp_", "")));
 		if (json == null && !req.isEmpty())
 			throw new Exception("internet connection required: missing required libraries: " + req);
 		List<Downloader> set = new ArrayList<>();
@@ -149,10 +150,10 @@ public class UpdateCheck {
 				continue;
 			if (!aj.type.equals("core") && !contains(type, aj.type))
 				continue;
-			if (local != null && local.contains("asset_" + aj.id))
+			if (local != null && (local.contains("asset_" + aj.id.replace("temp_", ""))))
 				continue;
 			String url = URL_NEW + aj.id + ".asset.bcuzip";
-			if (aj.id.contains("fork_essentials"))
+			if (aj.id.contains("fork_essentials") || aj.id.startsWith("temp_"))
 				url = url.replace(UPSTREAM, REPO);
 			File temp = CommonStatic.ctx.getAssetFile("./assets/.asset.bcuzip.temp");
 			File target = CommonStatic.ctx.getAssetFile("./assets/" + aj.id + ".asset.bcuzip");
@@ -228,13 +229,18 @@ public class UpdateCheck {
 						if (id != null)
 							exi[id] = id < count && id >= 0;
 					}
+			ContentJson[] fcont = JsonDecoder.decode(WebFileIO.directRead(URL_MUSIC_CHECK.replace(UPSTREAM, REPO)), ContentJson[].class);
+			ArrayList<Integer> fork = new ArrayList<>(fcont.length);
+			for(ContentJson content : fcont)
+				fork.add(Integer.parseInt(content.name.substring(0, 3)));
+
 			List<Downloader> ans = new ArrayList<>();
 			for (int i = 0; i < count; i++)
 				if (!exi[i]) {
 					File target = CommonStatic.ctx.getAssetFile("./music/" + Data.trio(i) + ".ogg");
 					File temp = CommonStatic.ctx.getAssetFile("./music/.ogg.temp");
 					String url = URL_MUSIC + Data.trio(i) + ".ogg";
-					if (i == 34)
+					if (fork.contains(i))
 						url = url.replace(UPSTREAM, REPO);
 					ans.add(new Downloader(target, temp, "music " + Data.trio(i), false, url));
 				}
@@ -288,6 +294,8 @@ public class UpdateCheck {
 					File target = CommonStatic.ctx.getAssetFile("./music/" + Data.trio(i) + ".ogg");
 					File temp = CommonStatic.ctx.getAssetFile("./music/.ogg.temp");
 					String url = URL_MUSIC + Data.trio(i) + ".ogg";
+					if (content.download_url.contains(REPO))
+						url = url.replace(UPSTREAM, REPO);
 					Downloader downloader = new Downloader(target, temp, "music " + Data.trio(i), false, url);
 					downloader.post = () -> local.put(id, content.sha);
 					ans.add(downloader);

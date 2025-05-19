@@ -25,11 +25,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.g2.bcu.androidutil.Definer
+import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.animation.adapter.AnimationListAdapter
 import com.g2.bcu.androidutil.fakeandroid.FIBM
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import common.CommonStatic
@@ -112,6 +114,7 @@ class AnimationManagement : AppCompatActivity() {
         DefineItf.check(this)
         AContext.check()
         (CommonStatic.ctx as AContext).updateActivity(this)
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_anim_management)
 
         lifecycleScope.launch {
@@ -126,12 +129,7 @@ class AnimationManagement : AppCompatActivity() {
             StaticStore.setDisappear(list, swipe, more)
 
             //Load Data
-            withContext(Dispatchers.IO) {
-                Definer.define(
-                    this@AnimationManagement,
-                    { _ -> },
-                    { t -> runOnUiThread { st.text = t } })
-            }
+            withContext(Dispatchers.IO) { Definer.defineAnimations(this@AnimationManagement, { _ -> }, { t -> runOnUiThread { st.text = t } }) }
 
             //Load UI
             more.setOnClickListener(object : SingleClick() {
@@ -225,5 +223,12 @@ class AnimationManagement : AppCompatActivity() {
 
         tempFunc = func
         resultLauncher.launch(Intent.createChooser(intent, "Choose Directory"))
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
+        val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
+        super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 }

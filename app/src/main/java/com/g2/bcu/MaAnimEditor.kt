@@ -27,18 +27,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionValues
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.gson.JsonParser
+import com.g2.bcu.androidutil.LocaleManager
 import com.g2.bcu.androidutil.StaticStore
 import com.g2.bcu.androidutil.animation.AnimationEditView
 import com.g2.bcu.androidutil.animation.adapter.MaAnimListAdapter
 import com.g2.bcu.androidutil.io.AContext
 import com.g2.bcu.androidutil.io.DefineItf
-import com.g2.bcu.androidutil.supports.DynamicListView
+import com.g2.bcu.androidutil.io.ErrorLogWriter
 import com.g2.bcu.androidutil.supports.LeakCanaryManager
 import com.g2.bcu.androidutil.supports.SingleClick
 import common.CommonStatic
@@ -58,7 +62,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileNotFoundException
-import java.io.FileOutputStream
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
@@ -107,51 +110,6 @@ class MaAnimEditor : AppCompatActivity() {
             }
         }
     }
-    private val exportLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(result.resultCode == RESULT_OK) {
-            val data = result.data
-
-            if(data != null) {
-                val file = tempFile
-                val uri = data.data
-
-                if(uri == null || file == null) {
-                    StaticStore.showShortMessage(this, getString(R.string.file_extract_cant))
-                } else {
-                    val pfd = contentResolver.openFileDescriptor(uri, "w")
-
-                    if(pfd != null) {
-                        val fos = FileOutputStream(pfd.fileDescriptor)
-                        val ins = file.data.stream
-
-                        val b = ByteArray(65536)
-                        var len: Int
-                        while(ins.read(b).also { len = it } != -1)
-                            fos.write(b, 0, len)
-
-                        ins.close()
-                        fos.close()
-
-                        val path = uri.path
-                        if(path == null) {
-                            StaticStore.showShortMessage(this, getString(R.string.file_extract_semi).replace("_",file.name))
-                            return@registerForActivityResult
-                        }
-
-                        val f = File(path)
-                        if(f.absolutePath.contains(":")) {
-                            val p = f.absolutePath.split(":")[1]
-                            StaticStore.showShortMessage(this,
-                                getString(R.string.file_extract_success).replace("_", file.name)
-                                    .replace("-", p))
-                        } else
-                            StaticStore.showShortMessage(this, getString(R.string.file_extract_semi).replace("_",file.name))
-                    } else
-                        StaticStore.showShortMessage(this, getString(R.string.file_extract_cant))
-                }
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -173,6 +131,7 @@ class MaAnimEditor : AppCompatActivity() {
         DefineItf.check(this)
         AContext.check()
         (CommonStatic.ctx as AContext).updateActivity(this)
+        Thread.setDefaultUncaughtExceptionHandler(ErrorLogWriter())
         setContentView(R.layout.activity_maanim_editor)
 
         val result = intent
@@ -195,7 +154,7 @@ class MaAnimEditor : AppCompatActivity() {
                 UserProfile.getUserPack(res.pack)?.source?.loadAnimation(res.id, res.base) as AnimCE?
             if (anim == null)
                 return@launch
-            anim.load()
+            anim.check()
 
             val cfgShowT = MaterialContainerTransform().apply {
                 startView = cfgBtn
@@ -276,16 +235,58 @@ class MaAnimEditor : AppCompatActivity() {
                 }
             })
             layout.addView(viewer)
-            val list = findViewById<DynamicListView>(R.id.maanimvalList)
+            val list = findViewById<RecyclerView>(R.id.maanimvalList)
+            list.layoutManager = LinearLayoutManager(this@MaAnimEditor)
             val adp = MaAnimListAdapter(this@MaAnimEditor, anim)
             list.adapter = adp
-            list.setSwapListener { from, to ->
-                val p = getAnim(anim).parts
-                val temp = p[from]
-                p[from] = p[to]
-                p[to] = temp
-                anim.unSave("maanim sort")
-            }
+            val touch = ItemTouchHelper(object: ItemTouchHelper.Callback() {
+                var moved : Boolean = false
+
+                override fun getMovementFlags(p0: RecyclerView, p1: RecyclerView.ViewHolder): Int {
+                    return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.END)
+                }
+
+                override fun canDropOver(recyclerView: RecyclerView, current: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                    return current.itemViewType == target.itemViewType
+                }
+
+                override fun onMove(view: RecyclerView, src: RecyclerView.ViewHolder, dest: RecyclerView.ViewHolder): Boolean {
+                    val from = src.bindingAdapterPosition
+                    val to = dest.bindingAdapterPosition
+                    val p = getAnim(anim).parts
+                    val temp = p[from]
+                    p[from] = p[to]
+                    p[to] = temp
+                    moved = true
+                    viewer.animationChanged()
+                    adp.notifyItemMoved(from, to)
+                    return false
+                }
+
+                override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                    super.clearView(recyclerView, viewHolder)
+                    // Action finished
+                    if (moved)
+                        unSave(anim,"maanim sort")
+                    moved = false
+                }
+
+                override fun onSwiped(holder: RecyclerView.ViewHolder, j: Int) {
+                    val pos = holder.bindingAdapterPosition
+                    val manim = getAnim(anim)
+                    val data: Array<Part?> = manim.parts
+                    data[pos] = null
+                    manim.parts = arrayOfNulls(--manim.n)
+                    var ind = 0
+                    for (datum in data)
+                        if (datum != null)
+                            manim.parts[ind++] = datum
+                    manim.validate()
+                    unSave(anim,"maanim remove part")
+                    adp.notifyItemRemoved(pos)
+                }
+            })
+            touch.attachToRecyclerView(list)
 
             val addl = findViewById<Button>(R.id.maanimpadd)
             addl.setOnClickListener {
@@ -302,8 +303,8 @@ class MaAnimEditor : AppCompatActivity() {
                 ma.parts[ind] = np
                 ma.validate()
                 unSave(anim,"maanim add line")
-                adp.insert(np, ind)
-                viewer.animationChanged()
+                adp.notifyItemInserted(ind)
+                animationChanged(viewer)
             }
             val impr = findViewById<Button>(R.id.maanimimport)
             impr.setOnClickListener {
@@ -318,23 +319,13 @@ class MaAnimEditor : AppCompatActivity() {
                             anim.anims[i] = a
                             anim.unSave("Import maanim")
                             if (anim.types[i] == viewer.getType()) {
-                                adp.setTo(*a.parts)
-                                viewer.animationChanged()
+                                animationChanged(viewer)
+                                adp.notifyDataSetChanged()
                             }
                             break
                         }
                 }
                 resultLauncher.launch(Intent.createChooser(intent, "Choose Directory"))
-            }
-            val expr = findViewById<Button>(R.id.maanimexport)
-            expr.setOnClickListener {
-                anim.save()
-                tempFile = VFile.getFile(CommonStatic.ctx.getWorkspaceFile(anim.id.path.substring(1) + "/maanim_${viewer.getType()}.txt"))
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                    .addCategory(Intent.CATEGORY_OPENABLE)
-                    .setType("*/*")
-                intent.putExtra(Intent.EXTRA_TITLE, tempFile?.name ?: "")
-                exportLauncher.launch(intent)
             }
 
             val anims = findViewById<Spinner>(R.id.maanimselect)
@@ -355,7 +346,7 @@ class MaAnimEditor : AppCompatActivity() {
                         if (viewer.aind != position) {
                             viewer.aind = position
                             viewer.animationChanged()
-                            adp.setTo(*getAnim(anim).parts)
+                            adp.notifyDataSetChanged()
                             controller.max = CommonStatic.fltFpsMul(viewer.anim.len().toFloat()).toInt()
 
                             controller.progress = 0
@@ -423,9 +414,17 @@ class MaAnimEditor : AppCompatActivity() {
                 else
                     View.VISIBLE
                 redo.visibility = View.VISIBLE
-                adp.setTo(*getAnim(anim).parts)
-                viewer.animationChanged()
+                adp.notifyDataSetChanged()
+                animationChanged(viewer)
             }
+            undo.setOnLongClickListener {
+                StaticStore.showShortMessage(this@MaAnimEditor, anim.undo)
+                false
+            }
+            undo.visibility = if (anim.undo == "initial")
+                View.GONE
+            else
+                View.VISIBLE
             redo.setOnClickListener {
                 anim.redo()
                 redo.visibility = if (anim.getRedo() == "nothing")
@@ -433,13 +432,13 @@ class MaAnimEditor : AppCompatActivity() {
                 else
                     View.VISIBLE
                 undo.visibility = View.VISIBLE
-                adp.setTo(*getAnim(anim).parts)
-                viewer.animationChanged()
+                adp.notifyDataSetChanged()
+                animationChanged(viewer)
             }
-            undo.visibility = if (anim.undo == "initial")
-                View.GONE
-            else
-                View.VISIBLE
+            redo.setOnLongClickListener {
+                StaticStore.showShortMessage(this@MaAnimEditor, anim.getRedo())
+                false
+            }
             redo.visibility = if (anim.getRedo() == "nothing")
                 View.GONE
             else
@@ -448,6 +447,7 @@ class MaAnimEditor : AppCompatActivity() {
             val bck = findViewById<Button>(R.id.maanimexit)
             bck.setOnClickListener {
                 anim.save()
+                anim.unload()
                 finish()
             }
             onBackPressedDispatcher.addCallback(this@MaAnimEditor, object : OnBackPressedCallback(true) {
@@ -536,6 +536,24 @@ class MaAnimEditor : AppCompatActivity() {
         val redo = findViewById<FloatingActionButton>(R.id.anim_Redo)
         undo.visibility = View.VISIBLE
         redo.visibility = View.GONE
+    }
+
+    fun animationChanged(a : AnimationEditView) {
+        a.animationChanged()
+
+        val controller = findViewById<SeekBar>(R.id.maanimframeseek)
+        val frame = findViewById<TextView>(R.id.maanimframe)
+
+        frame.text = getString(R.string.anim_frame).replace("-", "" + StaticStore.frame)
+        controller.progress = CommonStatic.fltFpsMul(StaticStore.frame).toInt()
+        controller.max = CommonStatic.fltFpsMul(a.anim.len().toFloat()).toInt()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        LocaleManager.attachBaseContext(this, newBase)
+
+        val shared = newBase.getSharedPreferences(StaticStore.CONFIG, Context.MODE_PRIVATE)
+        super.attachBaseContext(LocaleManager.langChange(newBase,shared?.getInt("Language",0) ?: 0))
     }
 
     inner class ScaleListener(private val cView : AnimationEditView) : ScaleGestureDetector.SimpleOnScaleGestureListener() {

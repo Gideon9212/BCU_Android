@@ -164,14 +164,24 @@ public abstract class AtkModelEntity extends AtkModelAb {
 		MaskAtk[] atks = data.getAtks(ind);
 		if (atks == null)
 			return 0;
-		for (MaskAtk atk : atks) {
+		for (int i = 0; i < atks.length; i++) {
+			if (act[ind][i] == 0)
+				continue;
+			MaskAtk atk = atks[i];
 			int dmg = getEffAtk(atk) * atk.getDire();
 			float[] ranges = inRange(atk);
 			List<AbEntity> ents = e.basis.inRange(atk.getTarget(), atk.getDire() * getDire(), ranges[0], ranges[1], false);
 			for (AbEntity ent : ents)
-				total += Math.min(ent.health * atk.getDire(), dmg * ent.calcDamageMult(dmg, e, atk));
+				total = total + (int)(Math.min(ent.health * atk.getDire(), dmg * ent.calcDamageMult(dmg, e, atk)));
 		}
 		return total;
+	}
+
+	public boolean isUsable(int ind) {
+		for (int act : act[ind])
+			if (act != 0)
+				return true;
+		return false;
 	}
 
 	/**
@@ -206,17 +216,24 @@ public abstract class AtkModelEntity extends AtkModelAb {
 	/**
 	 * Generate death surge when this entity is killed and the surge procs
 	 */
-	public void getDeathSurge() {
+	public void getDeathSurge(byte types) {
 		Proc p = Proc.blank();
-		int atk = getAttack(data.getAtkModel(data.firstAtk(), 0), p);
-		AttackSimple as = new AttackSimple(e, this, atk, e.traits, getAbi(), p, 0, 0, data.getAtkModel(data.firstAtk(), 0), 0, false);
-		Proc.VOLC ds = e.getProc().DEATHSURGE;
-		int addp = ds.dis_0 == ds.dis_1 ? ds.dis_0 : ds.dis_0 + (int) (b.r.nextDouble() * (ds.dis_1 - ds.dis_0));
-		float p0 = getPos() + getDire() * addp;
-		float sta = p0 + (getDire() == 1 ? W_VOLC_PIERCE : W_VOLC_INNER);
-		float end = p0 - (getDire() == 1 ? W_VOLC_INNER : W_VOLC_PIERCE);
+		for (byte i = 1; i < 4; i *= 2) {
+			if ((i & types) == 0)
+				continue;
+			int atk = getAttack(data.getAtkModel(data.firstAtk(), 0), p);
+			Proc.VOLC ds = i == 1 ? e.getProc().DEATHSURGE : e.getProc().MINIDEATHSURGE;
+			if (ds instanceof Proc.MINIVOLC)
+				atk = (int)(atk * ((Proc.MINIVOLC) ds).mult / 100.0);
+			AttackSimple as = new AttackSimple(e, this, atk, e.traits, getAbi(), p, 0, 0, data.getAtkModel(data.firstAtk(), 0), 0, false);
 
-		e.summoned.add(new ContVolcano(new AttackVolcano(e, as, sta, end, WT_VOLC, ds.pid), p0, e.layer, ds.time));
+			int addp = ds.dis_0 == ds.dis_1 ? ds.dis_0 : ds.dis_0 + (int) (b.r.nextFloat() * (ds.dis_1 - ds.dis_0));
+			float p0 = getPos() + getDire() * addp;
+			float sta = p0 + (getDire() == 1 ? W_VOLC_PIERCE : W_VOLC_INNER);
+			float end = p0 - (getDire() == 1 ? W_VOLC_INNER : W_VOLC_PIERCE);
+
+			e.summoned.add(new ContVolcano(new AttackVolcano(e, as, sta, end, i == 1 ? WT_VOLC : WT_MIVC, ds.pid), p0, e.layer, ds.time));
+		}
 	}
 
 	/**
@@ -229,7 +246,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 		int atk = (int)(getAttack(data.getAtkModel(data.firstAtk(), 0), p) * (mult / 100.0));
 		if (itm instanceof Proc.MINIVOLC) {
 			mult *= ((Proc.MINIVOLC) itm).mult / 100.0;
-			atk *= ((Proc.MINIVOLC) itm).mult / 100.0;
+			atk = (int)(atk * ((Proc.MINIVOLC) itm).mult / 100.0);
 		}
 
 		AttackSimple as = new AttackSimple(e, this, atk, e.traits, getAbi(), p, 0, 0, data.getAtkModel(data.firstAtk(), 0), 0, false);
@@ -278,12 +295,9 @@ public abstract class AtkModelEntity extends AtkModelAb {
 	@Override
 	public void invokeLater(AttackAb atk, Entity e) {
 		SUMMON proc = atk.getProc().SUMMON;
-		if (proc.exists()) {
-			SUMMON.TYPE conf = proc.type;
-			if (conf.on_hit || (conf.on_kill && e.health <= 0)) {
-				double rst = e.getProc().IMUSUMMON.mult;
-				summon(proc, e, atk, rst);
-			}
+		if (proc.prob > 0 && (proc.on_hit || (proc.on_kill && e.health <= 0))) {
+			double rst = e.getProc().IMUSUMMON.mult;
+			summon(proc, e, atk, rst);
 		}
 	}
 
@@ -295,7 +309,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 		float d0, d1;
 		d0 = d1 = dire == e.dire ? e.pos : e.pos + (data.getWidth() * dire);
 		d0 += data.getRange() * dire;
-		if (data.isLD() && e.getProc().AI.type.calcblindspot)
+		if (data.isLD() && e.getProc().AI.calcblindspot)
 			d1 += getBlindSpot() * dire;
 		else
 			d1 -= data.getWidth() * dire;
@@ -340,8 +354,8 @@ public abstract class AtkModelEntity extends AtkModelAb {
 		Proc p = matk.getProc().clone();
 		for (common.util.Data.Proc.BLESSING b : e.status.blessings.keySet())
 			if (b.procs != null)
-				for (int i = 0; i < PROC_TOT; i++)
-					p.getArr(i).add(b.procs.getArr(i));
+				for (String str : par)
+					p.get(str).add(b.procs.get(str));
 		return p;
 	}
 
@@ -357,8 +371,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 		for (int b : BCShareable) proc.getArr(b).set(p.getArr(b));
 		if (p.SUMMON.perform(b.r)) {
 			SUMMON sprc = p.SUMMON;
-			SUMMON.TYPE conf = sprc.type;
-			if (!conf.on_hit && !conf.on_kill)
+			if (!sprc.on_hit && !sprc.on_kill)
 				summon(sprc, e, matk, 0);
 			else
 				proc.SUMMON.set(sprc);
@@ -373,15 +386,17 @@ public abstract class AtkModelEntity extends AtkModelAb {
 				b.changeUnitsCooldown(c.amount, c.type);
 		}
 
-		if (proc.CRIT.exists() && proc.CRIT.mult == 0)
+		if (proc.CRIT.prob > 0 && proc.CRIT.mult == 0)
 			proc.CRIT.mult = 200;
-		if (proc.KB.exists() && proc.KB.dis == 0)
-			proc.KB.dis = KB_DIS[INT_KB];
-		if (proc.KB.exists() && proc.KB.time == 0)
-			proc.KB.time = KB_TIME[INT_KB];
-		if (proc.MINIWAVE.exists() && proc.MINIWAVE.multi == 0)
+		if (proc.KB.prob > 0) {
+			if (proc.KB.dis == 0)
+				proc.KB.dis = KB_DIS[INT_KB];
+			if (proc.KB.time == 0)
+				proc.KB.time = KB_TIME[INT_KB];
+		}
+		if (proc.MINIWAVE.prob > 0 && proc.MINIWAVE.multi == 0)
 			proc.MINIWAVE.multi = 20;
-		if (proc.MINIVOLC.exists() && proc.MINIVOLC.mult == 0)
+		if (proc.MINIVOLC.prob > 0 && proc.MINIVOLC.mult == 0)
 			proc.MINIVOLC.mult = 20;
 	}
 
@@ -400,8 +415,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 
 	protected void summon(SUMMON proc, Entity ent, Object acs, double resist) {
 		if (resist < 100) {
-			SUMMON.TYPE conf = proc.type;
-			if (conf.same_health && ent.health <= 0)
+			if (proc.same_health && ent.health <= 0)
 				return;
 			int time = proc.time;
 			int minlayer = proc.min_layer, maxlayer = proc.max_layer;
@@ -410,38 +424,41 @@ public abstract class AtkModelEntity extends AtkModelAb {
 
 			if ((proc.id == null && e instanceof EUnit) || (proc.id != null && AbUnit.class.isAssignableFrom(proc.id.cls))) {
 				AbUnit u = Identifier.getOr(proc.id, AbUnit.class);
-				if (conf.ignore_limit || !b.cantDeploy(u.getRarity(), u.getForms()[proc.form - 1].du.getWill())) {
+				if (proc.ignore_limit || !b.cantDeploy(u.getRarity(), u.getForms()[proc.form - 1].du.getWill())) {
 					int lvl = proc.mult;
-					if (!conf.fix_buff)
+					if (!proc.fix_buff)
 						lvl = (int) e.buff(lvl);
 					lvl = (int) (lvl * (100.0 - resist) / 100);
 					lvl = MathUtil.clip(lvl, 1, u.getCap());
 
 					for (int i = 0; i < proc.amount; i++) {
-						int dis = proc.dis == proc.max_dis ? proc.dis : (int) (proc.dis + b.r.nextDouble() * (proc.max_dis - proc.dis + 1));
+						int dis = proc.dis == proc.max_dis ? proc.dis : (int) (proc.dis + b.r.nextFloat() * (proc.max_dis - proc.dis + 1));
 						double up = ent.pos + getDire() * dis;
-						IForm ef = IForm.newIns(u instanceof Unit ? u.getForms()[Math.max(proc.form - 1, 0)] : (AbForm)u, lvl);
+						Form f = u.getForms()[Math.max(proc.form - 1, 0)];
+						IForm ef = IForm.newIns(u instanceof Unit ? f : (AbForm)u, lvl);
 						EUnit eu = ef.invokeEntity(b, lvl, minlayer, maxlayer);
-						if (conf.same_health)
+						if (proc.same_health)
 							eu.health = e.health;
 
 						eu.added(-1, (int) up);
-						b.tempe.add(new EntCont(eu, time));
-						eu.setSummon(conf.anim_type, conf.bond_hp ? e : null);
-
-						if ((proc.type.pass_proc & 1) > 0)
+						eu.setSummon(proc.anim_type, proc.bond_hp ? e : null);
+						if (proc.anim_type == Proc.SUMMON_ANIM.EVERYWHERE_DOOR)
+							b.tempe.add(new EntCont(new DoorCont(b, eu), time + (proc.interval * i)));
+						else
+							b.tempe.add(new EntCont(eu, time + (proc.interval * i)));
+						if (proc.pass_proc % 2 == 1)
 							eu.status.pass(e.status);
-						if (e != ent && (proc.type.pass_proc & 2) > 0)
+						if (e != ent && proc.pass_proc >= 2)
 							eu.status.pass(ent.status);
 					}
 				}
 			} else {
 				AbEnemy ene = Identifier.getOr(proc.id, AbEnemy.class);
 				int allow = b.st.data.allow(b, ene);
-				if (allow >= 0 || conf.ignore_limit) {
+				if (allow >= 0 || proc.ignore_limit) {
 					float mula = proc.mult * 0.01f;
 					float mult = proc.mult * 0.01f;
-					if (!conf.fix_buff) {
+					if (!proc.fix_buff) {
 						if (e instanceof EUnit) {
 							mula = (float) (mula + ((((EUnit) e).lvl - 1) * 0.2));
 							mult = (float) (mult + ((((EUnit) e).lvl - 1) * 0.2));
@@ -454,7 +471,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 					mula = (float) (mula * (100.0 - resist) / 100);
 					mult = (float) (mult * (100.0 - resist) / 100);
 					for (int i = 0; i < proc.amount; i++) {
-						int dis = proc.dis == proc.max_dis ? proc.dis : (int) (proc.dis + b.r.nextDouble() * (proc.max_dis - proc.dis + 1));
+						int dis = proc.dis == proc.max_dis ? proc.dis : (int) (proc.dis + b.r.nextFloat() * (proc.max_dis - proc.dis + 1));
 						float up = ent.pos + getDire() * dis;
 						EEnemy ee = ene.getEntity(b, acs, mult, mula, minlayer, maxlayer, 0);
 
@@ -465,20 +482,18 @@ public abstract class AtkModelEntity extends AtkModelAb {
 							up = b.st.len - 800;
 
 						ee.added(1, (int) up);
-						b.tempe.add(new EntCont(ee, time));
-						if (conf.same_health)
+						if (proc.same_health)
 							ee.health = e.health;
-						ee.setSummon(conf.anim_type, conf.bond_hp ? e : null);
-
-						if ((proc.type.pass_proc & 1) > 0)
-							ee.status.pass(e.status);
-						if (e != ent && (proc.type.pass_proc & 2) > 0)
-							ee.status.pass(ent.status);
-
-						if (!b.enemyStatistics.containsKey((Enemy)ee.data.getPack()))
-							b.enemyStatistics.put((Enemy)ee.data.getPack(), new long[]{0, 0, 1});
+						ee.setSummon(proc.anim_type, proc.bond_hp ? e : null);
+						if (proc.anim_type == Proc.SUMMON_ANIM.EVERYWHERE_DOOR)
+							b.tempe.add(new EntCont(new DoorCont(b, ee), time + (proc.interval * i)));
 						else
-							b.enemyStatistics.get((Enemy)ee.data.getPack())[2]++;
+							b.tempe.add(new EntCont(ee, time + (proc.interval * i)));
+
+						if (proc.pass_proc % 2 == 1)
+							ee.status.pass(e.status);
+						if (e != ent && proc.pass_proc >= 2)
+							ee.status.pass(ent.status);
 					}
 				}
 			}

@@ -11,7 +11,6 @@ import common.pack.Identifier;
 import common.pack.SortedPackSet;
 import common.util.Data;
 import common.util.Data.Proc;
-import common.util.pack.Background;
 import common.util.unit.AbEnemy;
 import common.util.unit.Trait;
 import common.util.unit.Unit;
@@ -60,7 +59,7 @@ public class Formatter {
 			return "" + Math.abs(v);
 		}
 
-		public String bg(Identifier<Background> id) {
+		public String id(Identifier<?> id) {
 			return Identifier.get(id) + "";
 		}
 
@@ -98,7 +97,7 @@ public class Formatter {
 		}
 
 		public String summonMagnification(boolean fix_buff, int buff, Identifier<?> id) {
-			boolean isEnemy = Identifier.get(id) instanceof AbEnemy;
+			boolean isEnemy = id == null ? this.isEnemy : id.get() instanceof AbEnemy;
 			if (!isEnemy) {
 				if (fix_buff)
 					return "Lv " + buff;
@@ -137,7 +136,7 @@ public class Formatter {
 			StringBuilder str = new StringBuilder("[");
 			for(int i = 0; i < Data.PROC_TOT; i++) {
 				Proc.ProcItem item = p.getArr(i);
-				if(!item.exists())
+				if(!item.def_exists())
 					continue;
 				String format = ProcLang.get().get(i).format;
 				String formatted = format(format, item, this);
@@ -147,6 +146,9 @@ public class Formatter {
 		}
 		public String toString(Object obj) {
 			return obj.toString();
+		}
+		public boolean strEqual(Object obj, String str) {
+			return String.valueOf(obj).equals(str);
 		}
 	}
 
@@ -216,7 +218,7 @@ public class Formatter {
 				else if (ch == '^')
 					stack.push(stack.pop() ^ nextElem());
 				else
-					throw new Exception("unknown operator " + ch + " at " + (ind - 1));
+					throw new Exception("unknown operator " + ch + " at " + (ind - 1) + " (Location: " + str.substring(p0, p1) + ")");
 			}
 			boolean b = false;
 			for (boolean bi : stack)
@@ -230,7 +232,7 @@ public class Formatter {
 			if (neg)
 				ch = str.charAt(++ind);
 			if (ch == '!')
-				throw new Exception("double ! at " + ind);
+				throw new Exception("double ! at " + ind + " (Location: " + str.substring(p0, p1) + ")");
 			if (ch == '(') {
 				int depth = 1;
 				int pre = ++ind;
@@ -268,7 +270,7 @@ public class Formatter {
 				return false;
 
 			try {
-				return new RefField(i, j).test(obj);
+				return new RefField(i, j).test(obj) instanceof Integer;
 			} catch (Exception ignored) {
 				return false;
 			}
@@ -305,7 +307,7 @@ public class Formatter {
 					int pre = i;
 					while (depth > 0) {
 						if (i >= p1)
-							throw new Exception("unfinished at " + i);
+							throw new Exception("unfinished codeblock at " + i + " (Location: " + str.substring(p0, p1) + ")");
 						char chr = str.charAt(i++);
 						if (chr == '(')
 							depth++;
@@ -315,12 +317,12 @@ public class Formatter {
 					BoolExp cond = new BoolExp(pre, i - 1);
 					while (str.charAt(i++) != '{')
 						if (i >= p1)
-							throw new Exception("unfinished at " + i);
+							throw new Exception("unfinished codeblock at " + i + " (Location: " + str.substring(p0, p1) + ")");
 					depth = 1;
 					pre = i;
 					while (depth > 0) {
 						if (i >= p1)
-							throw new Exception("unfinished at " + i);
+							throw new Exception("unfinished codeblock at " + i + " (Location: " + str.substring(p0, p1) + ")");
 						char chr = str.charAt(i++);
 						if (chr == '{')
 							depth++;
@@ -415,7 +417,7 @@ public class Formatter {
 				} else if (ch == '^') {
 					stack.push(stack.pop() ^ nextElem());
 				} else
-					throw new Exception("unknown operator " + ch + " at " + (ind - 1));
+					throw new Exception("unknown operator " + ch + " at " + (ind - 1) + " (Location: " + str.substring(p0, p1) + ")");
 				prevOp = ch;
 			}
 			if ((prevOp == '+' || prevOp == '-') && stack.size() >= 2) {
@@ -453,12 +455,14 @@ public class Formatter {
 			int pre = ind;
 			while (ch != '+' && ch != '-' && ch != '*' && ch != '/' && ch != '%' && ch != '&' && ch != '|' && ch != '^' && ind < p1)
 				ch = str.charAt(++ind);
-			Number n = (Number) new RefObj(pre, ind).eval();
+			Object n = new RefObj(pre, ind).eval();
 			if (n instanceof Integer)
 				return neg * (Integer) new RefObj(pre, ind).eval();
 			if (n instanceof Double)
-				return (int)(neg * (Double) new RefObj(pre, ind).eval());
-			return (int)(neg * (Float) new RefObj(pre, ind).eval());
+				return (int) (neg * (Double) new RefObj(pre, ind).eval());
+			if (n instanceof Enum)
+				return neg * ((Enum<?>)new RefObj(pre, ind).eval()).ordinal();
+			return (int) (neg * (Float) new RefObj(pre, ind).eval());
 		}
 
 		private int readNumber() {
@@ -493,42 +497,41 @@ public class Formatter {
 		@Override
 		public Object eval(Object parent) throws Exception {
 			if (str.charAt(p0) == '_' && parent != null)
-				throw new Exception("global only allowed for bottom level");
+				throw new Exception("global only allowed for bottom level" + " (Location: " + str.substring(p0, p1) + ")");
 			if (parent == null)
 				if (str.charAt(p0) == '_')
 					parent = ctx;
 				else
 					parent = obj;
-			int ind = str.charAt(p0) == '_' ? p0 + 1 : p0;
+			int ind = str.charAt(p0) == '_' || str.charAt(p0) == '`' ? p0 + 1 : p0;
 			String name = str.substring(ind, p1);
-
+			if (str.charAt(p0) == '`')
+				return name;
 			try {
 				Field f = parent.getClass().getField(name);
 				return f.get(parent);
 			} catch (NoSuchFieldException nse) {
 				if (CommonStatic.parseIntsN(name).length > 0)
 					return new IntExp(ind, p1).eval();
-				throw new Exception("Unrecognized field: " + name);
+				throw new Exception("Unrecognized field: " + name + " (Location: " + str.substring(p0, p1) + ")");
 			}
 		}
 
-		public boolean test(Object parent) {
+		public Object test(Object parent) {
 			if (parent == null)
 				if (str.charAt(p0) == '_')
 					parent = ctx;
 				else
 					parent = obj;
 
-			int ind = str.charAt(p0) == '_' ? p0 + 1 : p0;
-
+			int ind = str.charAt(p0) == '_' || str.charAt(p0) == '`' ? p0 + 1 : p0;
 			String name = str.substring(ind, p1);
-
+			if (str.charAt(p0) == '`')
+				return name;
 			try {
-				parent.getClass().getField(name).get(parent);
-
-				return true;
+				return parent.getClass().getField(name).get(parent);
 			} catch (NoSuchFieldException | IllegalAccessException nse) {
-				return false;
+				return null;
 			}
 		}
 	}
@@ -544,7 +547,7 @@ public class Formatter {
 		@Override
 		public Object eval(Object parent) throws Exception {
 			if (str.charAt(p0) == '_' && parent != null)
-				throw new Exception("global only allowed for bottom level: at " + p0);
+				throw new Exception("global only allowed for bottom level: at " + p0 + " (Location: " + str.substring(p0, p1) + ")");
 			if (parent == null)
 				if (str.charAt(p0) == '_')
 					parent = ctx;
@@ -558,7 +561,7 @@ public class Formatter {
 			for (Method m : ms)
 				if (m.getName().equals(name) && m.getParameterTypes().length == list.size())
 					return m.invoke(parent, args);
-			throw new Exception("function " + name + " not found for class " + parent.getClass());
+			throw new Exception("function " + name + " not found for class " + parent.getClass() + " (Location: " + str.substring(p0, p1) + ")");
 		}
 	}
 
@@ -581,7 +584,7 @@ public class Formatter {
 					int depth = 1;
 					while (depth > 0) {
 						if (i >= p1)
-							throw new Exception("unfinished at " + i);
+							throw new Exception("unfinished RefBlock at " + i + " (Location: " + str.substring(p0, p1) + ")");
 						char chr = str.charAt(i++);
 						if (chr == '(')
 							depth++;
@@ -732,13 +735,17 @@ public class Formatter {
 			if (ch == '{')
 				stack.push(2);
 			if (ch == ')' && (stack.isEmpty() || stack.pop() != 0))
-				return "bracket ) unexpected at " + i;
+				return "bracket ) unexpected at " + i + " (Location: " + getLoc(i) + ")";
 			if (ch == ']' && (stack.isEmpty() || stack.pop() != 1))
-				return "bracket ] unexpected at " + i;
+				return "bracket ] unexpected at " + i + " (Location: " + getLoc(i) + ")";
 			if (ch == '}' && (stack.isEmpty() || stack.pop() != 2))
-				return "bracket } unexpected at " + i;
+				return "bracket } unexpected at " + i + " (Location: " + getLoc(i) + ")";
 		}
 		return stack.isEmpty() ? null : "unenclosed bracket: " + stack;
+	}
+
+	private String getLoc(int i) {
+		return str.substring(Math.max(0, i - 15), Math.min(i + 15, str.length()));
 	}
 
 }

@@ -8,18 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
-import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.TableLayout
+import android.widget.TableRow
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.g2.bcu.BattleSimulation
 import com.g2.bcu.R
 import com.g2.bcu.ReplayList
 import com.g2.bcu.androidutil.StaticStore
+import com.g2.bcu.androidutil.supports.WatcherEditText
 import common.CommonStatic
 import common.io.json.JsonEncoder
 import common.pack.Source.ResourceLocation
@@ -30,11 +30,11 @@ import common.util.stage.Replay
 class ReplayListAdapter(private val activity: ReplayList, private val replays : ArrayList<Replay>) : ArrayAdapter<Replay>(activity, R.layout.replay_list_layout, replays) {
 
     private class ViewHolder(row: View) {
-        var name: EditText = row.findViewById(R.id.rplyname)
+        var name: WatcherEditText = row.findViewById(R.id.rplyname)
         var stgName: TextView = row.findViewById(R.id.rplystgname)
         var battle: Button = row.findViewById(R.id.rplystart)
         var expand: ImageButton = row.findViewById(R.id.rplyexpand)
-        val moreinfo: TableLayout = row.findViewById(R.id.rplymoreinfo)
+        val moreinfo: TableRow = row.findViewById(R.id.rplymoreinfo)
         val delete: Button = row.findViewById(R.id.rplydelete)
     }
 
@@ -92,11 +92,10 @@ class ReplayListAdapter(private val activity: ReplayList, private val replays : 
             }
         })
         holder.name.text = SpannableStringBuilder(replay.toString())
-        holder.name.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId != EditorInfo.IME_ACTION_DONE || replay.rl.id == holder.name.text.toString())
-                return@setOnEditorActionListener false
-            replay.rename(holder.name.text.toString())
-            false
+        holder.name.setWatcher {
+            if (!holder.name.hasFocus() || replay.rl.id == holder.name.text!!.toString())
+                return@setWatcher
+            replay.rename(holder.name.text!!.toString())
         }
         if (replay.rl.pack == ResourceLocation.LOCAL || UserProfile.getUserPack(replay.rl.pack)?.editable == true) {
             holder.delete.setOnClickListener {
@@ -116,7 +115,8 @@ class ReplayListAdapter(private val activity: ReplayList, private val replays : 
             val t = "${replay.st} (Corrupted)"
             holder.stgName.text = t
         } else {
-            holder.stgName.text = "$stage"
+            val t = "${stage.cont}: $stage"
+            holder.stgName.text = t
             holder.battle.setOnClickListener {
                 val intent = Intent(activity, BattleSimulation::class.java)
 

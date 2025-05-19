@@ -8,4 +8,7 @@
         android:id="@+id/anim_btn_set_prev" />
     <item android:title="@string/anim_btn_delete"
         android:id="@+id/anim_btn_delete" />
+    <item
+        android:id="@+id/anim_btn_export"
+        android:title="@string/def_export" />
 </menu>

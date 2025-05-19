@@ -197,20 +197,20 @@ public class Background extends AnimI<Background, Background.BGWvType> implement
 	@JsonClass.JCIdentifier
 	@JsonField
 	public Identifier<Background> id;
-	@JsonField(backCompat = JsonField.CompatType.FORK, defval = "null")
+	@JsonField(backCompat = JsonField.CompatType.FORK)
 	public Identifier<Background> reference;
 	public VImg img;
 	@JsonField
 	public int[][] cs = new int[4][3];
-	@JsonField(backCompat = JsonField.CompatType.FORK, defval = "null")
+	@JsonField(backCompat = JsonField.CompatType.FORK)
 	public Identifier<BackgroundEffect> bgEffect = null;
-	@JsonField(defval = "0")
+	@JsonField
 	public int overlayAlpha;
 	@JsonField
 	public int[][] overlay;
 
 	public int ic;
-	@JsonField
+	@JsonField(defval="true")
 	public boolean top;
 
 	public FakeImage[] parts = null;
@@ -370,12 +370,9 @@ public class Background extends AnimI<Background, Background.BGWvType> implement
 				g.gradRect(0, 0, (int) rect.x, fh + y, 0, y, cs[0], 0, y + fh, cs[1]);
 			}
 		}
-
 		for (int x = off; x < rect.x; x += fw)
-			if (x + fw > 0) {
-
+			if (x + fw > 0)
 				g.drawImage(parts[BG], x, h - fh, fw, fh);
-			}
 	}
 
 	@Override
@@ -398,7 +395,7 @@ public class Background extends AnimI<Background, Background.BGWvType> implement
 		if(loaded)
 			return;
 
-		if (img == null) {
+		if (img == null || (img.bimg != null && !img.bimg.isValid())) {
 			PackData pack = getCont();
 			if (pack == null)
 				return;
@@ -408,10 +405,12 @@ public class Background extends AnimI<Background, Background.BGWvType> implement
 					img = new VImg(VFile.get("./org/img/bg/bg"+Data.trio(id.id)+".png"));
 				else
 					img = new VImg(VFile.get("./org/img/bg/bg"+Data.trio(reference.id)+".png"));
-			} else if (pack instanceof PackData.UserPack)
+			} else if (reference == null)
 				img = ((PackData.UserPack) getCont()).source.readImage(Source.BasePath.BG.toString(), id.id);
-			else
-				return;
+			else {
+				reference.get().check();
+				img = new VImg(reference.get().img.getImg());
+			}
 		}
 
 		img.mark(Marker.BG);
@@ -459,6 +458,8 @@ public class Background extends AnimI<Background, Background.BGWvType> implement
 			if (effect >= 0)
 				bgEffect = UserProfile.getBCData().bgEffects.get(effect).getID();
 		}
+		if (top && img != null)
+			top = img.getImg().getHeight() >= 1024;
 	}
 
 	@Override

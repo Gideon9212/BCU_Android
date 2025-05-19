@@ -19,7 +19,7 @@ public abstract class CustomEntity extends DataEntity {
 
 	@JsonField(gen = GenType.GEN, defval = "proc isBlank")
 	public AtkDataModel rep;//TODO - Replace this with a Proc variable, given that is the only thing that gets used about it
-	@JsonField(gen = GenType.GEN, defval = "null")
+	@JsonField(gen = GenType.GEN)
 	public AtkDataModel cntr;
 	@JsonField(gen = GenType.GEN, usePool = true, backCompat = CompatType.FORK, defval = "isEmpty")
 	public AtkDataModel[] revs = new AtkDataModel[0], ress = new AtkDataModel[0], burs = new AtkDataModel[0],
@@ -30,7 +30,6 @@ public abstract class CustomEntity extends DataEntity {
 	@JsonField(gen = GenType.GEN)
 	public int[] share;
 
-	@JsonField(defval = "0")
 	public int base;
 	@JsonField(defval = "1")
 	public int touch = TCH_N;
@@ -198,16 +197,13 @@ public abstract class CustomEntity extends DataEntity {
 
 	@Override
 	public int getPost(boolean sp, int atk) {
-		int ans;
 		if (sp) {
-			ans = 0;
-			for (AtkDataModel adm : getSpAtks(true, atk))
-				ans -= adm.pre;
-		} else {
-			ans = getAnimLen(atk);
-			for (AtkDataModel adm : hits.get(atk))
-				ans -= adm.pre;
+			AtkDataModel[] spa = getSpAtks(true, atk);
+			return spa[spa.length - 1].pre;
 		}
+		int ans = getAnimLen(atk);
+		for (AtkDataModel adm : hits.get(atk))
+			ans -= adm.pre;
 		return ans;
 	}
 

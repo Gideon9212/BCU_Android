@@ -51,7 +51,7 @@ class LUOrbSetting : Fragment() {
     private val traits = intArrayOf(
         R.string.sch_red, R.string.sch_fl, R.string.sch_bla, R.string.sch_me, R.string.sch_an,
         R.string.sch_al, R.string.sch_zo, R.string.sch_re, R.string.sch_wh, R.string.esch_witch,
-        R.string.esch_eva, R.string.sch_de
+        R.string.esch_eva, R.string.sch_de, R.string.eff_none
     )
     private val grades = arrayOf("D", "C", "B", "A", "S")
 
@@ -319,9 +319,10 @@ class LUOrbSetting : Fragment() {
                         if(r >= traits.size) {
                             Log.e("LUOrbSetting", "Invalid trait data in updateSpinners() : $i")
                             return
-                        } else {
+                        } else if (r == -1)
+                            t.add(c.getString(traits[traits.size - 1]))
+                        else
                             t.add(c.getString(traits[r]))
-                        }
                     }
                 }
 
@@ -674,19 +675,20 @@ class LUOrbSetting : Fragment() {
             types.add(c.getString(R.string.orb_str))
             typeData.add(Data.ORB_STRONG)
         }
-
         if(mas) {
             types.add(c.getString(R.string.orb_mas))
             typeData.add(Data.ORB_MASSIVE)
         }
-
         if(res) {
             types.add(c.getString(R.string.orb_res))
             typeData.add(Data.ORB_RESISTANT)
         }
-
+        for (i in Data.ORB_MINIDEATHSURGE until Data.ORB_TYPE_TOTAL)
+            if (data.isEmpty() || !Orb.onlyOne(i) || data[Data.ORB_TYPE.toInt()] == i || !lv.equippingOrb(i)) {
+                types.add(getType(i))
+                typeData.add(i.toByte())
+            }
         val a0 = ArrayAdapter(c, R.layout.spinnersmall, types.toTypedArray())
-
         type.adapter = a0
 
         if(data.isEmpty()) {
@@ -708,9 +710,9 @@ class LUOrbSetting : Fragment() {
             grade.isEnabled = true
 
             if(slot) {
-                type.setSelection(typeData.indexOf(data[0].toByte())+1, false)
+                type.setSelection(typeData.indexOf(data[Data.ORB_TYPE.toInt()].toByte())+1, false)
             } else
-                type.setSelection(typeData.indexOf(data[0].toByte()), false)
+                type.setSelection(typeData.indexOf(data[Data.ORB_TYPE.toInt()].toByte()), false)
         }
 
         setAppear(trait, grade)
@@ -752,9 +754,9 @@ class LUOrbSetting : Fragment() {
 
         generateTraitData(od, slot, f, lv, needTraitFiltering(data))
 
-        trait.setSelection(traitData.indexOf(data[1]), false)
+        trait.setSelection(traitData.indexOf(data[Data.ORB_TRAIT.toInt()]), false)
 
-        val g = od[data[1]] ?: return
+        val g = od[data[Data.ORB_TRAIT.toInt()]] ?: return
 
         val gr = ArrayList<String>()
 
@@ -770,7 +772,7 @@ class LUOrbSetting : Fragment() {
 
         grade.adapter = a2
 
-        grade.setSelection(data[2], false)
+        grade.setSelection(data[Data.ORB_GRADE.toInt()], false)
     }
 
     private fun generateOrbTexts() : List<String> {
@@ -797,7 +799,7 @@ class LUOrbSetting : Fragment() {
                 if(data.isEmpty()) {
                     res.add(c.getString(R.string.lineup_orb)+" ${i+1} - "+c.getString(R.string.unit_info_t_none))
                 } else {
-                    res.add(c.getString(R.string.lineup_orb)+" ${i+1} - {${getType(data[0])}, ${getTrait(data[1])}, ${getGrade(data[2])}}")
+                    res.add(c.getString(R.string.lineup_orb)+" ${i+1} - {${getType(data[Data.ORB_TYPE.toInt()])}, ${getTrait(data[Data.ORB_TRAIT.toInt()])}, ${getGrade(data[Data.ORB_GRADE.toInt()])}}")
                 }
             }
         } else {
@@ -813,7 +815,7 @@ class LUOrbSetting : Fragment() {
                         Log.e("LUOrbSetting","Invalid format detected in generateOrbTexts() ! : ${l.orbs.contentDeepToString()}")
                         return res
                     } else {
-                        res.add(c.getString(R.string.lineup_orb)+" ${i+1} - {${getType(data[0])}, ${getTrait(data[1])}, ${getGrade(data[2])}}")
+                        res.add(c.getString(R.string.lineup_orb)+" ${i+1} - {${getType(data[Data.ORB_TYPE.toInt()])}, ${getTrait(data[Data.ORB_TRAIT.toInt()])}, ${getGrade(data[Data.ORB_GRADE.toInt()])}}")
                     }
                 }
             }
@@ -842,7 +844,7 @@ class LUOrbSetting : Fragment() {
             return if(data.isEmpty()) {
                 c.getString(R.string.lineup_orb)+" ${index+1} - "+c.getString(R.string.unit_info_t_none)
             } else {
-                c.getString(R.string.lineup_orb)+" ${index+1} - {${getType(data[0])}, ${getTrait(data[1])}, ${getGrade(data[2])}}"
+                c.getString(R.string.lineup_orb)+" ${index+1} - {${getType(data[Data.ORB_TYPE.toInt()])}, ${getTrait(data[Data.ORB_TRAIT.toInt()])}, ${getGrade(data[Data.ORB_GRADE.toInt()])}}"
             }
         } else {
             val l = BasisSet.current().sele.lu.getLv(f) ?: return ""
@@ -856,7 +858,7 @@ class LUOrbSetting : Fragment() {
                     Log.e("LUOrbSetting","Invalid format detected in generateOrbTexts() ! : ${l.orbs.contentDeepToString()}")
                     ""
                 } else {
-                    c.getString(R.string.lineup_orb)+"${index+1} - {${getType(data[0])}, ${getTrait(data[1])}, ${getGrade(data[2])}}"
+                    c.getString(R.string.lineup_orb)+"${index+1} - {${getType(data[Data.ORB_TYPE.toInt()])}, ${getTrait(data[Data.ORB_TRAIT.toInt()])}, ${getGrade(data[Data.ORB_GRADE.toInt()])}}"
                 }
             }
         }
@@ -869,25 +871,19 @@ class LUOrbSetting : Fragment() {
     private fun getType(type: Int) : String {
         val c = context ?: return "Unknown Type $type"
 
-        return when(type) {
-            0 -> {
-                c.getString(R.string.orb_atk)
-            }
-            1 -> {
-                c.getString(R.string.orb_def)
-            }
-            2 -> {
-                c.getString(R.string.orb_str)
-            }
-            3 -> {
-                c.getString(R.string.orb_mas)
-            }
-            4 -> {
-                c.getString(R.string.orb_res)
-            }
-            else -> {
-                return "Unknown Type $type"
-            }
+        return when(type.toByte()) {
+            Data.ORB_ATK -> c.getString(R.string.orb_atk)
+            Data.ORB_RES -> c.getString(R.string.orb_def)
+            Data.ORB_STRONG -> c.getString(R.string.orb_str)
+            Data.ORB_MASSIVE -> c.getString(R.string.orb_mas)
+            Data.ORB_RESISTANT -> c.getString(R.string.orb_res)
+            Data.ORB_MINIDEATHSURGE -> c.getString(R.string.orb_mds)
+            Data.ORB_RESWAVE -> c.getString(R.string.orb_rsw)
+            Data.ORB_REFUND -> c.getString(R.string.orb_refn)
+            Data.ORB_RESKB -> c.getString(R.string.orb_rkb)
+            Data.ORB_SOLBUFF -> c.getString(R.string.orb_sol)
+            Data.ORB_BAKILL -> c.getString(R.string.orb_colo)
+            else -> return "Unknown Type $type"
         }
     }
 
@@ -953,8 +949,8 @@ class LUOrbSetting : Fragment() {
         val cv = Canvas(b)
 
         val p = Paint()
-
-        cv.drawBitmap(StaticStore.getResizeb(CommonStatic.getBCAssets().TRAITS[getTextIndex(data[Data.ORB_TRAIT.toInt()])].bimg() as Bitmap, c, 96f), 0f, 0f, p)
+        val ind = if (getTextIndex(data[Data.ORB_TRAIT.toInt()]) != -1) getTextIndex(data[Data.ORB_TRAIT.toInt()]) else CommonStatic.getBCAssets().TRAITS.size - 1
+        cv.drawBitmap(StaticStore.getResizeb(CommonStatic.getBCAssets().TRAITS[ind].bimg() as Bitmap, c, 96f), 0f, 0f, p)
 
         p.alpha = (255 * 0.75).toInt()
 
@@ -1059,22 +1055,34 @@ class LUOrbSetting : Fragment() {
             return
         }
 
-        val s = when(data[Data.ORB_TYPE.toInt()]) {
-            Data.ORB_ATK.toInt() -> c.getString(R.string.orb_atk_desc)
-                .replace("_",Data.ORB_ATK_MULTI[data[2]].toString())
-
-            Data.ORB_RES.toInt() -> c.getString(R.string.orb_def_desc)
-                .replace("_",Data.ORB_RES_MULTI[data[2]].toString())
-
-            Data.ORB_STRONG.toInt() -> c.getString(R.string.orb_str_desc)
-                .replace("_", Data.ORB_STR_ATK_MULTI[data[Data.ORB_GRADE.toInt()]].toString())
-                .replace("-", Data.ORB_STR_DEF_MULTI[data[Data.ORB_GRADE.toInt()]].toString())
-
-            Data.ORB_MASSIVE.toInt() -> c.getString(R.string.orb_mas_desc)
-                .replace("_", Data.ORB_MASSIVE_MULTI[data[Data.ORB_GRADE.toInt()]].toString())
-
-            else -> c.getString(R.string.orb_res_desc)
-                .replace("_", Data.ORB_RESISTANT_MULTI[data[Data.ORB_GRADE.toInt()]].toString())
+        val grade = data[Data.ORB_GRADE.toInt()].toByte()
+        val s = when(data[Data.ORB_TYPE.toInt()].toByte()) {
+            Data.ORB_ATK -> c.getString(R.string.orb_atk_desc)
+                .replace("_",Orb.get(Data.ORB_ATK,grade)[0].toString())
+            Data.ORB_RES -> c.getString(R.string.orb_def_desc)
+                .replace("_",Orb.get(Data.ORB_RES,grade)[0].toString())
+            Data.ORB_STRONG -> c.getString(R.string.orb_str_desc)
+                .replace("_", (Orb.get(Data.ORB_STRONG,grade)[0] / 1000f).toString())
+                .replace("-", Orb.get(Data.ORB_STRONG,grade)[1].toString())
+            Data.ORB_MASSIVE -> c.getString(R.string.orb_mas_desc)
+                .replace("_", (Orb.get(Data.ORB_MASSIVE,grade)[0] / 300f).toString())
+            Data.ORB_RESISTANT -> c.getString(R.string.orb_res_desc)
+                .replace("_", Orb.get(Data.ORB_RESISTANT,grade)[0].toString())
+            Data.ORB_MINIDEATHSURGE -> c.getString(R.string.orb_mds_desc)
+                .replace("_", Orb.get(Data.ORB_MINIDEATHSURGE,grade)[0].toString())
+            Data.ORB_RESWAVE -> c.getString(R.string.orb_rsw_desc)
+                .replace("_", Orb.get(Data.ORB_RESWAVE,grade)[0].toString())
+            Data.ORB_REFUND -> c.getString(R.string.orb_refn_desc)
+                .replace("_", Orb.get(Data.ORB_REFUND,grade)[0].toString())
+            Data.ORB_RESKB -> c.getString(R.string.orb_rkb_desc)
+                .replace("_", Orb.get(Data.ORB_RESKB,grade)[0].toString())
+            Data.ORB_SOLBUFF -> c.getString(R.string.orb_sol_desc)
+                .replace("_", Orb.get(Data.ORB_SOLBUFF,grade)[0].toString())
+                .replace("-", Orb.get(Data.ORB_SOLBUFF,grade)[1].toString())
+            Data.ORB_BAKILL -> c.getString(R.string.orb_colo_desc)
+                .replace("_", (Orb.get(Data.ORB_BAKILL,grade)[0]-100).toString())
+                .replace("-", (100-Orb.get(Data.ORB_BAKILL,grade)[1]).toString())
+            else -> "???"
         }
 
         text.visibility = View.VISIBLE

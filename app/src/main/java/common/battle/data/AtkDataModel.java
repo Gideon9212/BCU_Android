@@ -20,9 +20,8 @@ public class AtkDataModel extends Data implements MaskAtk, BasedCopable<AtkDataM
 
 	@JsonField(block = true)
 	public final CustomEntity ce;
-	@JsonField(backCompat = JsonField.CompatType.FORK, defval = "isEmpty")
+	@JsonField(backCompat = JsonField.CompatType.FORK)
 	public String str = "";
-	@JsonField(defval = "0")
 	public int atk, ld0, ld1, move;
 	@JsonField(defval = "1")
 	public int targ = TCH_N, dire = 1;
@@ -32,13 +31,13 @@ public class AtkDataModel extends Data implements MaskAtk, BasedCopable<AtkDataM
 	public int pre = 1;
 	@JsonField(defval = "true")
 	public boolean range = true;
-	@JsonField(backCompat = JsonField.CompatType.FORK, defval = "0")
+	@JsonField(backCompat = JsonField.CompatType.FORK)
 	public int alt;
 	@JsonField(generic = Trait.class, alias = Identifier.class, backCompat = JsonField.CompatType.FORK, defval = "isEmpty")
-	public SortedPackSet<Trait> traits = new SortedPackSet<>(); //Gives attacks their own typings
+	public SortedPackSet<Trait> traits = new SortedPackSet<>();//Gives attacks their own typings
 
-	@JsonField(defval = "null")
-	public Identifier<Music> audio, audio1;
+	@JsonField(generic = Identifier.class, defval = "isEmpty")
+	public SortedPackSet<Identifier<Music>> audios = new SortedPackSet<>();//Gives custom audio to attacks
 
 	@JsonField(defval = "isBlank")
 	public Proc proc = Proc.blank();
@@ -58,15 +57,14 @@ public class AtkDataModel extends Data implements MaskAtk, BasedCopable<AtkDataM
 		ld1 = adm.ld1;
 		range = adm.range;
 		traits = new SortedPackSet<>(adm.traits);
-		traits.removeIf(t -> !(t.id.pack.equals(ene.getPack().getID().pack) || UserProfile.getUserPack(ene.getPack().getID().pack).desc.dependency.contains(t.id.pack)));
+		traits.removeIf(t -> !(t.id.pack.equals(Identifier.DEF) || t.id.pack.equals(ce.getPack().getID().pack) || UserProfile.getUserPack(ce.getPack().getID().pack).desc.dependency.contains(t.id.pack)));
 		dire = adm.dire;
 		count = adm.count;
 		targ = adm.targ;
 		alt = adm.alt;
 		move = adm.move;
 		proc = adm.proc.clone();
-		audio = adm.audio;
-		audio1 = adm.audio1;
+		audios = new SortedPackSet<>(adm.audios);
 	}
 
 	protected AtkDataModel(CustomEntity ene, MaskEntity me, int i) {
@@ -217,10 +215,13 @@ public class AtkDataModel extends Data implements MaskAtk, BasedCopable<AtkDataM
 	}
 
 	@Override
-	public Identifier<Music> getAudio(boolean sec) {
-		return sec ? audio1 : audio;
+	public Identifier<Music> getAudio() {
+		if (audios.isEmpty())
+			return null;
+		return audios.get(audios.size() == 1 ? 0 : (int)(Math.random() * audios.size()));
 	}
 
+	@SuppressWarnings("unchecked")
 	@JsonDecoder.OnInjected
 	public void onInjected(JsonObject jobj) {
 		if (proc == null)
@@ -230,6 +231,10 @@ public class AtkDataModel extends Data implements MaskAtk, BasedCopable<AtkDataM
 			if ((ce instanceof CustomUnit && spTrait && dire == -1) || (ce instanceof CustomEnemy && ((spTrait && dire == 1) || (!spTrait && dire == -1))))
 				traits.addAll(ce.traits);
 		}
+		if (jobj.has("audio"))
+			audios.add((Identifier<Music>)JsonDecoder.decode(jobj.get("audio"), Identifier.class));
+		if (jobj.has("audio1"))
+			audios.add((Identifier<Music>)JsonDecoder.decode(jobj.get("audio1"), Identifier.class));
 		if (proc.WARP.dis_1 < proc.WARP.dis)
 			proc.WARP.dis_1 = proc.WARP.dis;
 	}

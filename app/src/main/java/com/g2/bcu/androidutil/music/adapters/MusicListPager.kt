@@ -1,5 +1,6 @@
 package com.g2.bcu.androidutil.music.adapters
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,13 +19,15 @@ import common.util.stage.Music
 
 class MusicListPager : Fragment() {
     private var pid = Identifier.DEF
+    private var sele = false
 
     companion object {
-        fun newIntance(pid: String) : MusicListPager {
+        fun newIntance(pid: String, sele : Boolean) : MusicListPager {
             val mlp = MusicListPager()
             val bundle = Bundle()
 
             bundle.putString("pid", pid)
+            bundle.putBoolean("sele", sele)
 
             mlp.arguments = bundle
 
@@ -36,6 +39,7 @@ class MusicListPager : Fragment() {
         val view = inflater.inflate(R.layout.entity_list_pager, container, false)
 
         pid = arguments?.getString("pid") ?: Identifier.DEF
+        sele = arguments?.getBoolean("sele") ?: false
         val ac = activity ?: return view
 
         val list = view.findViewById<ListView>(R.id.entitylist)
@@ -55,21 +59,34 @@ class MusicListPager : Fragment() {
             }
 
             val adapter = MusicListAdapter(ac, names, pid, false)
-
             list.adapter = adapter
 
             list.onItemClickListener = AdapterView.OnItemClickListener { _, _, pos, _ ->
-                val intent = Intent(ac, MusicPlayer::class.java)
-
-                if(list.adapter !is MusicListAdapter)
+                if (list.adapter !is MusicListAdapter)
                     return@OnItemClickListener
-
                 val m = (list.adapter as MusicListAdapter).getItem(pos) ?: return@OnItemClickListener
 
-                intent.putExtra("Data", JsonEncoder.encode(m).toString())
-
-                ac.startActivity(intent)
+                if (sele) {
+                    val intent = Intent()
+                    intent.putExtra("Data", JsonEncoder.encode(m).toString())
+                    ac.setResult(Activity.RESULT_OK, intent)
+                    ac.finish()
+                } else {
+                    val intent = Intent(ac, MusicPlayer::class.java)
+                    intent.putExtra("Data", JsonEncoder.encode(m).toString())
+                    ac.startActivity(intent)
+                }
             }
+            if (sele)
+                list.onItemLongClickListener = AdapterView.OnItemLongClickListener { _, _, pos, _ ->
+                    if (list.adapter !is MusicListAdapter)
+                        return@OnItemLongClickListener false
+                    val m = (list.adapter as MusicListAdapter).getItem(pos) ?: return@OnItemLongClickListener false
+                    val intent = Intent(ac, MusicPlayer::class.java)
+                    intent.putExtra("Data", JsonEncoder.encode(m).toString())
+                    ac.startActivity(intent)
+                    true
+                }
         } else {
             list.visibility = View.GONE
         }

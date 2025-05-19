@@ -12,7 +12,6 @@ import common.util.unit.Trait;
 @JsonClass(noTag = NoTag.LOAD)
 public abstract class DataEntity extends Data implements MaskEntity {
 
-	@JsonField(defval = "0")
 	public int hp, range, will;
 	@JsonField(defval = "1")
 	public int hb = 1;
@@ -22,7 +21,7 @@ public abstract class DataEntity extends Data implements MaskEntity {
 	public int width = 320;
 	@JsonField(defval = "-1")
 	public int loop = -1;
-	@JsonField(backCompat = JsonField.CompatType.FORK, defval = "0")
+	@JsonField(backCompat = JsonField.CompatType.FORK)
 	public int tba, abi;
 
 	@JsonField(defval = "this.defSoul")
@@ -73,7 +72,7 @@ public abstract class DataEntity extends Data implements MaskEntity {
 
 		if (getProc().IMUWAVE.block == 100)
 			nabi |= 1 << 5;
-		if (getProc().DEMONVOLC.exists())
+		if (getProc().DEMONVOLC.prob > 0)
 			nabi |= 1 << 19;
 		return nabi;
 	}

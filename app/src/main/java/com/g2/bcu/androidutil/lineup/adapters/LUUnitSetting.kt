@@ -99,7 +99,7 @@ class LUUnitSetting : Fragment() {
                 setAppear(chform)
             } else
                 setDisappear(chform)
-            setAppear(spinners[0], spinners[1], plus, row, t, tal, supernprow, chform, levt)
+            setAppear(spinners[0], spinners[1], plus, row, t, tal, supernprow, levt)
 
             val s = GetStrings(requireContext())
 
@@ -218,8 +218,8 @@ class LUUnitSetting : Fragment() {
                 }
             })
 
-            val levels = ArrayList<Int>()
-            for (i in 1 until (f.unit().maxLv) + 1)
+            val levels = ArrayList<Int>(f.unit().maxLv)
+            for (i in 1 .. f.unit().maxLv)
                 levels.add(i)
 
             val adapter = ArrayAdapter(requireContext(), R.layout.spinneradapter, levels)
@@ -236,11 +236,10 @@ class LUUnitSetting : Fragment() {
                             changeSpinner(superTalent[i], lev + levp >= (f as Form).du.pCoin.getReqLv(superTalentIndex[i]))
                     setAtkText(t, hp, atk, s)
                 }
-
                 override fun onNothingSelected(parent: AdapterView<*>) {}
             }
-            val plusLevels = ArrayList<Int>()
-            for (i in 0 until (f.unit().maxPLv) + 1)
+            val plusLevels = ArrayList<Int>(f.unit().maxPLv)
+            for (i in 0 .. f.unit().maxPLv)
                 plusLevels.add(i)
 
             val adapter1 = ArrayAdapter(requireContext(), R.layout.spinneradapter, plusLevels)
