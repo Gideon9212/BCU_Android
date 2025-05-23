@@ -26,7 +26,7 @@ public class Part extends Data implements Cloneable, Comparable<Part> {
 		moves = new int[0][];
 	}
 
-	protected Part(Queue<String> qs, boolean isOld) {
+	protected Part(Queue<String> qs, int[] version) {
 		String[] ss = qs.poll().trim().split(",");
 		for (int i = 0; i < 3; i++)
 			ints[i] = Integer.parseInt(ss[i].trim());
@@ -34,7 +34,7 @@ public class Part extends Data implements Cloneable, Comparable<Part> {
 			name = restrict(ss[ss.length - 1]);
 		else
 			name = "";
-		if (isOld && ints[1] == 8)
+		if (version != null && version[0] < Data.getVer("0.7.8.0") && ints[1] == 8)
 			ints[1] = 53;
 
 		n = Integer.parseInt(qs.poll().trim());
@@ -43,6 +43,8 @@ public class Part extends Data implements Cloneable, Comparable<Part> {
 			ss = qs.poll().trim().split(",");
 			for (int j = 0; j < 4; j++)
 				moves[i][j] = Integer.parseInt(ss[j].trim());
+			if (version != null && version[1] < 13 && moves[i][2] % 2 == 1)//Easing 1 and 3 specifically
+				moves[i][3] = 0;//Just in case
 		}
 		validate();
 	}
@@ -133,8 +135,10 @@ public class Part extends Data implements Cloneable, Comparable<Part> {
 					float realFrame = frame;
 
 					double ti = 1.0 * (realFrame - f0) / (f1 - f0);
-					if (moves[i][2] == 1 || ints[1] == 13 || ints[1] == 14)
+					if ((moves[i][2] == 1 && moves[i][3] == 0) || ints[1] == 13 || ints[1] == 14)
 						ti = 0;
+					else if (moves[i][2] == 1)
+						ti = Math.floor(ti * moves[i][3])/(moves[i][3]);
 					else if (moves[i][2] == 2)
 						if (moves[i][3] >= 0)
 							ti = 1 - Math.sqrt(1 - Math.pow(ti, moves[i][3]));
@@ -151,6 +155,14 @@ public class Part extends Data implements Cloneable, Comparable<Part> {
 							ti = Math.sin(ti * Math.PI / 2);
 						else
 							ti = (1 - Math.cos(ti * Math.PI)) / 2;
+					else if (moves[i][2] == 5) {
+						double omega = (moves[i][3] == 0 ? 0.1 : Math.abs(moves[i][3]));
+						double theta = omega * ti;
+						if (moves[i][3] >= 0)
+							ti = (1 - Math.pow(1-ti,2) * (2/omega*Math.sin(theta) + Math.cos(theta)));
+						else
+							ti = -(Math.pow(ti,2) * (2/omega*Math.sin(theta) + Math.cos(theta)));
+					}
 
 					if ((ints[1] == 2 || ints[1] == 4 || ints[1] == 5) && v1 < v0)
 						vd = (int) Math.ceil((v1 - v0) * ti + v0);
@@ -205,12 +217,17 @@ public class Part extends Data implements Cloneable, Comparable<Part> {
 		double sum = 0;
 		for (int j = low; j <= high; j++) {
 			double val = moves[j][1] * 4096;
+			if (moves[i][3] > 0)
+				val *= 1+(moves[i][3]*0.1);
 			for (int k = low; k <= high; k++)
 				if (j != k)
 					val *= 1.0 * (frame - moves[k][0]) / (moves[j][0] - moves[k][0]);
 			sum += val;
 		}
-		return (int) (sum / 4096);
+		double div = 4096;
+		if (moves[i][3] < 0)
+			div *= 1+(-moves[i][3]*0.1);
+		return (int) (sum / div);
 	}
 
 }

@@ -101,7 +101,7 @@ class MaAnimEditor : AppCompatActivity() {
                     if(name.endsWith(".txt") || name.endsWith(".mamodel")) {
                         val fl = File(StaticStore.getExternalPack(this), name)
                         if (fl.exists()) {
-                            val imc = MaAnim.newIns(FDFile(fl), false)
+                            val imc = MaAnim.newIns(FDFile(fl), null)
                             tempFunc?.invoke(imc, name.substring(0, name.indexOf('.')))
                         }
                     }

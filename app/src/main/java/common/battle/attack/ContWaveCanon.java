@@ -12,7 +12,10 @@ import java.util.Set;
 
 public class ContWaveCanon extends ContWaveAb {
 
-	private final int canid;
+	// guessed attack point compared from BC
+	private static final int attack = 2;
+	private final int canid, extr;
+	private boolean snd = true, at = true;
 
 	// used only by normal and zombie cannon
 	public ContWaveCanon(AttackWave a, float p, int id) {
@@ -32,6 +35,7 @@ public class ContWaveCanon extends ContWaveAb {
 			anim.setTime(1);
 			maxt -= 1;
 		}
+		extr = anim.len() + maxt;
 		if (t > 0)
 			update(false);
 	}
@@ -56,11 +60,11 @@ public class ContWaveCanon extends ContWaveAb {
 	@Override
 	public void update(boolean nini) {
 		tempAtk = false;
-		// guessed attack point compared from BC
-		int attack = 2;
 		// guessed wave block time compared from BC
-		if (t == 0)
+		if (snd) {
 			CommonStatic.setSE(soundEffect);
+			snd = false;
+		}
 		if (t >= 1 && t <= attack) {
 			atk.capture();
 			for (AbEntity e : atk.capt)
@@ -79,13 +83,13 @@ public class ContWaveCanon extends ContWaveAb {
 		}
 		if (!activate)
 			return;
-		if (t == W_TIME && atk.getProc().WAVE.lv > 0)
+		if (at && t >= W_TIME && atk.getProc().WAVE.lv > 0)
 			nextWave(t - W_TIME);
-		if (t >= attack) {
+		if (t >= attack && t < maxt) {
 			sb.getAttack(atk);
 			tempAtk = true;
 		}
-		if (maxt == t)
+		if (extr <= t)
 			deactivate(null);
 		updateAnimation();
 		if (nini)
@@ -100,6 +104,8 @@ public class ContWaveCanon extends ContWaveAb {
 
 	@Override
 	protected void nextWave(float wTime) {
+		at = false;
+		atk.getProc().WAVE.lv--;
 		float np = pos - NYRAN[canid];
 		new ContWaveCanon(new AttackWave(atk.attacker, atk, np, NYRAN[canid]), np, canid, (int)(maxt - t + wTime), waves);
 	}

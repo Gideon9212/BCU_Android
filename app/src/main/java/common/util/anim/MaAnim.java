@@ -13,12 +13,12 @@ import java.util.Queue;
 
 public class MaAnim extends Data implements BattleStatic {
 
-	public static MaAnim newIns(FileData f, boolean isOld) {
+	public static MaAnim newIns(FileData f, int[] version) {
 		if(f == null)
 			return new MaAnim();
 
 		try {
-			return new MaAnim(f.readLine(), isOld);
+			return new MaAnim(f.readLine(), version);
 		} catch (Exception e) {
 			System.out.println("Error reading " + f.getPath());
 			e.printStackTrace();
@@ -27,7 +27,7 @@ public class MaAnim extends Data implements BattleStatic {
 	}
 
 	public static MaAnim newIns(String str) {
-		return new MaAnim(VFile.readLine(str), false);
+		return new MaAnim(VFile.readLine(str), null);
 	}
 
 	public int n;
@@ -40,7 +40,7 @@ public class MaAnim extends Data implements BattleStatic {
 		parts = new Part[0];
 	}
 
-	public MaAnim(@Nullable Queue<String> qs, boolean isOld) {
+	public MaAnim(@Nullable Queue<String> qs, int[] version) {
 		if (qs != null) {
 			qs.poll();
 			qs.poll();
@@ -50,7 +50,7 @@ public class MaAnim extends Data implements BattleStatic {
 			parts = new Part[n];
 
 			for (int i = 0; i < n; i++)
-				parts[i] = new Part(qs, isOld);
+				parts[i] = new Part(qs, version);
 
 			validate();
 		} else {

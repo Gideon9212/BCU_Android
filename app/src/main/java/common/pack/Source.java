@@ -185,15 +185,15 @@ public abstract class Source {
 		}
 
 		public MaAnim[] getMA() {
-			boolean old = !id.pack.equals("_local") && UserProfile.isOlderPack(UserProfile.getUserPack(id.pack), "0.7.8.0");
+			int[] ver = id.pack.equals("_local") ? null : UserProfile.getUserPack(id.pack).desc.allVersionData();
 			ArrayList<MaAnim> ans = new ArrayList<>();
 			for (int i = 0; i < getBaseUT().length; i++)
-				ans.add(MaAnim.newIns(loader.loadFile(id.base, id, "maanim_" + getBaseUT()[i].toString() + ".txt"), old));
+				ans.add(MaAnim.newIns(loader.loadFile(id.base, id, "maanim_" + getBaseUT()[i].toString() + ".txt"), ver));
 
 			int i = 1;
 			FileData extra = loader.loadFile(id.base, id, "maanim_attack1.txt");
 			while (extra != null) {
-				ans.add(i + 2, MaAnim.newIns(extra, old));
+				ans.add(i + 2, MaAnim.newIns(extra, ver));
 				i++;
 				extra = loader.loadFile(id.base, id, "maanim_attack" + i + ".txt");
 			}

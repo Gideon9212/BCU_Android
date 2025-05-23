@@ -184,6 +184,11 @@ public class AnimCE extends AnimCI {
 		unSave("imgcut remove line");
 	}
 
+	public void reloadAnimations() {
+		partial = false;
+		partial();
+	}
+
 	public void ICedited() {
 		check();
 		parts = imgcut.cut(getNum());

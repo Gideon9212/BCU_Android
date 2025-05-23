@@ -760,7 +760,7 @@ class BattleView(context: Context, field: BattleField, axis: Boolean, private va
     }
 
     private fun pickOneEXStage() : Stage? {
-        val chance = painter.bf.sb.r.nextFloat() * 100.0
+        val chance = painter.bf.sb.r.nextDouble() * 100.0
 
         val st = painter.bf.sb.st
 

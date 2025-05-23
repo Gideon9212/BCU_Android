@@ -54,7 +54,7 @@ public class Music implements Indexable<PackData, Music>, Comparable<Music> {
 	public String toString() {
 		if (id != null) {
 			if (!name.isEmpty())
-				return name + " (" + Data.trio(id.id) + ".ogg - " + id.pack + ")";
+				return Data.trio(id.id) + ".ogg - " + name + " (" + id.pack + ")";
 			return Data.trio(id.id) + ".ogg - " + id.pack;
 		} else
 			return name;

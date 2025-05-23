@@ -330,6 +330,10 @@ public abstract class PackData implements IndexContainer {
 			return 0;
 		}
 
+		public int[] allVersionData() {
+			return new int[]{Data.getVer(BCU_VERSION), FORK_VERSION};
+		}
+
 		@Override
 		public String toString() {
 			return names + " - " + id;

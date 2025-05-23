@@ -3,6 +3,7 @@ package common.util.lang;
 import common.CommonStatic;
 import common.CommonStatic.Lang;
 import common.io.json.JsonClass;
+import common.io.json.JsonDecoder.OnInjected;
 import common.io.json.JsonField;
 import common.util.Data;
 import org.jetbrains.annotations.NotNull;
@@ -90,5 +91,10 @@ public class MultiLangData extends Data {
 
     public boolean empty() {
         return dat.isEmpty();
+    }
+
+    @OnInjected
+    public void inject() {
+        dat.values().removeIf(str -> str.replace("<br>","").replace("\n","").isEmpty());
     }
 }
