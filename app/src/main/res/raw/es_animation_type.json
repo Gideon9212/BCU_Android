@@ -1,0 +1,109 @@
+{
+    "KBEff": {
+        "SW": "Onda jefe",
+        "ASS": "Gatotirador",
+        "KB": "Repulsión"
+    },
+    "UType": {
+        "BURROW_UP": "Desentierre",
+        "BURROW_MOVE": "Excavando",
+        "IDLE": "Inactivo",
+        "KB": "Retroceso",
+        "BURROW_DOWN": "Entierre",
+        "ENTRY": "Entrada",
+        "ATTACK": "Ataque",
+        "WALK": "Caminar",
+        "SOUL": "Alma",
+        "RETREAT": "Retirada",
+        "FOREGROUND": "Primer plano",
+        "BACKGROUND": "Fondo"
+    },
+    "VolcEff": {
+        "DURING": "Activo",
+        "START": "Inicio",
+        "END": "Final"
+    },
+    "ArmorEff": {
+        "BUFF": "Mejorada",
+        "DEBUFF": "Debilitada"
+    },
+    "SpeedEff": {
+        "UP": "Aumentada",
+        "DOWN": "Reducida"
+    },
+    "WaveType": {
+        "DEF": "Predeterminado"
+    },
+    "WeakUpEff": {
+        "UP": "Aumento"
+    },
+    "WarpEff": {
+        "ENTER": "Entrada",
+        "EXIT": "Salida"
+    },
+    "NyType": {
+        "BASE": "Base",
+        "ATK": "Ataque",
+        "EXT": "Extra"
+    },
+    "BarrierEff": {
+        "DESTR": "Destruida",
+        "BREAK": "Rompida",
+        "NONE": "Activa"
+    },
+    "BGWvType": {
+        "ENEMY": "Oleada enemiga",
+        "UNIT": "Oleada aliada"
+    },
+    "ZombieEff": {
+        "DOWN": "Derribado",
+        "REVIVE": "Revivir",
+        "BACK": "Retroceso"
+    },
+    "SniperEff": {
+        "IDLE": "Inactivo",
+        "ATK": "Ataque"
+    },
+    "DefEff": {
+        "DEF": "Predeterminado"
+    },
+    "ShieldEff": {
+        "FULL": "Completo",
+        "HALF": "Mitad",
+        "BROKEN": "Roto",
+        "BREAKER": "Destruido",
+        "REGENERATION": "Regenerado"
+    },
+    "DmgCap": {
+        "FAIL": "Fallo",
+        "SUCCESS": "éxito"
+    },
+    "LethargyEff": {
+        "DOWN": "Debilitar",
+        "UP": "Reforzar"
+    },
+    "RemShieldEff": {
+        "NEAR": "Cerca",
+        "FAR": "Lejos"
+    },
+    "AuraEff": {
+        "ENEDOWN": "Debilitar Enemigo",
+        "ENEUP": "Strengthen Enemigo",
+        "UNIDOWN": "Debilitar Aliado",
+        "UNIUP": "Strengthen Aliado"
+    },
+    "RangeShieldEff": {
+        "SINGLE": "Único objetivo",
+        "AREA": "Ataque de área"
+    },
+    "GuardEff": {
+        "NONE": "Predeterminado",
+        "BREAK": "Rompida"
+    },
+    "BlastEff": {
+        "START": "Inicio",
+        "EXPLODE": "Explocion",
+        "DUMMY": "Marcador",
+        "SINGLE": "Singular"
+    }
+}

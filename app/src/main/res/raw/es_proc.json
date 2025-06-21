@@ -1,0 +1,2063 @@
+{
+    "KB": {
+        "abbr_name": "RP",
+        "full_name": "Repulsión",
+        "tooltip": null,
+        "format": [
+            "[(prob<100){(prob)% de probabilidad de }]Repele[(prob<100){r}] al objetivo",
+            "[(dis>0&dis!=165){ a una distancia de (dis)}(dis<0){ atrayéndolo una distancia de (_abs(dis))}]",
+            "[(time>0&time!=11){ por (_dispTime(time))}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": "Ingresa 0 para usar el valor por defecto"
+            },
+            "dis": {
+                "name": "Distancia",
+                "tooltip": "Ingresa 0 para usar el valor por defecto"
+            }
+        }
+    },
+    "STOP": {
+        "abbr_name": "Parálisis",
+        "full_name": "Parálisis",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }][(mult>=0){Paraliza[(prob<100){r}][(mult>0){ parcialmente por (mult)%}]}(mult<0){Supercarga[(prob<100){r}] por (_abs(mult))%}] al objetivo por (_dispTimeF(time))",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": "La duración actual está sujeta a los valores de los tesoros y rasgos. Establece la duración como negativa para anular solo si la duración de la habilidad es mayor"
+            },
+            "mult": {
+                "name": "Potencia",
+                "tooltip": "Paraliza como en BC si el valor es 0, paraliza parcialmente si el valor esta entre 0 y 100, y aumenta la velocidad del enemigo si el valor es negativo"
+            }
+        }
+    },
+    "SLOW": {
+        "abbr_name": "Ralent.",
+        "full_name": "Ralentización",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }]Ralentiza[(prob<100){r}] por (_dispTimeF(time))",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": "La duración actual está sujeta a los valores de los tesoros y rasgos. Establece la duración como negativa para anular solo si la duración de la habilidad es mayor"
+            }
+        }
+    },
+    "CRIT": {
+        "abbr_name": "Crít",
+        "full_name": "Daño Crítico",
+        "tooltip": "Inflige más daño a enemigos. Véase el campo mult para realizar un ataque similar a la chorrimanguera.",
+        "format": [
+            "[(prob<100){(prob)% de probabilidad de Infligir}(prob==100){Inflige}] un golpe crítico",
+            "[(mult>0&mult!=200){ que inflige un daño de (mult)% al objetivo}",
+            "(mult<0){ que inflige (_abs(mult))% de vitalidad de daño los enemigos metálicos}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Multiplicador",
+                "tooltip": "El valor por defecto es 200. Ingresa un valor negativo para realizar un ataque tipo chorrimanguera que inflige daño porcentual a enemigos metálicos."
+            }
+        }
+    },
+    "WAVE": {
+        "abbr_name": "Oleada",
+        "full_name": "Oleada",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] una oleada [(inverted){invertida }][(pid){de IDs (_toString(pid)) y }]de Nv.(lv)[(hitless){, incluso si este ataque falla}]",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "lv": {
+                "name": "Nivel",
+                "tooltip": null
+            },
+            "hitless": {
+                "name": "Antifalla",
+                "tooltip": "La oleada sera creada incluso si el ataque falla"
+            },
+            "inverted": {
+                "name": "Invertida",
+                "tooltip": "Comienza donde normalmente terminaria, y viceversa"
+            },
+            "pid": {
+                "name": "ID",
+                "tooltip": "Da IDs a la oleada para resistencia basada en ID"
+            }
+        }
+    },
+    "WEAK": {
+        "abbr_name": "Desgaste",
+        "full_name": "Desgaste",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }][(mult>100){Fortalece}(mult<=100){Desgasta}][(prob<100){r}] el ataque del objetivo al [(mult>100){(mult)}(mult<=100){(mult)}]% durante (_dispTimeF(time))[(stackable){ (_left)Acumulable(_right)}]",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Multiplicador",
+                "tooltip": "A qué porcentaje del ataque original se desgastará al objetivo"
+            },
+            "stackable": {
+                "name": "Acumulable",
+                "tooltip": "Hara el efecto mas potente mientras mas veces es aplicado"
+            }
+        }
+    },
+    "BREAK": {
+        "abbr_name": "Rompe B",
+        "full_name": "Rompebarreras",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }]Rompe[(prob<100){r }] Barreras",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            }
+        }
+    },
+    "WARP": {
+        "abbr_name": "Abducción",
+        "full_name": "Abducción",
+        "tooltip": null,
+        "format": ["[(prob<100){(prob)% de probabilidad de Abducir}(prob==100){Abduce}] al objetivo ",
+            "[(dis==dis_1){hacia [(dis<0){delante}(dis>=0){atrás}] por (_dispTime(time)) a una distancia de (_abs(dis))}",
+            "(dis!=dis_1){en cualquier distancia entre (_abs(dis)) hacia [(dis<0){delante}(dis>=0){atrás}] y ",
+            "(_abs(dis_1)) hacia [(dis_1<0){delante}(dis_1>=0){atrás}]}]."],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": "Excluye tiempo de la animación de abducción"
+            },
+            "dis": {
+                "name": "Distancia Mínima",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "Distancia Máxima",
+                "tooltip": null
+            }
+        }
+    },
+    "CURSE": {
+        "abbr_name": "Maldición",
+        "full_name": "Maldición",
+        "tooltip": "Elimina habilidades relacionadas con los rasgos",
+        "format": "[(prob<100){(prob)% de probabilidad de Maldecir}(prob==100){Maldice}] por (_dispTime(time))",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": "La duración actual está sujeta a los valores de los tesoros y rasgos. Establece la duración como negativa para anular solo si la duración de la habilidad es mayor"
+            }
+        }
+    },
+    "STRONG": {
+        "abbr_name": "Inc. atq",
+        "full_name": "Arrebato",
+        "tooltip": null,
+        "format": "Aumenta el ataque por (mult)% [(incremental){gradualmente a medida que la vitalidad restante se aproxima a (health)%}(!incremental){después de perder (health)% vitalidad}]",
+        "class": {
+            "health": {
+                "name": "Salud",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Incremento",
+                "tooltip": null
+            },
+            "incremental": {
+                "name": "Gradual",
+                "tooltip": "Aumenta el ataque mientras mas la vitalidad restante se aproxima al % en lugar de solo aumentarla cuando llega a este"
+            }
+        }
+    },
+    "SPEEDUP": {
+        "abbr_name": "Inc. vel",
+        "full_name": "Adrenalina",
+        "tooltip": "Arrebato, pero afecta la velocidad en lugar del ataque",
+        "format": "Aumenta la velocidad por (mult)% [(incremental){gradualmente a medida que la vitalidad restante se aproxima a (health)%}(!incremental){después de perder (health)% vitalidad}]",
+        "class": {
+            "health": {
+                "name": "Salud",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Incremento",
+                "tooltip": null
+            },
+            "incremental": {
+                "name": "Gradual",
+                "tooltip": "Aumenta la velocidad mientras mas la vitalidad restante se aproxima al % en lugar de solo aumentarla cuando llega a este"
+            }
+        }
+    },
+    "LETHAL": {
+        "abbr_name": "Sobrevivir",
+        "full_name": "Supervivencia",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de Sobrevivir}(prob==100){Sobrevive}] un golpe letal",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            }
+        }
+    },
+    "BURROW": {
+        "abbr_name": "Escarbar",
+        "full_name": "Escarbar",
+        "tooltip": null,
+        "format": "Escarba [(count<0){infinitas veces}(count==1){una vez}(count>1){(count) veces}] hasta una distancia de (dis)",
+        "class": {
+            "count": {
+                "name": "Total de escarb.",
+                "tooltip": "Ingresa -1 para escarbar infinitas veces"
+            },
+            "dis": {
+                "name": "Distancia",
+                "tooltip": "La duración de escarbar se decide por la velocidad y la distancia juntas"
+            }
+        }
+    },
+    "REVIVE": {
+        "abbr_name": "Revivir",
+        "full_name": "Revivir",
+        "tooltip": "El Revivir básico sólo incluye los tres primeros parámetros. El resto se emplea para Revivir a Distancia",
+        "format": [
+            "Revive [(count<0){infinitamente}(count==1){una vez}(count>1){(count) veces}]",
+            " tras (_dispTime(time)) con un (health)% de la salud máxima.",
+            "[(imu_zkill){ Inmune ante la abilidad Matazombis.}]",
+            "[(revive_others){ Esta habilidad se aplicará a otros ",
+            "[(revive_non_zombie){aliados}]",
+            "[(!revive_non_zombie){aliados zombis}] ",
+            "[((_strEqual(range_type,`ALIVE))|(_strEqual(range_type,`FOREVER))){una vez que se encuentren }]",
+            "en el alcance de (dis_0)~(dis_1) ",
+            "[((_strEqual(range_type,`ACTIVE))){cuando esta entidad esté en la fase y se encuentre caminando/esperando/atacando}]",
+            "[((_strEqual(range_type,`PRESENT))){cuando esta entidad esté presente en la fase}]",
+            "[((_strEqual(range_type,`ALIVE))){siempre y cuando esta entidad esté presente en la fase}]",
+            "[((_strEqual(range_type,`FOREVER))){efectivamente siempre}].}]"
+        ],
+        "class": {
+            "count": {
+                "name": "Suma de revi.",
+                "tooltip": "Ingresa -1 para revivir infinitas veces"
+            },
+            "time": {
+                "name": "Demora",
+                "tooltip": null
+            },
+            "health": {
+                "name": "Salud",
+                "tooltip": "Salud en porcentaje tras revivir"
+            },
+            "dis_0": {
+                "name": "Distancia Mínima",
+                "tooltip": "Avanzado: Punto 0 de Revivir a Distancia. Aplicable solo cuando revivir a otros esté activado"
+            },
+            "dis_1": {
+                "name": "Distancia Máxima",
+                "tooltip": "Avanzado: Punto 1 de Revivir a Distancia. Aplicable solo cuando revivir a otros esté activado"
+            },
+            "range_type": {
+                "name": "Tipo de alcance",
+                "tooltip": [
+                    "Aplicable solo cuando revivir a otros esté activado. ",
+                    "0 para ser efectivo en el alcance establecido en estado normal. ",
+                    "1 para ser efectivo en el alcance establecido cuando esté presente en la fase. ",
+                    "2 para ser efectivo para aliados una vez pasado el alcance siempre y cuando esté en la fase. ",
+                    "3 para ser efectivo para aliados una vez pasado el alcance permanentemente."
+                ],
+                "options": ["Normal","Present","Alive","Permanent"]
+            },
+            "imu_zkill": {
+                "name": "Imu. MataZ",
+                "tooltip": "Inmune ante la habilidad Matazombis"
+            },
+            "revive_non_zombie": {
+                "name": "No zombis",
+                "tooltip": "Revive a no zombis también. Aplicable solo cuando revivir a otros esté activado"
+            },
+            "revive_others": {
+                "name": "Revivir otros",
+                "tooltip": "Punto alternativo para la característica de revivir a distancia"
+            }
+        }
+    },
+    "IMUKB": {
+        "abbr_name": "Imu. Rep",
+        "full_name": "Inmune/Resistente ante Repulsión",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Repulsión",
+            "[(mult<100&mult>0){ (_left)Reduce la distancia un (mult)%(_right)}(mult<0){ (_left)Aumenta la distancia un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Repulsión",
+            "[(block<100&block>0){ (_left)Reduce la distancia un (block)%(_right)}(block<0){ (_left)Aumenta la distancia un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la distancia entre todas las unidades. Fija a 100 para bloquear totalmente la Repulsión"
+            }
+        }
+    },
+    "IMUSTOP": {
+        "abbr_name": "Imu. Para",
+        "full_name": "Inmune/Resistente ante Parálisis",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Parálisis",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Parálisis",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la duración entre todas las unidades. Fija a 100 para bloquear totalmente la Parálisis"
+            }
+        }
+    },
+    "IMUSLOW": {
+        "abbr_name": "Imu. Ralent",
+        "full_name": "Inmune/Resistente ante Ralentización",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Ralentización",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Ralentización",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la duración entre todas las unidades. Fija a 100 para bloquear totalmente la Ralentización"
+            }
+        }
+    },
+    "IMUWAVE": {
+        "abbr_name": "Imu. Oleada",
+        "full_name": "Inmune/Resistente ante Oleadas",
+        "tooltip": null,
+        "format": [
+            "[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Oleadas[(pid){ de IDs (_toString(pid))}]",
+            "[(mult<100&mult>0){ (_left)Reduce el daño recibido por (mult)%(_right)}(mult<0){ (_left)Aumenta el daño recibido por (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Detiene}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Oleadas[(block==0&pid){ de IDs (_toString(pid))}]",
+            "[(block<100&block>0){ (_left)Reduce el daño por (block)%(_right)}(block<0){ (_left)Aumenta el daño por (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la duración entre todas las unidades. Fija a 100 para bloquear oleadas"
+            },
+            "pid": {
+                "name": "ID",
+                "tooltip": "Hace que la resistencia solo aplique a oleadas que contengan uno de estos IDs. ID 0 permite resistir oleadas sin IDs"
+            }
+        }
+    },
+    "IMUWEAK": {
+        "abbr_name": "Imu. Desgaste",
+        "full_name": "Inmune/Resistente ante Desgaste",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante el Desgaste",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Desgaste",
+            "[(block<100&block>0){ (_left)Reduce la duración um (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]",
+            "[(focus.effect!=0){. Solo afecta a [(focus.effect>0){disminuciones.}(focus.effect<0){aumentos.}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la duración entre todas las unidades. Fija a 100 para bloquear totalmente el Desgaste"
+            },
+            "focus": {
+                "name": "Ignorar",
+                "tooltip": "0 = Resiste aumentos y disminuciones, 1 = Solo resiste disminuciones, -1 = Solo resiste aumentos"
+            }
+        }
+    },
+    "IMUWARP": {
+        "abbr_name": "Imu. Abduc",
+        "full_name": "Inmune/Resistente ante Abducción",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Abducción",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Abducción",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la duración entre todas las unidades. Fija a 100 para bloquear totalmente la Abducción"
+            }
+        }
+    },
+    "IMUCURSE": {
+        "abbr_name": "Imu. Mald.",
+        "full_name": "Inmune/Resistente ante Maldición",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Maldición",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Maldición",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la duración entre todas las unidades. Fija a 100 para bloquear totalmente la Maldición"
+            }
+        }
+    },
+    "IMUSEAL": {
+        "abbr_name": "Imu. Sellar",
+        "full_name": "Inmune/Resistente ante Sellamiento",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Sellamiento",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Sellamiento",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la duración entre todas las unidades. Fija a 100 para bloquear totalmente el Sellado"
+            }
+        }
+    },
+    "IMUSUMMON": {
+        "abbr_name": "Imu. Invoc",
+        "full_name": "Inmune/Resistente ante Invocación",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante la Invocación con el parámetro Tras golpear/Tras eliminar",
+            "[(mult<100&mult>0){ (_left)Reduce un (mult)% de la fuerza de la entidad invocada(_right)}(mult<0){ (_left)Las entidades invocadas serán un (_abs(mult))% más fuertes(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Invocación",
+            "[(block<100&block>0){ (_left)Reduce un (block)% de la fuerza de la entidad invocada(_right)}(block<0){ (_left)Las entidades invocadas serán un (_abs(block))% más fuertes(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": "Solo aplica a invocaciones Tras golpear/Tras eliminar."
+            },
+            "block": {
+                "name": "Bloquear",
+                "tooltip": "Establece de 1 a 99 para reducir la fuerza de todas las entidades invocadas. Fija a 100 para bloquear totalmente el Sellado"
+            }
+        }
+    },
+    "SNIPER": {
+        "abbr_name": "Francotir.",
+        "full_name": "Repulsión estilo Gatotirador",
+        "tooltip": "Esta habilidad ignora la Inmunidad ante Repulsión.",
+        "format": "[(prob<100){(prob)% de probabilidad de }]Repele[(prob<100){r}] al objetivo estilo gatotirador",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            }
+        }
+    },
+    "TIME": {
+        "abbr_name": "Tiempo",
+        "full_name": "Detener Tiempo",
+        "tooltip": "A diferencia de la Parálisis, esta habilidad paraliza el combate, incluyendo oleadas, la obtención de dinero, los enfriamientos de gatos y enemigos, etc.",
+        "format": ["[(prob<100){(prob)% de probabilidad de [(intensity==100){Detener}(intensity>0&intensity<100){Ralentizar}(intensity<0){Acelerar}]}",
+            "(prob==100){[(intensity==100){Detiene}(intensity>0&intensity<100){Ralentiza}(intensity<0){Acelera}]}] el tiempo[(intensity!=100){ a (_abs(intensity))%}] por (_dispTime(time))"],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "intensity": {
+                "name": "Consistencia",
+                "tooltip": "Si el valor es menor que la duración, habran intervalos de tiempo en el que toda unidad podra moverse. Si el valor es negativo, toda entidad immune a la detencion de tiempo ira mas rapido"
+            }
+        }
+    },
+    "SEAL": {
+        "abbr_name": "Sellar",
+        "full_name": "Sellado",
+        "tooltip": "El Sellado desactivará todas las habilidades exceptuando Escarbar, Metal, Autodestrucción, Sólo Ataca y Revivir básico",
+        "format": "[(prob<100){(prob)% de probabilidad de }]Sella[(prob<100){r}] al objetivo por (_dispTime(time))",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": "La duración actual está sujeta a los valores de los tesoros y rasgos. Establece la duración como negativa para anular solo si la duración de la habilidad es mayor"
+            }
+        }
+    },
+    "SUMMON": {
+        "abbr_name": "Invoc.",
+        "full_name": "Invocación",
+        "tooltip": null,
+        "format": [
+            "(prob)% de probabilidad de invocar (amount) (_summonMagnification(fix_buff,mult,id)) (_entity(id,form)) tras (_dispTime(time)), ",
+            "invocadas a un alcance de (dis)[(max_dis!=dis){ ~ (max_dis)}] alejado de",
+            "[(on_kill|on_hit){ cada objetivo}(!on_hit&!on_kill){l invocador}] ",
+            "[(on_hit){golpeado}(on_kill&!on_hit){eliminado}",
+            "(!on_kill&!on_hit){en este ataque}], ",
+            "[(same_health){Las entidades invocadas tendrán la misma salud que esta entidad, }]",
+            "y[(ignore_limit){ no}] se ven restrictas por el límite de entidades de la fase. ",
+            "Las entidades invocadas estarán en [(min_layer==max_layer){la misma capa que esta entidad}",
+            "(min_layer!=max_layer){una capa aleatoria}]. ",
+            "[(!(_strEqual(anim_type,`NONE))){La invocación mostrará la animación de [((_strEqual(anim_type,`WARP))){abducción}",
+            "((_strEqual(anim_type,`BURROW))|(_strEqual(anim_type,`BURROW_DISABLE))){desentierre[(anim_type==3){ y desactivará ",
+            "escarbar para las entidades invocadas}]}((_strEqual(anim_type,`ENTRY))){entrada}((_strEqual(anim_type,`ATTACK))){ataque}",
+            "((_strEqual(anim_type,`EVERYWHERE_DOOR))){Telepuerta}].}][(bond_hp){El invocante conecta con las entidades invocadas.}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "id": {
+                "name": "ID",
+                "tooltip": null
+            },
+            "dis": {
+                "name": "Distancia",
+                "tooltip": "Distancia desde esta entidad por defecto, la distancia desde el objetivo si Tras golpear o Tras eliminar está activado"
+            },
+            "max_dis": {
+                "name": "Distancia Máxima",
+                "tooltip": "Distancia Máxima desde esta entidad por defecto, la distancia máxima desde el objetivo si Tras golpear o Tras eliminar está activado"
+            },
+            "mult": {
+                "name": "Fuerza",
+                "tooltip": "La fuerza de la entidad invocada, relativa a esta entidad por defecto, la fuerza será fija si activas el parámetro"
+            },
+            "time": {
+                "name": "Demora",
+                "tooltip": "La demora de esta invocación"
+            },
+            "min_layer": {
+                "name": "Capa máxima",
+                "tooltip": "lowest layer the summoned entity will be at. Set to -1 to use same layer as this entity"
+            },
+            "max_layer": {
+                "name": "Capa máxima",
+                "tooltip": "highest layer the summoned entity will be at. Set to -1 to use same layer as this entity"
+            },
+            "anim_type": {
+                "name": "Anim. invocado",
+                "tooltip": [
+                    "La animación de la invocación, 0 para no mostrar animaciones, 1 para mostrar la animación de abducción,",
+                    " 2 para mostrar la animación de desentierre, 3 para mostrar la animación de desentierre y desactivar la habilidad,",
+                    " 4 para animación de entrada, 5 para animación de ataque, 6 para animación de Telepuerta",
+                    " La entidad invocada debe tener una animación de desentierre para usar 2 or 3."
+                ],
+                "options": ["None","Warp","Burrow","Burrow (Disable)","Entry","Attack","Telepuerta"]
+            },
+            "ignore_limit": {
+                "name": "Ignorar límite",
+                "tooltip": "Ignora el límite de entidades del nivel. Ten cuidado, no invoques demasiado o podría romper el juego"
+            },
+            "fix_buff": {
+                "name": "Fuerza fija",
+                "tooltip": [
+                    "Usa un multiplicador fijo para la fuerza en vez de uno relativo.",
+                    "Ej.: Invocador al 200% y fuerza de 300% significaría una fuerza de 600% si fuerza fija está desactivada y fuerza de 300% si fuerza fija está activada"
+                ]
+            },
+            "same_health": {
+                "name": "Misma salud",
+                "tooltip": "Establece que la unidad invocada tenga la misma salud que esta entidad."
+            },
+            "bond_hp": {
+                "name": "Coneccion",
+                "tooltip": "Al activar, el invocante tambien recibira todo ataque que la entidad invocada reciba"
+            },
+            "on_hit": {
+                "name": "Tras golpear",
+                "tooltip": [
+                    "Invoca si y sólo si este ataque golpea objetivos.",
+                    " Invocación por cada objetivo atacado, las distancias de origen son relativas a las posiciones de los blancos.",
+                    " Las invocaciones múltiples son posibles para ataques de área."
+                ]
+            },
+            "on_kill": {
+                "name": "Tras eliminar",
+                "tooltip": [
+                    "Invoca si y sólo si este ataque mata objetivos.",
+                    " Invocación por cada objetivo eliminado, las distancias de origen son relativas a las posiciones de los blancos.",
+                    " Las invocaciones múltiples son posibles para ataques de área."
+                ]
+            },
+            "pass_proc": {
+                "name": "Pasaefectos",
+                "tooltip": "Pasa efectos inflingidos a entidades invocadas. 0 = no, 1 = del invocador, 2 = de entidades atacadas, 3 = de ambos",
+                "options": ["From Summoner","From Attacked"]
+            },
+            "amount": {
+                "name": "Amount",
+                "tooltip": "La cantidad a invocar."
+            },
+            "form": {
+                "name": "Forma",
+                "tooltip": "Establece qué forma de la unidad deseas invocar. Sólo aplicable a Unidades."
+            }
+        }
+    },
+    "MOVEWAVE": {
+        "abbr_name": "Atq móv",
+        "full_name": "Ataque Móvil",
+        "tooltip": null,
+        "format": [
+            "[(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] un ataque móvil[(pid){ con IDs (_toString(pid))}], ",
+            "originada a una distancia de (dis) de esta entidad, con anchura de (width), ",
+            " velocidad de (speed), e intervalo de (_dispTime(itv)) por (_dispTime(time))"
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "speed": {
+                "name": "Velocidad",
+                "tooltip": "en unidades por frame"
+            },
+            "width": {
+                "name": "Anchura",
+                "tooltip": "la anchura de la caja, de izquierda a derecha"
+            },
+            "time": {
+                "name": "Tiempo",
+                "tooltip": null
+            },
+            "dis": {
+                "name": "Distancia",
+                "tooltip": "describe el lugar del centro de la caja de golpes tras iniciarse"
+            },
+            "itv": {
+                "name": "Intervalo",
+                "tooltip": null
+            },
+            "pid": {
+                "name": "ID",
+                "tooltip": "Da IDs al ataque móvil para resistencia basada en ID"
+            }
+        }
+    },
+    "IMUMOVING": {
+        "abbr_name": "Imu. mov",
+        "full_name": "Inmune/Resistente a Ataque Móvil",
+        "tooltip": null,
+        "format": "[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Ataques Móviles[(pid){ de IDs (_toString(pid))}][(mult<100&mult>0){ (_left)Reduce el daño recibido un (mult)%(_right)}(mult<0){ (_left)Aumenta el daño recibido un (_abs(mult))%(_right)}]",
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "pid": {
+                "name": "ID",
+                "tooltip": "Hace que la resistencia solo aplique a ataques móviles que contengan uno de estos IDs. ID 0 permite resistir ataques móviles sin IDs"
+            }
+        }
+    },
+    "THEME": {
+        "abbr_name": "Fondo",
+        "full_name": "Cambio de Fondo",
+        "tooltip": null,
+        "format": [
+            "[(prob<100){(prob)% de probabilidad de }]Cambia[(prob<100){r}] [(id){el fondo a (_id(id))[(mus){ y }]}][(id){la musica a (_id(mus))}] por (_dispTime(time))",
+            "[(kill){ y eliminar a todas las entidades del campo}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Tiempo",
+                "tooltip": "Tiempo hasta que el fondo cambie al original"
+            },
+            "id": {
+                "name": "ID fondo",
+                "tooltip": null
+            },
+            "mus": {
+                "name": "ID Música",
+                "tooltip": null
+            },
+            "kill": {
+                "name": "Eliminar",
+                "tooltip": "Eliminar a todas las entidades de la fase"
+            }
+        }
+    },
+    "POISON": {
+        "abbr_name": "Veneno",
+        "full_name": "Veneno",
+        "tooltip": null,
+        "format": [
+            "[(prob<100){(prob)% de probabilidad de [(damage_type==2){Herir}]}][(damage_type==0){Quema}(damage_type==1){Envenena}",
+            "(prob==100&damage_type==2){Hiere}(damage_type==3){Corroe}][(prob<100&damage_type!=2){r}] al objetivo por (_dispTime(time)), ",
+            "realizando [(damage_type==0){un daño de (damage) cada }(damage_type>0){un daño igual al (damage)% de la salud ",
+            "[(damage_type==1){total}(damage_type==2){actual}(damage_type==3){perdida}] cada }](_dispTime(itv)).",
+            " Este efecto [(unstackable){no }]es acumulable[(ignoreMetal){, [(!modifAffected){e }]ignora la habilidad metal}]",
+            "[(modifAffected){, y su daño se ve afectado por cualquier efecto que altere el daño del ataque original}]."
+        ],
+        "class": {
+            "prob": {
+                "name": "probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "tiempo",
+                "tooltip": null
+            },
+            "damage": {
+                "name": "daño",
+                "tooltip": "Si es porcentual o no depende del tipo de daño"
+            },
+            "itv": {
+                "name": "intervalo",
+                "tooltip": null
+            },
+            "damage_type": {
+                "name": "tipo de daño",
+                "tooltip": "0 para daño fijo (quemadura), 1 para restar un % de la salud total (veneno), 2 para un % de la salud actual, 3 para un % de la salud perdida (corrosión).",
+                "options": ["Burn (Fixed)","Poison (HP% Total)","Bleed (HP% Current)","Corrode (HP% Lost)"]
+            },
+            "unstackable": {
+                "name": "No acumulable",
+                "tooltip": null
+            },
+            "ignoreMetal": {
+                "name": "Ignorar Metal",
+                "tooltip": "Activa esto para infligir daño regular a enemigos metálicos."
+            },
+            "modifAffected": {
+                "name": "Considerar Habilidades",
+                "tooltip": "Activa esto para ver el daño de veneno ser afectado por habilidades que modifiquen el daño como superioridad o daño crítico."
+            }
+        }
+    },
+    "IMUPOI": {
+        "abbr_name": "Imu. Veneno",
+        "full_name": "Inmune/Resistente ante el Veneno",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Veneno",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador}(block<100&block>0){Absorbedor}(block<0){Aumentador}] de Veneno",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]",
+            "[(focus.effect!=0){. Solo afecta al veneno [(focus.effect>0){perjudicial}(focus.effect<0){curativo}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir el daño gradual. Fija a 100 para bloquear totalmente el veneno"
+            },
+            "focus": {
+                "name": "Ignorar",
+                "tooltip": "0 = Resiste todo tipo de veneno, 1 = Solo resistente ante veneno perjudicial, -1 = Solo resistente ante veneno curativo"
+            }
+        }
+    },
+    "BOSS": {
+        "abbr_name": "Jefe",
+        "full_name": "Onda de Jefe",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] una onda de jefe",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            }
+        }
+    },
+    "CRITI": {
+        "abbr_name": "Imu. crít",
+        "full_name": "Inmunidad ante Daño Crítico",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Daño Crítico",
+            "[(mult<100&mult>0){ (_left)Reduce el daño recibido un (mult)%(_right)}(mult<0){ (_left)Aumenta el daño recibido un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador}(block<100&block>0){Absorbedor}(block<0){Aumentador}] de Daño Crítico",
+            "[(block<100&block>0){ (_left)Reduce el daño recibido un (block)%(_right)}(block<0){ (_left)Aumenta el daño recibido un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir el daño crítico. Fija a 100 para bloquear totalmente los críticos"
+            }
+        }
+    },
+    "SATK": {
+        "abbr_name": "Golpetazo",
+        "full_name": "Golpetazo",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }]Asesta[(prob<100){r}] un golpetazo. (_left)Inflige un (mult)% más de daño(_right)",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            }
+        }
+    },
+    "IMUATK": {
+        "abbr_name": "Evasión",
+        "full_name": "Evasión",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }]Esquiva[(prob<100){r}] ataques por (_dispTime(time))[(cd>0){, con enfriamiento de (_dispTimeF(cd)) por esquivada}]",
+        "class": {
+            "prob": {
+                "name": "probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "duración",
+                "tooltip": null
+            },
+            "cd": {
+                "name": "Enfriamiento",
+                "tooltip": "No podra evadir por esta cantidad de tiempo cuando la evasion termine"
+            }
+        }
+    },
+    "POIATK": {
+        "abbr_name": "Tóxico",
+        "full_name": "Toxicidad",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de Infligir}(prob==100){Inflige}] toxicidad (_left)Inflige un (mult)% de la salud máxima del objetivo(_right)",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            }
+        }
+    },
+    "VOLC": {
+        "abbr_name": "Réplica",
+        "full_name": "Réplica",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] una réplica[(pid){ de ID (_toString(pid))}] por (_dispTime(time)) (_left)Creada desde una distancia de (dis_0) a (dis_1)(_right)[(hitless){, incluso si este ataque falla}]",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "Distancia Mínima",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "Distancia Máxima",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "hitless": {
+                "name": "Antifalla",
+                "tooltip": "La replica sera creada incluso si el ataque falla"
+            },
+            "pid":{
+                "name": "ID",
+                "tooltip": "Da IDs a la réplica para resistencia basada en ID"
+            }
+        }
+    },
+    "IMUPOIATK": {
+        "abbr_name": "Imu. toxic",
+        "full_name": "Inmune/Resistente ante la Toxicidad",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Toxicidad",
+            "[(mult<100&mult>0){ (_left)Reduce el daño recibido un (mult)%(_right)}(mult<0){ (_left)Aumenta el daño recibido un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador}(block<100&block>0){Absorbedor}(block<0){Aumentador}] de Toxicidad",
+            "[(block<100&block>0){ (_left)Reduce el daño recibido un (block)%(_right)}(block<0){ (_left)Aumenta el daño recibido un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir el daño. Fija a 100 para bloquear totalmente la toxicidad"
+            }
+        }
+    },
+    "IMUVOLC": {
+        "abbr_name": "Imu. Réplica",
+        "full_name": "Inmune/Resistente ante Réplicas",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Réplicas[(pid){ de IDs (_toString(pid))}]",
+            "[(mult<100&mult>0){ (_left)Reduce el daño recibido por (mult)%(_right)}(mult<0){ (_left)Aumenta el daño recibido por (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Detiene}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Réplicas[(block==0&pid){ de IDs (_toString(pid))}]",
+            "[(block<100&block>0){ (_left)Reduce el daño por (block)%(_right)}(block<0){ (_left)Aumenta el daño por (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir el daño. Fija a 100 para bloquear Réplica"
+            },
+            "pid": {
+                "name": "ID",
+                "tooltip": "Hace que la resistencia solo aplique a Réplicas que contengan uno de estos IDs. ID 0 permite resistir Réplicas sin IDs"
+            }
+        }
+    },
+    "ARMOR": {
+        "abbr_name": "Rompearmadura",
+        "full_name": "RompeArmadura",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }][(mult<0){Mejora}(mult>=0){Rompe}][(prob<100){r}] la armadura del objetivo por (_dispTime(time)) (_left)El objetivo recibirá (_abs(mult))% [(mult<0){menos}(mult>=0){más}] daño[(stackable){, y es acumulable}](_right)",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "stackable": {
+                "name": "Acumulable",
+                "tooltip": "Hara el efecto mas potente mientras mas veces es aplicado"
+            }
+        }
+    },
+    "SPEED": {
+        "abbr_name": "Prisa",
+        "full_name": "Prisa",
+        "tooltip": null,
+        "format": [
+            "[(prob<100){(prob)% de probabilidad de }]",
+            "[(type==2){Fija}(type!=2){[(speed>=0){Aumenta}(speed<0){Disminu}]}]",
+            "[(prob<100){[(type==2){i}]r}(prob==100&type==2){ye}] la velocidad del objetivo ",
+            "[(type!=2){por}(type==2){a}] [(type==2){(speed)}(type!=2){(_abs(speed))}][(type==1){%}]",
+            " por (_dispTime(time))[(stackable){ (_left)Acumulable(_right)}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "speed": {
+                "name": "Velocidad",
+                "tooltip": null
+            },
+            "stackable": {
+                "name": "Acumulable",
+                "tooltip": "Hara el efecto mas potente mientras mas veces es aplicado"
+            },
+            "type": {
+                "name": "Tipo",
+                "tooltip": "0 para aumentar la velocidad por un valor, 1 para aumentar la velocidad por un porcentaje, 2 para fijar la velocidad a un valor."
+            }
+        }
+    },
+    "IMUARMOR": {
+        "abbr_name": "Imu. Romp.A",
+        "full_name": "Inmune/Resistente ante RompeArmadura",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante RompeArmadura",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador}(block<100&block>0){Absorbedor}(block<0){Aumentador}] de RompeArmadura",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]",
+            "[(focus.effect!=0){. Solo resiste [(focus.effect>0){roturas}(focus.effect<0){fortalecimientos}] de armadura.}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir el daño. Fija a 100 para bloquear totalmente la rotura de armadura"
+            },
+            "focus": {
+                "name": "Ignorar",
+                "tooltip": "0 = Resistente ante roturas y fortalecimientos, 1 = Solo resistente ante roturas, -1 = Solo resistente ante fortalecimientos"
+            }
+        }
+    },
+    "IMUSPEED": {
+        "abbr_name": "Imu.Prisa",
+        "full_name": "Inmune/Resistente ante Prisa",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Prisa",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador}(block<100&block>0){Absorbedor}(block<0){Aumentador}] de Prisa",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]",
+            "[(focus.effect!=0){. Solo resiste [(focus.effect>0){disminuciones.}(focus.effect<0){aumentos.}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir el cambio de velociad. Fija a 100 para bloquear totalmente la Prisa"
+            },
+            "focus": {
+                "name": "Ignorar",
+                "tooltip": "0 = Resistente ante aumentos y disminuciones, 1 = Solo resistente ante disminuciones, -1 = Solo resistente ante aumentos"
+            }
+        }
+    },
+    "MINIWAVE": {
+        "abbr_name": "Minioleada",
+        "full_name": "Minioleada",
+        "tooltip": "Crea una oleada pequeña que se mueve al doble de velocidad de la normal con un parámetro dinámico de multiplicación de daño",
+        "format": "[(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] una minioleada [(inverted){invertida }][(pid){de IDs (_toString(pid)) y }]de Nv.(lv) [(multi!=20){(_left)Inflige al objetivo un (multi)% del ataque del activador(_right)}][(hitless){, incluso si este ataque falla}]",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "lv": {
+                "name": "Nivel",
+                "tooltip": null
+            },
+            "multi": {
+                "name": "Multi",
+                "tooltip": "Porcentaje de ataque del activador.<br>Si multi es 20, tendrá el 20% del ataque del activador. Los valores negativos están permitidos."
+            },
+            "hitless": {
+                "name": "Antifalla",
+                "tooltip": "La minioleada sera creada incluso si el ataque falla"
+            },
+            "inverted": {
+                "name": "Invertida",
+                "tooltip": "Comienza donde normalmente terminaria, y viceversa"
+            },
+            "pid": {
+                "name": "ID",
+                "tooltip": "Da IDs a la oleada para resistencia basada en ID"
+            }
+        }
+    },
+    "DMGCUT": {
+        "abbr_name": "Spr. Armad.",
+        "full_name": "Super Armadura",
+        "tooltip": "Esta habilidad reduce todo el daño que se encuentre debajo de cierto valor a cero.",
+        "format": "[(prob<100){(prob)% de probabilidad de }][(reduction>=0){Reduc}(reduction<0){Aumenta}][(prob<100){[(reduction>=0){i}]r}(prob==100&reduction>=0){e}] [(traitIgnore){todo }]daño menor que [(magnif){(_shield(dmg))}(!magnif){(dmg)}] por (reduction)% [(procs){ y desactivar los efectos del ataque}]",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "dmg": {
+                "name": "Daño",
+                "tooltip": "La cantidad máxima de daño a ser negada."
+            },
+            "reduction": {
+                "name": "% de reducción",
+                "tooltip": "Porcentaje del daño a reducir por."
+            },
+            "traitIgnore": {
+                "name": "Ignorar rasgos",
+                "tooltip": "Cuando esto está activado, la habilidad se podrá activar independientemente del rasgo del atacante."
+            },
+            "procs": {
+                "name": "Ignorar efectos",
+                "tooltip": "Cuando esto está activado, los efectos de los ataques negados también se desactivarán."
+            },
+            "magnif": {
+                "name": "Usar Fuerza",
+                "tooltip": "Activa esto para que la salud de la armadura se vea afectada por el multiplicador de HP de la entidad."
+            }
+        }
+    },
+    "DMGCAP": {
+        "abbr_name": "Escudo M.",
+        "full_name": "Escudo Místico",
+        "tooltip": "Esta habilidad reduce todo el daño que esté por encima de cierta cantidad a dicha cantidad (O lo anula, si 'anular daño' está activado).",
+        "format": "[(prob<100){(prob)% de probabilidad de }][(nullify){Anula[(prob<100){r}][(traitIgnore){ todo}]}(!nullify){Fija[(prob<100){r}]}] daño mayor que [(magnif){(_shield(dmg))}(!magnif){(dmg)}][(!nullify){ a [(magnif){(_shield(dmg))}(!magnif){(dmg)}]}(procs){ e ignorar los efectos del ataque}]",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "dmg": {
+                "name": "Daño",
+                "tooltip": "El daño mínimo a ser limitado."
+            },
+            "traitIgnore": {
+                "name": "Ignorar rasgos",
+                "tooltip": "Cuando esto está activado, esta habilidad puede activarse independientemente del rasgo del enemigo."
+            },
+            "nullify": {
+                "name": "Anular Daño",
+                "tooltip": "Cuando esto está activado, el daño del ataque será negado en vez de ser fijado a la cantidad"
+            },
+            "procs": {
+                "name": "Ignorar efectos",
+                "tooltip": "Cuando esto está activado, los efectos de los ataques negados también se desactivarán."
+            },
+            "magnif": {
+                "name": "Usar Fuerza",
+                "tooltip": "Activa esto para que la salud del escudo se vea afectada por el multiplicador de HP de la entidad."
+            }
+        }
+    },
+    "BARRIER": {
+        "abbr_name": "Barrera",
+        "full_name": "Barrera",
+        "tooltip": "Bloquea todo daño menor que el HP de la barrera. Se romperá si un ataque inflige más daño que su HP",
+        "format": [
+            "Barrera (_left)La barrera tiene [(magnif){(_shield(health))}(!magnif){(health)}] HP",
+            "[(regentime>0){, se regenera (_dispTime(regentime)) después de ser quebrada}]",
+            "[(timeout>0){, la barrera se rompe después de (_dispTime(timeout))}](_right)"
+        ],
+        "class": {
+            "health": {
+                "name": "Salud",
+                "tooltip": "Salud de la barrera"
+            },
+            "regentime": {
+                "name": "Tiempo de Regeneración",
+                "tooltip": "La barrera de la entidad se regenerará después de que un período de tiempo transcurra. Fija a 0 para descativar esta habilidad."
+            },
+            "timeout": {
+                "name": "Límite",
+                "tooltip": "La barrera de la entidad se romperá después de que transcurra un período de tiempo. Fija a 0 para desactivar esta habilidad."
+            },
+            "magnif": {
+                "name": "Usar Fuerza",
+                "tooltip": "Activa esto para que la salud de la barrera se vea afectada por el multiplicador de HP de la entidad."
+            }
+        }
+    },
+    "DEMONSHIELD": {
+        "abbr_name": "Escudo Aku",
+        "full_name": "Escudo Aku",
+        "tooltip": "Bloquea una cierta cantidad de daño. A diferencia de la barrera, esto absorbe daño en vez de negarlo.",
+        "format": "Escudo Aku (_left)El Escudo tiene (_shield(hp)) HP, se regenera con un (regen)% de su HP original cuando la unidad recibe un retroceso(_right)",
+        "class": {
+            "hp": {
+                "name": "Salud",
+                "tooltip": "Salud del escudo"
+            },
+            "regen": {
+                "name": "Regen",
+                "tooltip": "Porcentaje del HP base que regenera tras un retroceso"
+            }
+        }
+    },
+    "SHIELDBREAK": {
+        "abbr_name": "Atrav. Escudo",
+        "full_name": "Atravesar Escudos",
+        "tooltip": "Directamente rompe el Escudo Aku. Ten en cuenta que esto no previene que el escudo se regenere tras un retroceso.",
+        "format": "[(prob<100){(prob)% de probabilidad de }]Rompe[(prob<100){r}] Escudos Aku",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            }
+        }
+    },
+    "COUNTER": {
+        "abbr_name": "Contra",
+        "full_name": "Contraataque",
+        "tooltip": "Inflige daño tras ser atacado.",
+        "format": [
+            "[(prob<100){(prob)% de probabilidad de }]Contraataca[(prob<100){r}], infligiendo un (damage)%[(maxDamage!=0){ (_left)No mayor de (_abs(maxDamage))[(maxDamage<0){, y no mayor que la vitalidad restante de esta unidad}](_right)}]",
+            "[(!useOwnDamage){del daño recibido de un ataque. }(useOwnDamage){del ataque de esta entidad. }][(!(_strEqual(counterWave,`NONE))){ Esta entidad también [((_strEqual(counterWave,`COUNTER)))",
+            "{contraatacará}((_strEqual(counterWave,`REFLECT))){reflejará}] oleadas/réplicas. }][(procType!=0){Este contraataque ",
+            "[(procType==1|procType==3){tendrá}(procType==2){reemplazará}] las habilidades del ataque original[(procType==2){ con las habilidades de esta entidad}(procType==3){ y las habilidades de esta entidad}]. }]",
+            "El contraataque golpeará a [(areaAttack){ todos los enemigos}(!areaAttack){ solo el atacante}][(areaAttack|!outRange){[(!areaAttack){ si se encuentran}]",
+            "[(minRange!=0|maxRange!=0){ de (minRange) a (maxRange) unidades de esta entidad}(minRange==0&maxRange==0){ en el alcance de esta entidad}]}]."
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "damage": {
+                "name": "%Daño",
+                "tooltip": "El porcentaje de daño a reflejar tras ser golpeado."
+            },
+            "minRange": {
+                "name": "Punto ciego",
+                "tooltip": "El contraataque no golpeará nada debajo de este número. Deja esto y Alcance Máx. en 0 para usar el alcance normal de la unidad."
+            },
+            "maxRange": {
+                "name": "Alcance Máx",
+                "tooltip": "El contraataque golpeará todo debajo de este número. Deja esto y Punto ciego en 0 para usar el alcance normal de la unidad."
+            },
+            "procType": {
+                "name": "Tipo de Hab.",
+                "tooltip": "Este parámetro afecta a cómo serán manejadas las habilidades. 0 = Elimina todas las habilidades. 1 = Le devuelve las habilidades al atacante. 2 = Reemplaza los efectos del atacante con los efectos de esta unidad. 3 = Usa tanto los efectos de esta entidad como los del atacante. Inútil si existe un golpe registrado como counter",
+                "options": ["Reflect","Attacker's"]
+            },
+            "counterWave": {
+                "name": "Contraatacar Oleadas",
+                "tooltip": "Alterna la respuesta tras recibir una Oleada o Réplica. 0 = No hacer nada. 1 = Contraatacar. 2 = Reflejar.",
+                "options": ["No","Yes","Reflect"]
+            },
+            "useOwnDamage": {
+                "name": "Usar Atq Propio",
+                "tooltip": "Usa el ataque de esta unidad para los contraataques en vez del daño recibido."
+            },
+            "outRange": {
+                "name": "Ignorar Distancia",
+                "tooltip": "Activa esto y la unidad contraatacará sin importar cómo de lejos se encuentre el atacante."
+            },
+            "areaAttack": {
+                "name": "Ataque de Área",
+                "tooltip": "Activa esto y el contraataque golpeará a todas las entidades en el alcance del contraataque. Si está desactivado, sólo el atacante sufrirá daño."
+            },
+            "maxDamage": {
+                "name": "Limite de daño",
+                "tooltip": "El contraataque no realizara mas de esta cantidad de daño. 0 = no limite. Numero negativo asegura que la cantidad no exceda la vitalidad restante de esta unidad"
+            }
+        }
+    },
+    "DEATHSURGE": {
+        "abbr_name": "Réplica M.",
+        "full_name": "Réplica Mortal",
+        "tooltip": null,
+        "format": ["[(spawns>1){Cada (spawns)to enviado[(prob<100){ tiene}] }][(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] una réplica [(pid){de IDs (_toString(pid)) }]",
+            "por (_dispTime(time)) tras morir (_left)Creada desde el alcance de (dis_0) hasta (dis_1)(_right)"],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "Distancia Mínima",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "Distancia Máxima",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "pid":{
+                "name": "ID",
+                "tooltip": "Da IDs a la réplica para resistencia basada en ID"
+            },
+            "spawns": {
+                "name": "Num. de Envios",
+                "tooltip": "Cantidad de envios por Réplica Mortal"
+            }
+        }
+    },
+    "MINIDEATHSURGE": {
+        "abbr_name": "M.Réplica M.",
+        "full_name": "Mini Réplica Mortal",
+        "tooltip": null,
+        "format": ["[(spawns>1){Cada (spawns)to enviado[(prob<100){ tiene}] }][(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] una miniréplica [(pid){de IDs (_toString(pid)) }]",
+            "por (_dispTime(time)) tras morir (_left)Creada desde el alcance de (dis_0) hasta (dis_1)[(mult!=20){, Inflige al objetivo un (mult)% del ataque del activador}](_right)"],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "Distancia Mínima",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "Distancia Máxima",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Multi",
+                "tooltip": "Porcentaje de ataque del activador.<br>Si multi es 20, tendrá el 20% del ataque del activador. Los valores negativos están permitidos."
+            },
+            "pid":{
+                "name": "ID",
+                "tooltip": "Da IDs a la réplica para resistencia basada en ID"
+            },
+            "spawns": {
+                "name": "Num. de Envios",
+                "tooltip": "Cantidad de envios por Réplica Mortal"
+            }
+        }
+    },
+    "IMUCANNON": {
+        "abbr_name": "Imu.Cañón",
+        "full_name": "Inmunidad ante Cañón",
+        "tooltip": null,
+        "format": [
+            "[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante ",
+            "[(type!=127){[(type&1>0){oleadas normales de cañón[(type>2){, }]}",
+            "(type&2>0){ráfagas del cañón ralentizador[(type>4){, }]}",
+            "(type&4>0){ráfagas del cañón inmovilizador[(type>8){, }]}",
+            "(type&8>0){ráfagas de la chorrimanguera[(type>16){, }]}",
+            "(type&16>0){oleadas del cañón ráfaga[(type>32){, }]}",
+            "(type&32>0){ráfagas del cañón rompebarreras[(type>64){, y }]}",
+            "(type&64>0){ráfagas del cañón maldecidor}]}(type==127){oleadas de cualquier cañón}]",
+            "[(mult!=100){ (_left)[(mult>0){Reduce}(mult<0){Aumenta}] el daño recibido y los efectos un (_abs(mult))%(_right)}]"
+        ],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "type": {
+                "name": "Categoría",
+                "tooltip": "+1 para inmunidad ante el cañón normal, +2 para inmunidad ante el cañón ralentizador, +4 para inmunidad ante el cañón inmovilizador, +8 para inmunidad ante la chorrimanguera, +16 para inmunidad ante el cañón de ráfagas, +32 para inmunidad ante el cañón rompebarreras, +64 para inmunidad ante el cañón maldecidor",
+                "options": ["Normal","Ralentizador","Inmovilizador","Chorrimanguera","Ráfaga","Rompebarreras","Maldecidor"]
+            }
+        }
+    },
+    "BOUNTY": {
+        "abbr_name": "x2 Dinero",
+        "full_name": "Multiplicador de Dinero",
+        "tooltip": null,
+        "format": "[(mult>0){Dinero Extra}(mult<0){Pérdida}] (_left)Recibe un (_abs(mult))% [(mult>0){más}(mult<0){menos}] de dinero tras derrotar enemigos(_right)",
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            }
+        }
+    },
+    "ATKBASE": {
+        "abbr_name": "Vs. Base",
+        "full_name": "Destructor de Bases",
+        "tooltip": null,
+        "format": "[(mult>0){Eficaz en la destrucción de castillos}(mult<0){Ineficaz en la destrucción de castillos}] (_left)Inflige un (_abs(mult))% [(mult>0){más}(mult<0){menos}] de daño al castillo enemigo(_right)",
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            }
+        }
+    },
+    "BSTHUNT": {
+        "abbr_name": "Mata BST",
+        "full_name": "Cazador de Bestias",
+        "tooltip": null,
+        "format": "Cazador de Bestias (_left)Inflige 2.5x de daño[(prob>0){, }(prob==0){ y }]sólo recibe 0.6x de daño[(prob>0){, y tiene (prob)% de probabilidad de evadir sus ataques por (_dispTime(time))}](_right)",
+        "class": {
+            "active": {
+                "name": "Mayor fuerza contra Bestias",
+                "tooltip": null
+            },
+            "prob": {
+                "name": "Prob. de evasión",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            }
+        }
+    },
+    "WORKERLV": {
+        "abbr_name": "Nv Trabajo",
+        "full_name": "Bono de Eficiencia",
+        "tooltip": "Aumenta el nivel del gato trabajador por la cantidad provenida",
+        "format": "[(prob<100){(prob)% de probabilidad de }][(mult>0){Aumenta}(mult<0){Reduc}][(prob<100){[(mult<0){i}]r}(prob==100&mult<0){e}] el nivel del gato trabajador por (mult)",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Aumento",
+                "tooltip": "El numero a añadir"
+            }
+        }
+    },
+    "CDSETTER": {
+        "abbr_name": "Decarga",
+        "full_name": "Decargate",
+        "tooltip": "Aumenta el enfriamiento de los aliados por una cantidad especifica",
+        "format": [
+            "[(prob<100){(prob)% de probabilidad de }][(type==2){Ajusta}(type!=2){[(amount>0){Aumenta}(amount<0){Reduc}]}]",
+            "[(prob<100){[(type!=2&amount<0){i}]r}(prob==100&type!=2&amount<0){e}] ",
+            "el enfriamiento de [(slot<0){un aliado aleatorio}(slot>=0&slot<10){el aliado en la ranura No.(slot) del equipo}(slot==10){los aliados atacados}] ",
+            "[(type==2){a}(type!=2){por}] (amount)[(type!=1){f}(type==1){%}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "amount": {
+                "name": "Aumento",
+                "tooltip": "Usa cantidad negativa para reducir enfriamiento"
+            },
+            "slot": {
+                "name": "Ranura",
+                "tooltip": "La ranura del equip a afectar. -1 afectara una ranura aleatoria, y 10 determina la ranura por las entidades atacadas"
+            },
+            "type": {
+                "name": "Categoria",
+                "tooltip": "0 = f, 1 = %, 2 = cambiar exactamente por el valor puesto"
+            }
+        }
+    },
+    "WEAKAURA": {
+        "abbr_name": "Aura Debil",
+        "full_name": "Aura Debilitante",
+        "tooltip": "Disminuye fuerza para todo enemigo en la distancia determinada",
+        "format": [
+            "[(trait){Todos los }]Enemigos entre (min_dis) ~ (max_dis) distancia de esta entidad",
+            "[(amult!=0){ inflingira (amult)% de su daño}]",
+            "[(dmult!=0){[(amult!=0){,[(smult==0&tmult==0){ y}]}] recibiran (_abs(dmult))% [(dmult>0){más}(dmult<0){menos}] daño}]",
+            "[(smult!=0){[(amult!=0|dmult!=0){,[(tmult==0){ y}]}] se moveran a (smult)% de su velocidad}]",
+            "[(tmult!=0){[(amult!=0|dmult!=0|smult!=0){, y}] (_abs(tmult))% [(tmult>0){más}(tmult<0){menos}] TEA}]."
+        ],
+        "class": {
+            "amult": {
+                "name": "ATK Mult.",
+                "tooltip": null
+            },
+            "dmult": {
+                "name": "DEF Mult.",
+                "tooltip": null
+            },
+            "smult": {
+                "name": "VEL Mult.",
+                "tooltip": null
+            },
+            "tmult": {
+                "name": "TEA Mult.",
+                "tooltip": null
+            },
+            "min_dis": {
+                "name": "Punto ciego",
+                "tooltip": "Aura no tendra efecto a una distancia menor de esta"
+            },
+            "max_dis": {
+                "name": "Distancia máxima",
+                "tooltip": "Aura no tendra efecto a una distancia mayor de esta"
+            },
+            "trait": {
+                "name": "Ignorar rasgos",
+                "tooltip": "Debitila a todo enemigo sin importar rasgo"
+            }
+        }
+    },
+    "STRONGAURA": {
+        "abbr_name": "Aura Motiv",
+        "full_name": "Aura Motivante",
+        "tooltip": "Aumenta fuerza para todo enemigo en la distancia determinada",
+        "format": [
+            "[(trait){Todos los }]Aliados [(skip_self){(_left)excepto este(_right) }]entre (min_dis) ~ (max_dis) distancia de esta entidad",
+            "[(amult!=0){ inflingiran (amult)% [(amult>0){más}(amult<0){menos}] daño}]",
+            "[(dmult!=0){[(amult!=0){,[(smult==0&tmult==0){ y}]}] recibiran (_abs(dmult))% de daño}]",
+            "[(smult!=0){[(amult!=0|dmult!=0){,[(tmult==0){ y}]}] se moveran (_abs(smult))% más [(amult>0){rápido}(amult<0){lento}]}]",
+            "[(tmult!=0){[(amult!=0|dmult!=0|smult!=0){, y}] (_abs(tmult))% de su TEA}]."
+        ],
+        "class": {
+            "amult": {
+                "name": "ATK Mult.",
+                "tooltip": null
+            },
+            "dmult": {
+                "name": "DEF Mult.",
+                "tooltip": null
+            },
+            "smult": {
+                "name": "VEL Mult.",
+                "tooltip": null
+            },
+            "tmult": {
+                "name": "TEA Mult.",
+                "tooltip": null
+            },
+            "min_dis": {
+                "name": "Punto ciego",
+                "tooltip": "Aura no tendra efecto a una distancia menor de esta"
+            },
+            "max_dis": {
+                "name": "Distancia máxima",
+                "tooltip": "Aura no tendra efecto a una distancia mayor de esta"
+            },
+            "trait": {
+                "name": "Ignorar rasgos",
+                "tooltip": "Refuerza a todo aliado sin importar rasgo"
+            },
+            "skip_self": {
+                "name": "No afectado",
+                "tooltip": "No sera afectado por su propio aura"
+            }
+        }
+    },
+    "REMOTESHIELD": {
+        "abbr_name": "Rangoescudo",
+        "full_name": "Escudo a Distancia",
+        "tooltip": "Reduce el daño de ataques que provienen de un rango especificado",
+        "format": [
+            "[(prob<100){(prob)% de probabilidad de }][(reduction!=0&block!=100){[(reduction>0){Reduc}(reduction<0){Aumenta}]",
+            "[(prob<100){[(reduction>0){i}]r}(prob==100&reduction>0){e}][(!traitCon){ todo}] daño",
+            " recibido de ataques originados entre (minrange) ~ (maxrange) distancia de esta entidad por (_abs(reduction))%[(procs){ e",
+            " ignora sus habilidades}].[(block!=0){Ademas, [(block>0){reduce}(block<0){aumenta}] el daño recibido por otras unidades atacadas por",
+            " el ataque por (_abs(block))%}]}(reduction==0&block!=0){[(block>0){Bloquea}(block<0){Amplifica}][(prob<100){r}][(!traitCon){ todo}]",
+            " daño recibido de ataques originados entre (minrange) ~ (maxrange) distancia de esta entidad por (_abs(block))%[(procs){ y bloquea sus ",
+            " habilidades}].}][(waves){Tambien afecta oleadas.}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "minrange": {
+                "name": "Distancia Mínima",
+                "tooltip": "No afecta ataques que originen más cerca de esta distancia."
+            },
+            "maxrange": {
+                "name": "Distancia Máxima",
+                "tooltip": "No afecta ataques que originen más lejos de esta distancia."
+            },
+            "reduction": {
+                "name": "Reducción",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueo",
+                "tooltip": "Similar a reducción, pero aplica a todos los que reciban el ataque"
+            },
+            "traitCon": {
+                "name": "Considerar rasgos",
+                "tooltip": "Solo tomara efecto si el atacante y el atacado tienen al meos un rasgo en común"
+            },
+            "procs": {
+                "name": "Evade Habilidades",
+                "tooltip": null
+            },
+            "waves": {
+                "name": "Anti-Oleadas",
+                "tooltip": null
+            }
+        }
+    },
+    "LETHARGY": {
+        "abbr_name": "Letargo",
+        "full_name": "Letargo",
+        "tooltip": null,
+        "format": "[(prob<100){(prob)% de probabilidad de }][(mult>0){Aumenta}(mult<0){Reduc}][(prob<100){[(mult<0){i}]r}(prob==100&mult<0){e}] el TEA del objetivo por (_abs(mult))[(percentage){%}] por (_dispTime(time))",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Multiplo",
+                "tooltip": null
+            },
+            "percentage": {
+                "name": "Porciento",
+                "tooltip": "Si no es aplicado, el TEA sera aumentado por un numero fijo"
+            }
+        }
+    },
+    "IMULETHARGY": {
+        "abbr_name": "Imu. Letargo",
+        "full_name": "Inmune/Resistente ante Letargo",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Letargo",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador}(block<100&block>0){Absorbedor}(block<0){Aumentador}] de Letargo",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]",
+            "[(focus.effect!=0){. Solo resiste [(focus.effect>0){aumentos}(focus.effect<0){disminuciones}].}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir el daño. Fija a 100 para bloquear totalmente el Letargo"
+            },
+            "focus": {
+                "name": "Ignorar",
+                "tooltip": "0 = Resistente ante roturas y fortalecimientos, 1 = Solo resistente ante roturas, -1 = Solo resistente ante fortalecimientos"
+            }
+        }
+    },
+    "AI": {
+        "abbr_name": "AI",
+        "full_name": "Estrategista",
+        "tooltip": "Intento fallido de inteligencia",
+        "format": [
+            "Estrategista [(calcstrongest){ (_left)Usara el ataque más eficaz(_right)}]",
+            "[(retreatDist>0|danger){ (_left)Retroceder a (retreatSpeed) velocidad cuando [(retreatDist>0){algun enemigo este a (retreatDist) o menos distancia",
+            "[(danger){ o cuando }]}][(danger){este a distancia de un enemigo que esta a punto de atacar}](_right)}]",
+            "[(calcblindspot){ (_left)Entidades a una distancia menor que la distancia mínima de ataque no seran contadas al calcular ataque(_right)}]",
+            "[(ignHypno){ (_left)No atacara enemigos hipnotizados ni soportara aliados hipnotizados(_right)}]"
+        ],
+        "class": {
+            "calcstrongest": {
+                "name": "Usar ataque más eficaz",
+                "tooltip": "Solo es util para entidades con más de una animación de ataque"
+            },
+            "danger": {
+                "name": "Evade Peligro",
+                "tooltip": "Retroceder si se encuentra en la distancia de un enemigo que este a punto de atacar"
+            },
+            "calcblindspot": {
+                "name": "Ignorar Punto Ciego",
+                "tooltip": "Si los unicos enemigos cercanos a esta unidad se encuentran demasiado cerca para atacar, no atacara"
+            },
+            "retreatDist": {
+                "name": "Distancia de Retirada",
+                "tooltip": "Si un enemigo esta muy cerca a esta unidad, comienzara retirada"
+            },
+            "retreatSpeed": {
+                "name": "Velocidad de retirada",
+                "tooltip": "Usada para retroceder. Requiere activar [Evade Peligro] o [Distancia de Retirada]"
+            },
+            "ignHypno": {
+                "name": "Ignorar Hipnotizados",
+                "tooltip": "No atacara enemigos hipnotizados ni soportara aliados hipnotizados"
+            }
+        }
+    },
+    "RAGE": {
+        "abbr_name": "Furia",
+        "full_name": "Furia",
+        "tooltip": "Enoja al oponente, haciendo que sus ataques inflinjan daño a tanto enemigos como aliados",
+        "format": "[(prob<100){(prob)% de probabilidad de }]Enfurece[(prob<100){r}] al oponente por (_dispTime(time))",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            }
+        }
+    },
+    "HYPNO": {
+        "abbr_name": "Hypno",
+        "full_name": "Hipnosis",
+        "tooltip": "Torna al oponente contra sus aliados",
+        "format": "[(prob<100){(prob)% de probabilidad de }]Hypnotiza[(prob<100){r}] al oponente por (_dispTime(time))",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            }
+        }
+    },
+    "IMURAGE": {
+        "abbr_name": "Imu. Furia",
+        "full_name": "Inmune/Resistente ante Furia",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Furia",
+            "[(mult<100&mult>0){ (_left)Reduce la distancia un (mult)%(_right)}(mult<0){ (_left)Aumenta la distancia un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Furia",
+            "[(block<100&block>0){ (_left)Reduce la distancia un (block)%(_right)}(block<0){ (_left)Aumenta la distancia un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la duración entre todas las unidades. Fija a 100 para bloquear totalmente la Furia"
+            }
+        }
+    },
+    "IMUHYPNO": {
+        "abbr_name": "Imu. Hypno",
+        "full_name": "Inmune/Resistente ante Hipnosis",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Hipnosis",
+            "[(mult<100&mult>0){ (_left)Reduce la duración un (mult)%(_right)}(mult<0){ (_left)Aumenta la duración un (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Bloqueador de}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Hipnosis",
+            "[(block<100&block>0){ (_left)Reduce la duración un (block)%(_right)}(block<0){ (_left)Aumenta la duración un (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir la duración entre todas las unidades. Fija a 100 para bloquear totalmente la Hipnosis"
+            }
+        }
+    },
+    "MINIVOLC": {
+        "abbr_name": "M. Réplica",
+        "full_name": "Mini Réplica",
+        "tooltip": "Crea una Réplica con daño ajustable (usualmente 20% del daño original)",
+        "format": "[(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] una mini-réplica[(pid){ de ID (_toString(pid))}] por (_dispTime(time)) (_left)Creada desde una distancia de (dis_0) a (dis_1)[(mult!=20){, Inflige al objetivo un (mult)% del ataque del activador}](_right)[(hitless){, incluso si este ataque falla}]",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "Distancia Mínima",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "Distancia Máxima",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Multi",
+                "tooltip": "Porcentaje de ataque del activador.<br>Si multi es 20, tendrá el 20% del ataque del activador. Los valores negativos están permitidos."
+            },
+            "hitless": {
+                "name": "Antifalla",
+                "tooltip": "La replica sera creada incluso si el ataque falla"
+            },
+            "pid":{
+                "name": "ID",
+                "tooltip": "Da IDs a la réplica para resistencia basada en ID"
+            }
+        }
+    },
+    "DEMONVOLC": {
+        "abbr_name": "C.Réplica",
+        "full_name": "Contraréplica",
+        "tooltip": "Crea una réplica al recibir daño por una réplica, con el nivel y duración de la misma",
+        "format": "[(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] una Contraréplica[(mult!=100){, con (mult)% del daño del activante}]",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Multi",
+                "tooltip": null
+            }
+        }
+    },
+    "DMGINC": {
+        "abbr_name": "Superfuerte",
+        "full_name": "Superfuerza",
+        "tooltip": "Superfuerte, pero más ajustable",
+        "format": "Daño [(mult<100){Patético}(mult>100&mult<300){Eficaz}(mult>=300&mult<500){Superfuerte}(mult>=500){Megafuerte}] (_left)Inflinge (_resDiv(mult))x de daño contra rasgos que afecta(_right)",
+        "class": {
+            "mult": {
+                "name": "Multi",
+                "tooltip": "Daño actual es afectado por Frutas ITF para ciertos rasgos"
+            }
+        }
+    },
+    "DEFINC": {
+        "abbr_name": "Resistencia",
+        "full_name": "Resistencia",
+        "tooltip": "Superfuerte, pero más ajustable",
+        "format": "[(mult<100){Frágil}(mult>100&mult<400){Superioridad}(mult>=400){[(mult<600){Super}(mult>=600){Mega}]resistente}] (_left)Recibe 1/(_resDiv(mult))x daño(_right)",
+        "class": {
+            "mult": {
+                "name": "Multi",
+                "tooltip": "Resistencia actual es afectado por Frutas ITF para ciertos rasgos"
+            }
+        }
+    },
+    "RANGESHIELD": {
+        "abbr_name": "Escudo Enf.",
+        "full_name": "Escudo Enfocado",
+        "tooltip": "Reduce daño Ataques de Único objetivo o Ataques de área",
+        "format": "[(prob<100){(prob)% de probabilidad de }][(mult>0){Reduc}(mult<0){Aumenta}][(prob<100){[(mult>0){i}]r}(prob==100&mult>=0){e}] el daño recibido de Ataques de [(range){área}(!range){Único objetivo}] por (_abs(mult))%",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Multi",
+                "tooltip": null
+            },
+            "range": {
+                "name": "Ataques de área",
+                "tooltip": null
+            }
+        }
+    },
+    "SPIRIT": {
+        "abbr_name": "Conjurar",
+        "full_name": "Conjurador",
+        "tooltip": "Invoca un espiritu invencible que ataca una vez y desaparece (En BCU, las ultimas 2 son opcionales)",
+        "format": [
+            "Conjura (_entity(id,form)) como espiritu (amount) ve[(amount>1){ces}(amount==1){z}] por invocante, con enfriamiento [(amount>1&cd0!=cd1){inicial }]de (_dispTime(cd0))",
+            "[(amount>1&cd0!=cd1){, y enfriamiento subsecuente de (_dispTime(cd1))}]",
+            "[(summonerCd!=0){, y [(summonerCd<0){reduce}(summonerCd>0){aumenta}] el enfriamiento del invocante por (_dispTime(_abs(summonerCd)))}]",
+            "[(moneyCost!=0){. Cada conjuramiento cuesta (moneyCost)¢}]",
+            "[(!inv){ (_left)No es invencible(_right)}]"
+        ],
+        "class": {
+            "id": {
+                "name": "ID de Entidad",
+                "tooltip": null
+            },
+            "cd0": {
+                "name": "Enfriamiento Inicial",
+                "tooltip": "15 por defecto. Para el primer espiritu"
+            },
+            "cd1": {
+                "name": "Enfriamiento Subsecuente",
+                "tooltip": "15 por defecto. Para el segundo+ espiritu"
+            },
+            "amount": {
+                "name": "Cantidad Máxima",
+                "tooltip": "Máxima por invocante"
+            },
+            "summonerCd": {
+                "name": "Penalidad (Enfriamiento)",
+                "tooltip": "Añadido al conjurante"
+            },
+            "moneyCost": {
+                "name": "Costo",
+                "tooltip": "Medido en lo que costaria en EoC 1, que es 2/3 de lo usual"
+            },
+            "animType": {
+                "name": "Anim. invocado",
+                "tooltip": [
+                    "La animación de la invocación, 0 para no mostrar animaciones, 1 para mostrar la animación de abducción,",
+                    " 2 para mostrar la animación de desentierre, 3 para mostrar la animación de desentierre y desactivar la habilidad,",
+                    " 4 para animación de entrada, 5 para animación de ataque, 6 para animación de Telepuerta",
+                    " La entidad invocada debe tener una animación de desentierre para usar 2 or 3."
+                ]
+            },
+            "form": {
+                "name": "Forma",
+                "tooltip": "Forma del espiritu conjurado"
+            },
+            "inv": {
+                "name": "Invencible",
+                "tooltip": null
+            }
+        }
+    },
+    "METALKILL" : {
+        "abbr_name": "M.Metal",
+        "full_name": "Matametálicos",
+        "tooltip": "Reduce la vitalidad restante de enemigos metalicos por %",
+        "format": "Matametálicos (_left)Reduce (mult)% de la vitalidad restante del objetivo(_right)",
+        "class": {
+            "mult": {
+                "name": "Multi",
+                "tooltip": null
+            }
+        }
+    },
+    "BLAST": {
+        "abbr_name": "Explosión",
+        "full_name": "Explosión",
+        "tooltip": "Crea una explosión que se esparce a derecha e izquierda a inflinge menos daño por nivel",
+        "format": ["[(prob<100){(prob)% de probabilidad de }]Crea[(prob<100){r}] una Explosión [(pid){de IDs (_toString(pid)) y }]de Nv.(lv)",
+            "[(lv>1){, con una reducción de (reduction)% de daño por nivel}] (_left)Creada [(dis_0==dis_1){a (dis_0) distancia}(dis_0!=dis_1){entre (dis_0) ~ (dis_1) distancia}](_right)"],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "Distancia Mínima",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "Distancia Máxima",
+                "tooltip": null
+            },
+            "lv": {
+                "name": "Nivel",
+                "tooltip": "Es 3 por defecto"
+            },
+            "reduction": {
+                "name": "Reducción",
+                "tooltip": "30 por defecto, Acumulativo por nivel"
+            },
+            "pid": {
+                "name": "ID",
+                "tooltip": "Sets the IDs of the blast attack, allowing for type-based resistance discrimination"
+            }
+        }
+    },
+    "IMUBLAST": {
+        "abbr_name": "Imu. Explosión",
+        "full_name": "Inmune/Resistente ante Explosiones",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Inmune}(mult<100&mult>0){Resistente}(mult<0){Débil}] ante Explosiones[(pid){ de IDs (_toString(pid))}]",
+            "[(mult<100&mult>0){ (_left)Reduce el daño recibido por (mult)%(_right)}(mult<0){ (_left)Aumenta el daño recibido por (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){[(block==100){Detiene}(block<100&block>0){Absorbedor de}(block<0){Aumentador de}] Explosiones[(block==0&pid){ de IDs (_toString(pid))}]",
+            "[(block<100&block>0){ (_left)Reduce el daño por (block)%(_right)}(block<0){ (_left)Aumenta el daño por (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "Porcentaje",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Bloqueador",
+                "tooltip": "Establece de 1 a 99 para reducir el daño. Fija a 100 para bloquear Explosiones"
+            },
+            "pid": {
+                "name": "ID",
+                "tooltip": "Hace que la resistencia solo aplique a Explosiones que contengan uno de estos IDs. ID 0 permite resistir Explosiones sin IDs"
+            }
+        }
+    },
+    "DRAIN": {
+        "abbr_name": "Drenar",
+        "full_name": "Drenador",
+        "tooltip": "Absorbe daño inflingido como vitalidad",
+        "format": "[(prob<100){(prob)% de probabilidad de }]Absorbe[(prob<100){r}] (mult)% del daño inflingido como vitalidad",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Multi",
+                "tooltip": "%"
+            }
+        }
+    },
+    "BLESSING": {
+        "abbr_name": "Bendición",
+        "full_name": "Bendición",
+        "tooltip": "Opuesto a Maldición, provee rasgos y habilidades a entidades afectadas",
+        "format": [
+            "[(prob<100){(prob)% chance to Bendecir}(prob==100){Bendice}] unidades por (_dispTime(time)), dandoles las siguientes ",
+            "[(abis!=0){Abilidades: (_bitMask(abis))[((procs)|(traits)){, }]}][(procs){Habilidades: (_proc(procs))[(traits){, }]}]",
+            "[(traits){Rasgos: (_toString(traits))}].[(stackable){El efecto de esta bendición es acumulable.}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "time": {
+                "name": "Duración",
+                "tooltip": null
+            },
+            "abis": {
+                "name": "Abilidades",
+                "tooltip": "Like attacks' alt abi, it grants abilities. It can't remove them though"
+            },
+            "procs": {
+                "name": "Habilidades",
+                "tooltip": "Añadidos encima de las que ya tenga"
+            },
+            "stackable": {
+                "name": "Acumulable",
+                "tooltip": null
+            },
+            "traits": {
+                "name": "Rasgos añadidos",
+                "tooltip": null
+            }
+        }
+    },
+    "REFUND": {
+        "abbr_name": "Reembolso",
+        "full_name": "Reembolso",
+        "tooltip": null,
+        "format": "[(count>1){Cada (count)to enviado[(prob<100){ tiene}] }][(prob<100){(prob)% de probabilidad de Devolver}(prob==100){Devuelve}] (mult)% de su costo",
+        "class": {
+            "prob": {
+                "name": "Probabilidad",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "Multi",
+                "tooltip": "% of cost to be refunded"
+            },
+            "count": {
+                "name": "Num. de Envios",
+                "tooltip": "Cantidad de envios por reembolso"
+            }
+        }
+    }
+}

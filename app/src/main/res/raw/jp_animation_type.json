@@ -1,0 +1,109 @@
+{
+  "KBEff": {
+    "SW": "衝撃波",
+    "ASS": "スニャイパー",
+    "KB": "ふっとばす"
+  },
+  "UType": {
+    "BURROW_UP": "移動終了",
+    "BURROW_MOVE": "地中移動中",
+    "IDLE": "待機",
+    "KB": "KB",
+    "BURROW_DOWN": "潜る",
+    "ENTRY": "到着",
+    "ATTACK": "攻撃",
+    "WALK": "移動",
+    "SOUL": "魂",
+    "RETREAT": "撤退",
+    "FOREGROUND": "前景",
+    "BACKGROUND": "背景"
+  },
+  "VolcEff": {
+    "DURING": "中",
+    "START": "スタート",
+    "END": "終了"
+  },
+  "ArmorEff": {
+    "BUFF": "増加",
+    "DEBUFF": "減少"
+  },
+  "SpeedEff": {
+    "UP": "増加",
+    "DOWN": "減少"
+  },
+  "WaveType": {
+    "DEF": "デフォルト"
+  },
+  "WeakUpEff": {
+    "UP": "増加"
+  },
+  "WarpEff": {
+    "ENTER": "入る",
+    "EXIT": "出口"
+  },
+  "NyType": {
+    "BASE": "ベース",
+    "ATK": "攻撃",
+    "EXT": "エクストラ"
+  },
+  "BarrierEff": {
+    "DESTR": "破壊",
+    "BREAK": "壊す",
+    "NONE": "デフォルト"
+  },
+  "BGWvType": {
+    "ENEMY": "敵",
+    "UNIT": "猫"
+  },
+  "ZombieEff": {
+    "DOWN": "死",
+    "REVIVE": "復活",
+    "BACK": "ふっとばす"
+  },
+  "SniperEff": {
+    "IDLE": "待機",
+    "ATK": "攻撃"
+  },
+  "DefEff": {
+    "DEF": "デフォルト"
+  },
+  "ShieldEff": {
+    "FULL" : "全開",
+    "HALF" : "半壊",
+    "BROKEN" : "壊れる",
+    "BREAKER" : "破壊",
+    "REGENERATION" : "再生"
+  },
+  "DmgCap": {
+    "FAIL" : "失敗",
+    "SUCCESS" : "成功"
+  },
+  "LethargyEff": {
+    "DOWN" : "エネルギー低減",
+    "UP" : "エネルギーを高める"
+  },
+  "RemShieldEff": {
+    "NEAR": "近い",
+    "FAR": "遠い"
+  },
+  "AuraEff": {
+    "ENEDOWN": "敵の攻撃力低減",
+    "ENEUP": "敵の攻撃力増加",
+    "UNIDOWN": "味方の攻撃力低減",
+    "UNIUP": "味方の攻撃力増加"
+  },
+  "RangeShieldEff": {
+    "SINGLE": "単体",
+    "AREA": "範囲"
+  },
+  "GuardEff": {
+      "NONE": "デフォルト",
+      "BREAK": "壊す"
+  },
+  "BlastEff": {
+    "START": "スタート",
+    "EXPLODE": "爆発",
+    "DUMMY": "ダミー",
+    "SINGLE": "Singular"
+  }
+}
