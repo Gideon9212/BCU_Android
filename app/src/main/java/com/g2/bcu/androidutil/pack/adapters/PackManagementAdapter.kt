@@ -61,12 +61,16 @@ class PackManagementAdapter(private val ac: Activity, private val pList: ArrayLi
         }
 
         val p = pList[position]
-
         val title = if(p.desc.author == null || p.desc.author.isBlank()) { p.sid
         } else p.sid + " [${p.desc.author}]"
 
         holder.id.text = title
         holder.name.text = p.desc.names.toString().ifBlank { p.sid }
+        if (!p.loaded) {
+            if (p.icon == null)
+                p.icon = p.source.readImage("icon")
+            holder.name.setTextColor(StaticStore.getAttributeColor(ac, R.attr.ErrorPrimary))
+        }
         if (p.icon == null)
             holder.icn.visibility = View.GONE
         else
@@ -84,6 +88,14 @@ class PackManagementAdapter(private val ac: Activity, private val pList: ArrayLi
         holder.desc.text = desc
 
         row.setOnLongClickListener {
+            if (!p.loaded) {
+                p.load()
+                val ps = ArrayList<PackData.UserPack>(1)
+                ps.add(p)
+                UserProfile.loadPacks(ps)
+                holder.name.setTextColor(StaticStore.getAttributeColor(ac, R.attr.TextPrimary))
+                return@setOnLongClickListener false
+            }
             val descPage = Dialog(ac)
             descPage.setContentView(R.layout.pack_description_viewer)
             descPage.setCancelable(true)

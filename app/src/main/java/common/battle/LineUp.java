@@ -9,14 +9,30 @@ import common.pack.Identifier;
 import common.pack.PackData;
 import common.pack.SortedPackSet;
 import common.pack.UserProfile;
+import common.util.BattleStatic;
 import common.util.Data;
+import common.util.stage.CharaGroup;
 import common.util.unit.*;
 
+import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 @JsonClass
 public class LineUp extends Data {
+
+	public static class ComboBuff implements BattleStatic {
+		public int[] inc = new int[C_TOT];
+		public CharaGroup cg;
+
+		public ComboBuff() {
+			this(null);
+		}
+		public ComboBuff(CharaGroup cg) {
+			if (cg != null)
+				this.cg = cg;
+		}
+	}
 
 	@JsonField(generic = { Identifier.class, Level.class })
 	public final TreeMap<Identifier<AbUnit>, Level> map = new TreeMap<>();
@@ -25,7 +41,8 @@ public class LineUp extends Data {
 	public final AbForm[][] fs = new AbForm[2][5];
 	public final IForm[][] efs = new IForm[2][5];
 
-	public int[] inc = new int[C_TOT], loc = new int[5];
+	public LinkedList<ComboBuff> incs = new LinkedList<>();
+	private int[][] loc = new int[2][5];
 	public SortedPackSet<Combo> coms = new SortedPackSet<>();
 
 	private boolean updating = false;
@@ -153,14 +170,16 @@ public class LineUp extends Data {
 	/**
 	 * apply a combo
 	 */
-	public void set(Form[] com) {
+	public void set(Combo co) {
+		Form[] com = co.forms;
 		// if a unit in the combo is already present in the lineup
 		boolean[] exi = new boolean[com.length];
 		// the number of units required to inject
 		int rem = com.length;
+		byte row = co.row == 0 || co.row == 3 ? 0 : (byte)(co.row-1);
 		for (int i = 0; i < com.length; i++)
 			for (int j = 0; j < 5; j++) {
-				if (fs[0][j] == null || fs[0][j] instanceof UniRand)
+				if (fs[row][j] == null || fs[row][j] instanceof UniRand)
 					continue;
 
 				Form f = (Form)fs[0][j];
@@ -168,15 +187,15 @@ public class LineUp extends Data {
 				if (f.unit == com[i].unit) {
 					exi[i] = true;
 					if (f.fid < formID)
-						fs[0][j] = f.unit.forms[formID];
-					loc[j]++;
+						fs[row][j] = f.unit.forms[formID];
+					loc[row][j]++;
 					rem--;
 				}
 			}
 		// number of units not present in any combo
 		int free = 0;
 		for (int i = 0; i < 5; i++)
-			if (loc[i] == 0)
+			if (loc[row][i] == 0)
 				free++;
 
 		if (free < rem) {
@@ -189,15 +208,15 @@ public class LineUp extends Data {
 					if (c.forms[i] == null)
 						break;
 					for (int j = 0; j < 5; j++) {
-						if (fs[0][j] == null)
+						if (fs[row][j] == null)
 							break;
-						if (fs[0][j] instanceof UniRand)
+						if (fs[row][j] instanceof UniRand)
 							continue;
-						Form f = (Form)fs[0][j];
+						Form f = (Form)fs[row][j];
 						if (f.unit != c.forms[i].unit)
 							continue;
-						loc[j]--;
-						if (loc[j] == 0)
+						loc[row][j]--;
+						if (loc[row][j] == 0)
 							del--;
 						break;
 					}
@@ -206,8 +225,8 @@ public class LineUp extends Data {
 		}
 		for (int i = 0; i < 5; i++)
 			for (Form form : com)
-				if (fs[1][i] != null && fs[1][i] instanceof Form && fs[1][i].unit() == form.unit) {
-					fs[1][i] = null;
+				if (fs[1-row][i] != null && fs[1-row][i] instanceof Form && fs[1-row][i].unit() == form.unit) {
+					fs[1-row][i] = null;
 					break;
 				}
 		arrange();
@@ -222,7 +241,7 @@ public class LineUp extends Data {
 		}
 		int p = 0, r = 0, i = 0, j = 10 - emp;
 		while (r < rem) {
-			while (loc[i] != 0)
+			while (loc[row][i] != 0)
 				i++;
 			while (exi[p])
 				p++;
@@ -284,23 +303,24 @@ public class LineUp extends Data {
 	 */
 	public boolean willRem(Combo c) {
 		int free = 0;
-
-		for (int i = 0; i < 5; i++)
-			if (fs[0][i] == null)
-				free++;
-			else if (loc[i] == 0) {
-				boolean b = true;
-
-				for (Form is : c.forms)
-					if (fs[0][i].unit() == is.unit) {
-						b = false;
-
-						break;
-					}
-				if (b)
+		byte[] rows = c.row == 0 || c.row == 3 ? new byte[]{0,2} : new byte[]{(byte)(c.row-1), c.row};
+		for (byte j = rows[0]; j < rows[1]; j++) {
+			free = 0;
+			for (int i = 0; i < 5; i++)
+				if (fs[j][i] == null)
 					free++;
-			}
+				else if (loc[j][i] == 0) {
+					boolean b = true;
 
+					for (Form is : c.forms)
+						if (fs[j][i].unit() == is.unit) {
+							b = false;
+							break;
+						}
+					if (b)
+						free++;
+				}
+		}
 		return free < occupance(c);
 	}
 
@@ -323,8 +343,9 @@ public class LineUp extends Data {
 	 */
 	public void renewCombo() {
 		coms.clear();
-		inc = new int[C_TOT];
-		loc = new int[5];
+		incs.clear();
+		incs.add(new ComboBuff());
+		loc = new int[2][5];
 		CommonStatic.Config cfg = CommonStatic.getConfig();
 		for (PackData p : UserProfile.getAllPacks()) {
 			if (cfg.excludeCombo.contains(p.getSID()))
@@ -335,50 +356,108 @@ public class LineUp extends Data {
 		}
 	}
 
+	/**
+	 * AAA	A
+	 * @param cg Only units affected. Can be null for universal buffs
+	 * @param addIfAbsent duh
+	 * @return Buffs acccounting restrictions
+	 */
+	public ComboBuff getCombosFor(CharaGroup cg, boolean addIfAbsent) {
+		if (cg == null)
+			return incs.getFirst();
+		ComboBuff buff = null;
+		for (ComboBuff cb : incs)
+			if (cb.cg == cg) {
+				buff = cb;
+				break;
+			}
+		if (buff == null && addIfAbsent)
+			incs.add(buff = new ComboBuff(cg));
+		return buff;
+	}
+	public void validateIncs() {
+		incs.removeIf(inc -> {
+			if (inc.cg == null)
+				return false;
+			for (Combo c : coms)
+				if (c.group == inc.cg)
+					return false;
+			return true;
+		});
+	}
+
 	public void renewCombo(Combo c, boolean locChk) {
 		if (locChk)
-			for (int i = 0; i < 5; i++)
-				loc[i]--;
+			for (int j = 0; j < 2; j++)
+				for (int i = 0; i < 5; i++)
+					loc[j][i]--;
 
 		boolean b = true;
+		byte[] rows = c.row == 0 || c.row == 3 ? new byte[]{0,2} : new byte[]{(byte)(c.row-1), c.row};
+		byte foundRow = (byte)(c.row == 3 ? -2 : -1);//For combo row 3 check
 		for (int i = 0; i < c.forms.length; i++) {
 			Form fu = c.forms[i];
 			if (fu == null)
 				break;
 			boolean b0 = false;
-			for (int j = 0; j < 5; j++) {
-				if (fs[0][j] instanceof UniRand)
-					continue;
-				Form f = (Form)fs[0][j];
-				if (f == null)
+			for (byte k = rows[0]; k < rows[1]; k++)
+				for (int j = 0; j < 5; j++) {
+					if (fs[k][j] instanceof UniRand)
+						continue;
+					Form f = (Form) fs[k][j];
+					if (f == null)
+						break;
+					if (f.unit != fu.unit || !c.correctForm(i, f.fid))
+						continue;
+					if (foundRow == -2)
+						foundRow = k;
+					b0 = foundRow == -1 || foundRow == k;
 					break;
-				if (f.unit != fu.unit || f.fid < fu.fid)
-					continue;
-				b0 = true;
-				break;
-			}
+				}
 			if (b0)
 				continue;
 			b = false;
 			break;
 		}
+		ComboBuff buff = getCombosFor(c.group, b);
 		if (b) {
-			coms.add(c);
-			inc[c.type] += CommonStatic.getBCAssets().values[c.type][c.lv];
+			if (!coms.add(c))//It's a set so it prevents combo buffs from being applied twice
+				return;
+			buff.inc[c.type] += CommonStatic.getBCAssets().values[c.type][c.lv];
 			for (int i = 0; i < c.forms.length; i++) {
 				Form fu = c.forms[i];
-				for (int j = 0; j < 5; j++) {
-					if (!(fs[0][j] instanceof Form))
-						continue;
-					Form f = (Form) fs[0][j];
-					if (f.unit == fu.unit && f.fid >= fu.fid)
-						loc[j]++;
+				for (byte k = rows[0]; k < rows[1]; k++)
+					for (int j = 0; j < 5; j++) {
+						if (!(fs[rows[0]][j] instanceof Form))
+							continue;
+						Form f = (Form) fs[rows[0]][j];
+						if (f.unit == fu.unit && c.correctForm(i, f.fid))
+							loc[k][j]++;
+					}
 				}
-			}
-		} else if (coms.contains(c)) {
-			inc[c.type] -= CommonStatic.getBCAssets().values[c.type][c.lv];
-			coms.remove(c);
+		} else
+			removeCombo(c);
+	}
+
+	public void removeCombo(Combo c) {
+		if (!coms.contains(c))
+			return;
+		coms.remove(c);
+		ComboBuff buff = getCombosFor(c.group, false);
+		buff.inc[c.type] -= CommonStatic.getBCAssets().values[c.type][c.lv];
+		byte[] rows = c.row == 0 || c.row == 3 ? new byte[]{0,2} : new byte[]{(byte)(c.row-1), c.row};
+		for (int i = 0; i < c.forms.length; i++) {
+			Form fu = c.forms[i];
+			for (byte k = rows[0]; k < rows[1]; k++)
+				for (int j = 0; j < 5; j++) {
+					if (!(fs[rows[0]][j] instanceof Form))
+						continue;
+					Form f = (Form) fs[rows[0]][j];
+					if (f.unit == fu.unit && c.correctForm(i, f.fid))
+						loc[k][j]--;
+				}
 		}
+		validateIncs();
 	}
 
 	private void renewEForm() {

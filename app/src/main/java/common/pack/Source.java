@@ -601,8 +601,11 @@ public abstract class Source {
 		}
 
 		public void addAnimation(AnimCE anim) {
-			anims[anim.id.base.equals(BasePath.ANIM) ? 0 : anim.id.base.equals(BasePath.SOUL) ? 1 :
-					anim.id.base.equals(BasePath.BGEffect) ? 2 : -1].add(anim);
+			byte ind = (byte)(anim.id.base.equals(BasePath.ANIM) ? 0 : anim.id.base.equals(BasePath.SOUL) ? 1
+					: anim.id.base.equals(BasePath.BGEffect) ? 2 : -1);
+			if (anims[ind] == null)
+				anims[ind] = new LinkedHashSet<>();
+			anims[ind].add(anim);
 		}
 
 		public void unloadAnimation(AnimCE anim) {

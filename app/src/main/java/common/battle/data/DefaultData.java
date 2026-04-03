@@ -64,6 +64,10 @@ public abstract class DefaultData extends DataEntity {
 	public int getTBA() {
 		return tba * 2;
 	}
+	@Override
+	public int getRealTBA() {
+		return getTBA();
+	}
 
 	@Override
 	public boolean isLD() {

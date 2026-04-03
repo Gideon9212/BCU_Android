@@ -116,11 +116,12 @@ public class UpdateCheck {
 				"110700", "110703", "110800", "110900", "110903", "111000", "111003", "111005", "120000", "120100",
 				"120200", "120203", "120300", "120400", "120500", "120503", "120600", "120700", "130000", "130100",
 				"130200", "130300", "130400", "130500", "130600", "130700", "140000", "140100", "140200", "140300",
-				"140400", "140500", "140600", "140700", "fork_essentials"
+				"140400", "140500", "140600", "140700", "150000", "150100", "150200",
+				"fork_essentials"
 		);
 	}
 
-	public static final String REPO = "Gideon9212/";
+	public static final String REPO = "Gideon9212";
 	public static final String UPSTREAM = "battlecatsultimate/";
 	public static final String URL_UPDATE = "https://raw.githubusercontent.com/" +UPSTREAM+ "bcu-page/master/api/updateInfo.json";
 	public static final String URL_UPDATE_R = "https://raw.githubusercontent.com/" +REPO+ "bcu-assets/master/assets/updateInfo.json";

@@ -59,10 +59,9 @@ public class AttackWave extends AttackAb {
 			atk = ((AtkModelEntity)model).getEffMult(raw);
 		process();
 		for (AbEntity e : capt) {
-			if (e instanceof Entity) {
-				e.damaged(this);
+			if (e instanceof Entity)
 				incl.add((Entity) e);
-			}
+			e.damaged(this);
 		}
 		r.clear();
 	}

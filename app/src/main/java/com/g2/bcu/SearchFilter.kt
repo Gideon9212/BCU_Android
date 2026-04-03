@@ -65,8 +65,8 @@ class SearchFilter : AppCompatActivity() {
         intArrayOf(R.string.sch_abi_ic, 1, Data.P_IMUCURSE.toInt()), intArrayOf(R.string.sch_abi_impoi, 1, Data.P_IMUPOIATK.toInt()), intArrayOf(R.string.sch_abi_wk, 0, Data.AB_WKILL.toInt()),
         intArrayOf(R.string.sch_abi_eva, 0, Data.AB_EKILL.toInt()), intArrayOf(R.string.sch_abi_poi, 1, Data.P_POIATK.toInt()), intArrayOf(R.string.enem_info_barrier, 1, Data.P_BARRIER.toInt()),
         intArrayOf(R.string.sch_abi_ds, 1, Data.P_DEMONSHIELD.toInt()), intArrayOf(R.string.sch_abi_sd,  1, Data.P_DEATHSURGE.toInt()), intArrayOf(R.string.sch_abi_msd, 1, Data.P_MINIDEATHSURGE.toInt()),
-        intArrayOf(R.string.sch_abi_rfn, 1, Data.P_REFUND.toInt()), intArrayOf(R.string.sch_abi_rms,  1, Data.P_REMOTESHIELD.toInt()), intArrayOf(R.string.sch_abi_tps,  1, Data.P_RANGESHIELD.toInt()),
-        intArrayOf(R.string.abi_sui, 0, Data.AB_GLASS.toInt()), intArrayOf(R.string.abi_bu, 1, Data.P_BURROW.toInt()), intArrayOf(R.string.abi_rev, 1, Data.P_REVIVE.toInt()),
+        intArrayOf(R.string.sch_abi_rfn, 1, Data.P_REFUND.toInt()), intArrayOf(R.string.sch_abi_cnc, 1, Data.P_CANONCHARGE.toInt()), intArrayOf(R.string.sch_abi_rms,  1, Data.P_REMOTESHIELD.toInt()),
+        intArrayOf(R.string.sch_abi_tps,  1, Data.P_RANGESHIELD.toInt()), intArrayOf(R.string.abi_sui, 0, Data.AB_GLASS.toInt()), intArrayOf(R.string.abi_bu, 1, Data.P_BURROW.toInt()), intArrayOf(R.string.abi_rev, 1, Data.P_REVIVE.toInt()),
         intArrayOf(R.string.abi_gh, 0, Data.AB_GHOST.toInt()), intArrayOf(R.string.abi_snk, 1, Data.P_SNIPER.toInt()), intArrayOf(R.string.abi_seal, 1, Data.P_SEAL.toInt()), intArrayOf(R.string.abi_bles, 1, Data.P_BLESS.toInt()),
         intArrayOf(R.string.abi_stt, 1, Data.P_TIME.toInt()), intArrayOf(R.string.abi_sum, 1, Data.P_SUMMON.toInt()), intArrayOf(R.string.abi_mvatk, 1, Data.P_MOVEWAVE.toInt()),
         intArrayOf(R.string.abi_thch, 1, Data.P_THEME.toInt()), intArrayOf(R.string.abi_poi, 1, Data.P_POISON.toInt()), intArrayOf(R.string.abi_boswv, 1, Data.P_BOSS.toInt()),
@@ -78,8 +78,8 @@ class SearchFilter : AppCompatActivity() {
         intArrayOf(R.string.abi_imcri, 1, Data.P_CRITI.toInt()), intArrayOf(R.string.sch_abi_imusm, 1, Data.P_IMUSUMMON.toInt()), intArrayOf(R.string.sch_abi_imar, 1, Data.P_IMUARMOR.toInt()),
         intArrayOf(R.string.sch_abi_imlt, 1, Data.P_IMULETHARGY.toInt()), intArrayOf(R.string.sch_abi_imr, 1, Data.P_IMURAGE.toInt()), intArrayOf(R.string.sch_abi_imh, 1, Data.P_IMUHYPNO.toInt()),
         intArrayOf(R.string.sch_abi_imsp, 1, Data.P_IMUSPEED.toInt()), intArrayOf(R.string.sch_abi_wlv, 1, Data.P_WORKERLV.toInt()), intArrayOf(R.string.sch_abi_cdc, 1, Data.P_CDSETTER.toInt()),
-        intArrayOf(R.string.sch_abi_waur, 1, Data.P_WEAKAURA.toInt()), intArrayOf(R.string.sch_abi_saur, 1, Data.P_STRONGAURA.toInt()), intArrayOf(R.string.sch_abi_stt, 1, Data.P_AI.toInt())) //2nd field is 0 if ability, 1 if proc. For the ones with higher length, the format is: [field index, >= min-amount, < max-amount] (-1 or not making the array as long if none for the amounts)
-
+        intArrayOf(R.string.sch_abi_waur, 1, Data.P_WEAKAURA.toInt()), intArrayOf(R.string.sch_abi_saur, 1, Data.P_STRONGAURA.toInt()), intArrayOf(R.string.sch_abi_rgn, 1, Data.P_HPREGEN.toInt()), intArrayOf(R.string.sch_abi_stt, 1, Data.P_AI.toInt()))
+    //2nd field is 0 if ability, 1 if proc. For the ones with higher length, the format is: [field index, >= min-amount, < max-amount] (-1 or not making the array as long if none for the amounts)
     private val rarities = arrayOfNulls<CheckBox>(rareid.size)
     private val attacks = arrayOfNulls<CheckBox>(atkid.size)
 

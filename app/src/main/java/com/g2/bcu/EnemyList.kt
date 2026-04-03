@@ -117,7 +117,7 @@ open class EnemyList : AppCompatActivity() {
 
             //Load Data
             withContext(Dispatchers.IO) {
-                Definer.define(this@EnemyList, { _ -> }, { t -> runOnUiThread { st.text = t }})
+                Definer.define(this@EnemyList, { p -> runOnUiThread { progression.progress = (p * 10000).toInt() } }, { t -> runOnUiThread { st.text = t }})
             }
 
             //Load UI

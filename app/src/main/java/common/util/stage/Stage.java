@@ -245,7 +245,7 @@ public class Stage extends Data
 		ans.bgh = bgh;
 		ans.mush = mush;
 		if (info != null) {
-			CustomStageInfo csi = new CustomStageInfo(ans);
+			CustomStageInfo csi = new CustomStageInfo(ans, sm);
 			csi.stages.addAll(Arrays.asList(ans.info.getExStages()));
 			if (!csi.stages.isEmpty()) {
 				float[] chances = ans.info.getExChances();
@@ -259,9 +259,13 @@ public class Stage extends Data
 						csi.totalChance += (short)chance;
 					}
 			}
-			if (info instanceof CustomStageInfo && ((CustomStageInfo)info).ubase != null) {
-				csi.ubase = ((CustomStageInfo)info).ubase;
-				csi.lv = ((CustomStageInfo)info).lv;
+			if (info instanceof CustomStageInfo) {
+				CustomStageInfo cinf = (CustomStageInfo)info;
+				if (cinf.ubase != null) {
+					csi.ubase = cinf.ubase;
+					csi.lv = cinf.lv;
+				}
+				csi.rewards.addAll(cinf.rewards);
 			}
 			ans.info = csi;
 		}
@@ -387,6 +391,18 @@ public class Stage extends Data
 					l.doordis_0 = (len - 500 - basepos) * l.doordis_0 / 100;
 					l.doordis_1 = (len - 500 - basepos) * l.doordis_1 / 100;
 				}
+		}
+
+		if (lim.stageLimit != null) {
+			if (UserProfile.isOlderPack(mc.pack, "0.7.12.1")) {
+				for (int i = 0; i < lim.stageLimit.rarityDeployLimit.length; i++)
+					if (lim.stageLimit.rarityDeployLimit[i] == 0)
+						lim.stageLimit.rarityDeployLimit[i] = -1;
+				if (lim.stageLimit.maxUnitSpawn == 0)
+					lim.stageLimit.maxUnitSpawn = -1;
+				if (lim.stageLimit.globalCost == 0)
+					lim.stageLimit.globalCost = -1;
+			}
 		}
 	}
 

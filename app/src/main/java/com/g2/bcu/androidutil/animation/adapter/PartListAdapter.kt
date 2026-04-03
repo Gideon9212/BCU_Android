@@ -20,7 +20,7 @@ import common.util.anim.Part
 class PartListAdapter(private val activity: MaAnimEditor, private val a : AnimCE, private val p : Part) : RecyclerView.Adapter<PartListAdapter.ViewHolder>() {
 
     companion object {
-        val eases = arrayOf("0 - Linear", "1 - Instant", "2 - Exponential", "3 - Polynomial", "4 - Sinusoidal")
+        val eases = arrayOf("0 - Linear", "1 - Instant", "2 - Exponential", "3 - Polynomial", "4 - Sinusoidal", "5 - Elastic")
     }
     class ViewHolder(row: View) : RecyclerView.ViewHolder(row) {
         val ifr: WatcherEditText = row.findViewById(R.id.mapart_frame)
@@ -35,10 +35,10 @@ class PartListAdapter(private val activity: MaAnimEditor, private val a : AnimCE
             iea.setSelection(ma[2])
             ipa.text = SpannableStringBuilder(ma[3].toString())
 
-            ipa.visibility = if (ma[2] == 2 || ma[2] == 4)
-                View.VISIBLE
-            else
+            ipa.visibility = if (ma[2] == 0)
                 View.GONE
+            else
+                View.VISIBLE
         }
     }
 
@@ -87,10 +87,10 @@ class PartListAdapter(private val activity: MaAnimEditor, private val a : AnimCE
                 pa[2] = position
                 p.check(a)
                 activity.unSave(a,"maanim change part move $position easing")
-                holder.ipa.visibility = if (pa[2] == 2 || pa[2] == 4)
-                    View.VISIBLE
-                else
+                holder.ipa.visibility = if (pa[2] == 0)
                     View.GONE
+                else
+                    View.VISIBLE
                 voo.animationChanged()
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}

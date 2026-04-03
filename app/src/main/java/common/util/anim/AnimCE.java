@@ -277,6 +277,22 @@ public class AnimCE extends AnimCI {
 		SourceAnimSaver saver = new SourceAnimSaver(id, this);
 		for (UserPack pack : UserProfile.getUserPacks())
 			if (pack.editable) {
+				if (id.base == Source.BasePath.BGEffect) {
+					List<CustomBGEffect> list = new ArrayList<>();
+					for (BackgroundEffect bge : pack.bgEffects)
+						if (bge instanceof CustomBGEffect && ((CustomBGEffect)bge).anim == this)
+							list.add((CustomBGEffect)bge);
+					if (!list.isEmpty()) {
+						ResourceLocation rl = new ResourceLocation(pack.getSID(), id.id, id.base);
+						Workspace.validate(rl);
+						AnimCE tar = new AnimCE(rl, this);
+						tar.parts = tar.imgcut.cut(tar.getNum());
+						((Workspace)pack.source).addAnimation(tar);
+						for (CustomBGEffect bge : list)
+							bge.anim = tar;
+					}
+					continue;
+				}
 				List<Animable<AnimU<?>, UType>> list = new ArrayList<>();
 				if (id.base == Source.BasePath.ANIM) {
 					for (Enemy e : pack.enemies)
@@ -286,14 +302,10 @@ public class AnimCE extends AnimCI {
 						for (Form f : u.forms)
 							if (f.anim == this)
 								list.add(f);
-				} else if (id.base == Source.BasePath.SOUL) {
+				} else
 					for (Soul s : pack.souls)
 						if (s.anim == this)
 							list.add(s);
-				} else
-					for (BackgroundEffect bge : pack.bgEffects)
-						if (bge instanceof CustomBGEffect && ((CustomBGEffect)bge).anim == this)
-							list.add(((CustomBGEffect) bge).anim);
 				if (list.isEmpty())
 					continue;
 				ResourceLocation rl = new ResourceLocation(pack.getSID(), id.id, id.base);

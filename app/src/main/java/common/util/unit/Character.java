@@ -6,7 +6,7 @@ import common.battle.data.CustomEntity;
 import common.battle.data.MaskEntity;
 import common.io.json.JsonClass;
 import common.io.json.JsonField;
-import common.io.json.localDecoder;
+import common.io.json.LocalDecoder;
 import common.pack.Identifier;
 import common.pack.PackData;
 import common.pack.PackData.UserPack;
@@ -67,25 +67,25 @@ public abstract class Character extends Animable<AnimU<?>, AnimU.UType> implemen
                         if (pack.desc.FORK_VERSION < 4) {
                             if (pack.desc.FORK_VERSION < 3) {
                                 if (pack.desc.FORK_VERSION < 2) {
-                                    AtkDataModel[] oldAtks = new localDecoder(jdu.getAsJsonObject("atks"), AtkDataModel[].class, ent).setGen(true).setPool(true).decode();
+                                    AtkDataModel[] oldAtks = new LocalDecoder(jdu.getAsJsonObject("atks"), AtkDataModel[].class, ent).setGen(true).setPool(true).decode();
                                     ent.hits.set(0, oldAtks);
                                 } //Finish FORK_VERSION 2 checks
-                                AtkDataModel oldSpAtk = new localDecoder(jdu.get("rev"), AtkDataModel.class, ent).setGen(true).decode();
+                                AtkDataModel oldSpAtk = new LocalDecoder(jdu.get("rev"), AtkDataModel.class, ent).setGen(true).decode();
                                 if (oldSpAtk != null)
                                     ent.revs = new AtkDataModel[]{oldSpAtk};
-                                oldSpAtk = new localDecoder(jdu.get("res"), AtkDataModel.class, ent).setGen(true).decode();
+                                oldSpAtk = new LocalDecoder(jdu.get("res"), AtkDataModel.class, ent).setGen(true).decode();
                                 if (oldSpAtk != null)
                                     ent.ress = new AtkDataModel[]{oldSpAtk};
-                                oldSpAtk = new localDecoder(jdu.get("bur"), AtkDataModel.class, ent).setGen(true).decode();
+                                oldSpAtk = new LocalDecoder(jdu.get("bur"), AtkDataModel.class, ent).setGen(true).decode();
                                 if (oldSpAtk != null)
                                     ent.burs = new AtkDataModel[]{oldSpAtk};
-                                oldSpAtk = new localDecoder(jdu.get("resu"), AtkDataModel.class, ent).setGen(true).decode();
+                                oldSpAtk = new LocalDecoder(jdu.get("resu"), AtkDataModel.class, ent).setGen(true).decode();
                                 if (oldSpAtk != null)
                                     ent.resus = new AtkDataModel[]{oldSpAtk};
-                                oldSpAtk = new localDecoder(jdu.get("revi"), AtkDataModel.class, ent).setGen(true).decode();
+                                oldSpAtk = new LocalDecoder(jdu.get("revi"), AtkDataModel.class, ent).setGen(true).decode();
                                 if (oldSpAtk != null)
                                     ent.revis = new AtkDataModel[]{oldSpAtk};
-                                oldSpAtk = new localDecoder(jdu.get("entr"), AtkDataModel.class, ent).setGen(true).decode();
+                                oldSpAtk = new LocalDecoder(jdu.get("entr"), AtkDataModel.class, ent).setGen(true).decode();
                                 if (oldSpAtk != null)
                                     ent.entrs = new AtkDataModel[]{oldSpAtk};
 
@@ -106,7 +106,7 @@ public abstract class Character extends Animable<AnimU<?>, AnimU.UType> implemen
                                                             ent.tba += ent.getPost(false, 0) + 1;
                                                     } //Finish 0.5.2.0 check
                                                     proc.BARRIER.health = jdu.get("shield").getAsInt();
-                                                    ent.traits = Trait.convertType(type, false);
+                                                    ent.traits = Trait.convertBitmask(type, false);
                                                     if ((ent.abi & (1 << 18)) != 0) //Seal Immunity
                                                         proc.IMUSEAL.mult = 100;
                                                     if ((ent.abi & (1 << 7)) != 0) //Moving atk Immunity

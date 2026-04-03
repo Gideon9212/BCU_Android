@@ -19,9 +19,9 @@ import common.io.assets.AssetLoader
 import common.pack.PackData
 import common.pack.Source.Workspace
 import common.pack.UserProfile
+import common.system.VImg
 import common.system.fake.ImageBuilder
 import common.system.files.VFile
-import common.util.Data
 import common.util.anim.ImgCut
 import common.util.lang.ProcLang
 import common.util.stage.Replay
@@ -203,6 +203,12 @@ object Definer {
         if (animRead)
             return
         Workspace.loadAnimations(null)
+        if (!bcRead) {
+            val aux = CommonStatic.getBCAssets()
+            val uni = VImg("./org/page/uni.png")
+            uni.setCut(aux.unicut)
+            aux.slot[0] = uni
+        }
         animRead = true
     }
     fun defineMedals(context: Context, text: Consumer<String>) {

@@ -30,9 +30,12 @@ public class MultiLangData extends Data {
      * @return True if the value in the given lang changed
      */
     public boolean put(Lang.Locale lang, String data) {
-        if (data != null && !data.isEmpty() && (lang == langs()[0] || !toString().equals(data))) {
-            String old = dat.put(lang, data);
-            return old == null || !old.equals(data);
+        if (data != null && !data.isEmpty()) {
+            if (lang == langs()[0] || !toString().equals(data)) {
+                String old = dat.put(lang, data);
+                return old == null || !old.equals(data);
+            } else if (!dat.containsKey(langs()[0]))
+                return false;
         }
         return dat.remove(lang) != null;
     }

@@ -23,7 +23,7 @@ public class ContBlast extends ContAb {
         maxl = blast.getProc().BLAST.lv;
         EAnimD<BlastEff> anim = (blast.dire == 1 ? effas().A_E_BLAST : effas().A_BLAST).getEAnim(BlastEff.START);
         anim.setTime(1);
-        anims = new ArrayList<>(maxl * 2 - 1);
+        anims = new ArrayList<>(maxl == 3 ? 1 : maxl * 2 - 1);//Level 3 uses default animation
         anims.add(anim);
     }
 
@@ -32,8 +32,9 @@ public class ContBlast extends ContAb {
         FakeTransform at = gra.getTransform();
         for (int i = anims.size() - 1; i >= Math.max(0, anims.size() - 4); i--) {
             if (i > 0) {
+                int mul = i % 2 == 0 ? -1 : 1;
                 anims.get(i).ent[3].alter(53, 400 + (100 - (blast.lv * blast.reduction)) * 6);
-                anims.get(i).ent[3].alter(4, 10 + 40 * ((i+1) / 2));
+                anims.get(i).ent[3].alter(4, (10 + 40 * ((i+1) / 2)) * mul);
             }
             anims.get(i).draw(gra, p, psiz);
             gra.setTransform(at);
@@ -64,7 +65,7 @@ public class ContBlast extends ContAb {
     }
 
     @Override
-    public void update() { // FIXME: update on same frame as attack
+    public void update() {
         t++;
         blast.attacked = false;
         int rt = (int)t - BLAST_PRE;
@@ -78,10 +79,8 @@ public class ContBlast extends ContAb {
                 if (blast.lv < maxl) {
                     CommonStatic.setSE(EXPLOSION_SE + Math.max(0, 3 - (maxl - blast.lv)));
                     if (blast.lv > 0 && maxl != 3) {
-                        EAnimD<BlastEff> a = (blast.dire == 1 ? effas().A_E_BLAST : effas().A_BLAST).getEAnim(BlastEff.SINGLE);
-                        a.ent[3].b.revert();
                         anims.add((blast.dire == 1 ? effas().A_E_BLAST : effas().A_BLAST).getEAnim(BlastEff.SINGLE));
-                        anims.add(a);
+                        anims.add((blast.dire == 1 ? effas().A_E_BLAST : effas().A_BLAST).getEAnim(BlastEff.SINGLE));
                     }
                 }
             }

@@ -13,8 +13,8 @@ public class AttackBlast extends AttackAb {
     public int raw;
     public boolean attacked = false;
 
-    private final LinkedList<AbEntity> capt2 = new LinkedList<>();
-    private final LinkedList<AbEntity>[] ents = new LinkedList[] {new LinkedList<AbEntity>(), new LinkedList<AbEntity>()};
+    private final List<AbEntity> capt2 = new LinkedList<>();
+    private final List<AbEntity>[] ents = new LinkedList[] {new LinkedList<AbEntity>(), new LinkedList<AbEntity>()};
 
     protected AttackBlast(Entity attacker, AttackSimple src, float pos, int bt) {
         super(attacker, src, pos + 75, pos - 75, false);

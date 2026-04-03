@@ -254,6 +254,10 @@ public abstract class CustomEntity extends DataEntity {
 	public int getTBA() {
 		return Math.abs(tba);
 	}
+	@Override
+	public int getRealTBA() {
+		return tba;
+	}
 
 	@Override
 	public int getTouch() {
@@ -268,7 +272,7 @@ public abstract class CustomEntity extends DataEntity {
 		abi = de.getAbi();
 		loop = de.getAtkLoop();
 		traits = new SortedPackSet<>();
-		traits.addIf(de.getTraits(), t -> t.BCTrait() || t.id.pack.equals(getPack().getID().pack) || ((UserPack)getPack().getPack()).desc.dependency.contains(t.id.pack));
+		traits.addIf(de.getTraits(true), t -> t.BCTrait() || t.id.pack.equals(getPack().getID().pack) || ((UserPack)getPack().getPack()).desc.dependency.contains(t.id.pack));
 		width = de.getWidth();
 		tba = de.getTBA();
 		touch = de.getTouch();
@@ -286,7 +290,7 @@ public abstract class CustomEntity extends DataEntity {
 		rep.proc = de.getProc().clone();
 		int m = de.getAtkCount(0);
 		hits.set(0, new AtkDataModel[m]);
-		for (int i = 0; i < m; i++) {
+		for (int i = de.firstAtk(); i < m; i++) {
 			hits.get(0)[i] = new AtkDataModel(this, de, i);
 			for (int j : BCShareable)
 				hits.get(0)[i].proc.getArr(j).set(de.getProc().getArr(j));

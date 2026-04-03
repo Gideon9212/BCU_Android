@@ -62,7 +62,10 @@ public class SCDef implements Copable<SCDef> {
 		@Override
 		public Line clone() {
 			try {
-				return (Line) super.clone();
+				Line clone = (Line)super.clone();
+				if (rev != null)
+					clone.rev = rev.copy();
+				return clone;
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 				return null;

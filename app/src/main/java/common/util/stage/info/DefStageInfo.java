@@ -9,9 +9,7 @@ import common.util.stage.StageMap;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class DefStageInfo implements StageInfo {
     private static final DecimalFormat df;
@@ -33,6 +31,7 @@ public class DefStageInfo implements StageInfo {
     public int diff = -1, exChance = -1, exMapID = -1, exStageIDMin = -1, exStageIDMax = -1;
     public boolean exConnection = false;
     public int maxMaterial = -1;
+    public Map<Integer, Map.Entry<Integer, Integer>> challengeRewards = new HashMap<>(); // <Clear, <ID, Amount>>
 
     public DefStageInfo(StageMap.StageMapInfo info, Stage s, int[] data) {
         map = info;

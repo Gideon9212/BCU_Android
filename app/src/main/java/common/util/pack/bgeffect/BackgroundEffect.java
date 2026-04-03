@@ -34,7 +34,7 @@ public abstract class BackgroundEffect extends Data implements IndexContainer.In
      * @return Object decoded to its proper class
      */
     @SuppressWarnings("unused")
-    public static Object construct(JsonElement elem) {
+    public static BackgroundEffect construct(JsonElement elem) {
         if (elem.getAsJsonObject().has("anim"))
             return JsonDecoder.decode(elem, CustomBGEffect.class);
         return JsonDecoder.decode(elem, MixedBGEffect.class);
@@ -69,24 +69,17 @@ public abstract class BackgroundEffect extends Data implements IndexContainer.In
 
             if(vf != null) {
                 Collection<VFile> fileList = vf.list();
-
-                if(fileList != null) {
-                    for(VFile file : fileList) {
-                        if(file == null)
-                            continue;
-
-                        if(file.name.matches("bg\\d+\\.json") && file.getData().size() != 0) {
+                if(fileList != null)
+                    for(VFile file : fileList)
+                        if(file != null && file.name.matches("bg\\d+\\.json") && file.getData().size() != 0)
                             jsonList.add(CommonStatic.parseIntN(file.name));
-                        }
-                    }
-                }
             }
 
             jsonList.sort(Integer::compareTo);
             for (Integer id : jsonList) {
                 JsonBGEffect jbg = new JsonBGEffect(Identifier.rawParseInt(id, BackgroundEffect.class), false);
                 assets.bgEffects.add(jbg);
-                assets.bgs.getRaw(id).bgEffect = jbg.getID();
+                assets.bgs.getFromID(id).bgEffect = jbg.getID();
             }
 
             for (int j = 0; j < assets.bgEffects.size(); j++) {

@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.battle.attack.AttackAb;
 import common.battle.attack.ContAb;
 import common.battle.data.MaskUnit;
+import common.battle.data.OrbInfo;
 import common.battle.entity.*;
 import common.pack.Identifier;
 import common.util.BattleObj;
@@ -123,8 +124,7 @@ public class StageBasis extends BattleObj {
 			if (st.getCont().id.id < 3)
 				sttime = st.getCont().id.id;
 		}
-		int max = est.lim != null ? est.lim.num : 50;
-		max_num = max <= 0 ? 50 : max;
+		max_num = est.lim.num <= 0 ? 50 : est.lim.num;
 		maxCannon = bas.t().CanonTime(sttime, elu.getInc(C_C_SPE));
 		le.initCapacity(max_num + st.max);
 
@@ -139,7 +139,7 @@ public class StageBasis extends BattleObj {
 		cannon = maxCannon * elu.getInc(C_C_INI) / 100;
 		canon = new Cannon(this, nyc);
 		conf = cnf;
-		if (est.lim != null && est.lim.stageLimit != null && est.lim.stageLimit.coolStart)
+		if (est.lim.stageLimit != null && est.lim.stageLimit.coolStart)
 			for (int i = 0; i < 2; i++)
 				for (int j = 0; j < 5; j++)
 					elu.resetCD(i, j);
@@ -170,7 +170,7 @@ public class StageBasis extends BattleObj {
 
 		isOneLineup = oneLine;
 		this.buttonDelayOn = buttonDelayOn;
-		rem_spawns = est.lim != null && est.lim.stageLimit != null && est.lim.stageLimit.maxUnitSpawn > 0 ? est.lim.stageLimit.maxUnitSpawn : -1;
+		rem_spawns = est.lim.stageLimit != null && est.lim.stageLimit.maxUnitSpawn > 0 ? est.lim.stageLimit.maxUnitSpawn : -1;
 	}
 
 	/**
@@ -267,7 +267,7 @@ public class StageBasis extends BattleObj {
 		return ans;
 	}
 	public boolean cantDeploy(int rare, int wp) {
-		if (rare != -1 && est.lim.stageLimit != null && est.lim.stageLimit.rarityDeployLimit[rare] > 0) {
+		if (rare != -1 && est.lim.stageLimit != null && est.lim.stageLimit.rarityDeployLimit[rare] >= 0) {
 			int ans = wp;
 			for (Entity ent : le)
 				if (ent.dire == -1 && !ent.dead && ((MaskUnit) ent.data).getPack().unit.rarity == rare)
@@ -309,7 +309,7 @@ public class StageBasis extends BattleObj {
 	/**
 	 * list of entities in the range d0 ~ d1 that can be touched by entity with given direction and touch mode
 	 * entity is picked if d0 <= pos <= d1 when excludeRightEdge is false
-	 *                  if d0 <= pos <  d1 when excludeRightEdge is true (currently only used by bblast, TODO: waves should use it)
+	 *                  if d0 <= pos <  d1 when excludeRightEdge is true (used by breakerblast and blast ability), TODO: waves should use it)
 	 */
 	public List<AbEntity> inRange(int touch, int dire, float d0, float d1, boolean excludeRightEdge) {
 		float start = Math.min(d0, d1);
@@ -495,7 +495,7 @@ public class StageBasis extends BattleObj {
 			}
 		}
 
-		if (elu.price[i][j] > money) {
+		if (getCost(i,j) > money) {
 			if (manual)
 				CommonStatic.setSE(SE_SPEND_FAIL);
 			return false;
@@ -521,10 +521,10 @@ public class StageBasis extends BattleObj {
 			elu.resetCD(i, j);
 			elu.smnd[i][j] = true;
 			rem_spawns--;
+			money -= getCost(i,j);
 			eu.added(-1, st.len - 700);
 
 			le.add(eu);
-			money -= elu.price[i][j];
 			if (st.minUSpawn == st.maxUSpawn)
 				unitRespawnTime = st.minUSpawn;
 			else
@@ -538,6 +538,18 @@ public class StageBasis extends BattleObj {
 			return true;
 		}
 		return false;
+	}
+
+	public int getCost(int i, int j) {
+		if (elu.price[i][j] == -1 || elu.price[i][j] == -2 || !(b.lu.fs[i][j] instanceof Form) ||spawns.getOrDefault((Form)b.lu.fs[i][j], 0) % 2 == 0
+			|| ((EForm)b.lu.efs[i][j]).getLevel().getOrbs() == null)
+			return elu.price[i][j];
+		int[][] orbes = ((EForm)b.lu.efs[i][j]).getLevel().getOrbs();
+		int mul = 100;
+		for (int[] orb : orbes)
+			if (orb.length == ORB_TOT && orb[ORB_TYPE] == ORB_LOWERCOST)
+				mul -= OrbInfo.get((byte)orb[ORB_TYPE],(byte)orb[ORB_GRADE])[0];
+		return elu.price[i][j] * mul / 100;
 	}
 
 	@Override
@@ -875,7 +887,7 @@ public class StageBasis extends BattleObj {
 			if (newBg.bgEffect == null)
 				bgEffect = null;
 			else
-				bgEffect = newBg.bgEffect.get();
+				bgEffect = newBg.getEffect();
 		}
 		bg = newBg;
 	}
@@ -910,10 +922,10 @@ public class StageBasis extends BattleObj {
 		return new int[]{est.lim.stageLimit.deployDuplicationTimes[rarity], est.lim.stageLimit.deployDuplicationDelay[rarity]};
 	}
 
-	public float speedLimit(boolean isEnemy) {
+	public int speedLimit(boolean isEnemy) {
 		if (est.lim.stageLimit == null)
 			return -1;
-		return isEnemy ? est.lim.stageLimit.enemySpeedLimit : est.lim.stageLimit.unitSpeedLimit;
+		return isEnemy ? est.lim.stageLimit.enemySpeedOverride : est.lim.stageLimit.unitSpeedOverride;
 	}
 
 	public BattleList<EUnit> getAllOf(int i, int j) {

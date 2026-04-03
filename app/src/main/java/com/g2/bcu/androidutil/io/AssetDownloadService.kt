@@ -236,7 +236,7 @@ class AssetDownloadService : Service() {
                 }
 
                 sendBroadcast(PROGRESS_TEXT, getString(R.string.main_file_merge))
-                //AssetLoader.removeTemp() TODO: Make this optional (reg asset sucks)
+                AssetLoader.removeTemp() //TODO: Make this optional
                 AssetLoader.merge()
 
                 sendBroadcast(SUCCESS, "")

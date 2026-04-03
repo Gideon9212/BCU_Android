@@ -28,12 +28,6 @@ public class CopRand extends BattleObj {
 		return r.nextFloat();
 	}
 
-	public double nextDouble() {
-		Random r = new Random(seed);
-		seed = r.nextLong();
-		return r.nextFloat();
-	}
-
 	public int nextInt(int bound) {
 		Random r = new Random(seed);
 		seed = r.nextLong();

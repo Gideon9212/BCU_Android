@@ -218,15 +218,15 @@ public class Part extends Data implements Cloneable, Comparable<Part> {
 		for (int j = low; j <= high; j++) {
 			double val = moves[j][1] * 4096;
 			if (moves[i][3] > 0)
-				val *= 1+(moves[i][3]*0.1);
+				val *= 1+(moves[i][3]*0.01);
 			for (int k = low; k <= high; k++)
 				if (j != k)
 					val *= 1.0 * (frame - moves[k][0]) / (moves[j][0] - moves[k][0]);
 			sum += val;
 		}
 		double div = 4096;
-		if (moves[i][3] < 0)
-			div *= 1+(-moves[i][3]*0.1);
+		if (moves[i][3] < 0 && moves[i][3] != -100)
+			div *= 1-(moves[i][3]*0.01);
 		return (int) (sum / div);
 	}
 

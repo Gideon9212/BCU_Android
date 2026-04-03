@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import common.CommonStatic;
 import common.battle.Treasure;
 import common.battle.data.CustomEntity;
-import common.battle.data.Orb;
+import common.battle.data.OrbInfo;
 import common.battle.data.PCoin;
 import common.io.assets.AssetLoader;
 import common.io.json.Dependency;
@@ -47,24 +47,24 @@ import java.util.function.Consumer;
 @JsonClass(read = RType.FILL, noTag = NoTag.LOAD)
 public abstract class PackData implements IndexContainer {
 
-	public static class DefPack extends PackData {
+    public static class DefPack extends PackData {
 
-		public VFileRoot root = new VFileRoot(".");
+        public VFileRoot root = new VFileRoot(".");
 
-		protected DefPack() {
+        protected DefPack() {
 
-		}
+        }
 
-		@Override
-		public String getSID() {
-			return Identifier.DEF;
-		}
+        @Override
+        public String getSID() {
+            return Identifier.DEF;
+        }
 
 		public void load(Consumer<String> progress, Consumer<Double> bar) {
 			progress.accept("Loading basic Images");
 			Res.readData();
 			progress.accept("Loading traits");
-			Trait.addBCTraits();
+			Trait.read();
 			progress.accept("Loading cannon Data");
 			Treasure.readCannonCurveData();
 			progress.accept("Loading enemies");
@@ -91,7 +91,7 @@ public abstract class PackData implements IndexContainer {
 			loadLimit();
 			CastleImg.loadBossSpawns();
 			progress.accept("Loading orbs");
-			Orb.read();
+			OrbInfo.read();
 			progress.accept("Loading musics");
 			loadMusic();
 			progress.accept("Processing data");
@@ -116,10 +116,10 @@ public abstract class PackData implements IndexContainer {
 			}
 		}
 
-		@Override
-		public String toString() {
-			return "Default BC Data";
-		}
+        @Override
+        public String toString() {
+            return "Default BC Data";
+        }
 
 		private void loadCharaGroup() {
 			Queue<String> qs = VFile.readLine("./org/data/Charagroup.csv");
@@ -201,7 +201,7 @@ public abstract class PackData implements IndexContainer {
 			}
 			String dem = "demonsoul"; // TODO identify if anim is enemy or not in demon soul name in effect page
 			CommonStatic.getBCAssets().demonSouls.add(new DemonSoul(0, new AnimUD(pre + dem + mid, "demonsoul_" + Data.duo(0), null, null), true));
-			byte u = (byte)(VFile.get(pre + dem + mid + "demonsoul_01") == null ? 0 : 1);
+			byte u = (byte)(VFile.get(pre + dem + mid + "demonsoul_01.png") == null ? 0 : 1);
 			CommonStatic.getBCAssets().demonSouls.add(new DemonSoul(0, new AnimUD(pre + dem + mid, "demonsoul_" + Data.duo(u), null, null), u == 1));
 		}
 
@@ -405,6 +405,7 @@ public abstract class PackData implements IndexContainer {
 			source = new Workspace(id);
 			castles = new PackCasList(this);
 			mc = new PackMapColc(this);
+			save = new SaveData(this);
 			editable = true;
 			loaded = true;
 		}

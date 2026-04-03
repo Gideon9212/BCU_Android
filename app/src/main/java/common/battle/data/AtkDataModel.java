@@ -173,7 +173,7 @@ public class AtkDataModel extends Data implements MaskAtk, BasedCopable<AtkDataM
 
 	@Override
 	public String getName() {
-		return str;
+		return str.toLowerCase();
 	}
 
 	public void checkAvail() {

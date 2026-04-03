@@ -32,6 +32,10 @@ public abstract class BattleField {
 		btlTick = !btlTick;
 	}
 
+	public boolean battleTick() {
+		return btlTick;
+	}
+
 	protected boolean act_can() {
 		return sb.act_can();
 	}

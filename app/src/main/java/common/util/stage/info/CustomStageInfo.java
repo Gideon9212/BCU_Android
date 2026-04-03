@@ -4,11 +4,12 @@ import com.google.gson.JsonObject;
 import common.io.json.JsonClass;
 import common.io.json.JsonDecoder;
 import common.io.json.JsonField;
-import common.io.json.localDecoder;
+import common.io.json.LocalDecoder;
 import common.pack.Identifier;
 import common.pack.SortedPackSet;
 import common.util.stage.MapColc.PackMapColc;
 import common.util.stage.Stage;
+import common.util.stage.StageMap;
 import common.util.unit.AbForm;
 import common.util.unit.Form;
 import common.util.unit.Level;
@@ -49,10 +50,14 @@ public class CustomStageInfo implements StageInfo {
     }
 
     public CustomStageInfo(Stage st) {
+        this(st, st.getCont());
+    }
+
+    public CustomStageInfo(Stage st, StageMap sm) {
         this.st = st;
         st.info = this;
-        if (st.getMC() instanceof PackMapColc)
-            ((PackMapColc)st.getMC()).si.add(this);
+        if (sm != null && sm != Stage.CLIPSM && sm.getCont() instanceof PackMapColc)
+            ((PackMapColc)sm.getCont()).si.add(this);
     }
 
     @Override
@@ -131,6 +136,6 @@ public class CustomStageInfo implements StageInfo {
         for (Float chance : chances)
             totalChance += chance;
         if (jobj.has("reward"))
-            rewards.add(new localDecoder(jobj.get("reward"), Form.class, this).setAlias(AbForm.AbFormJson.class).decode());
+            rewards.add(new LocalDecoder(jobj.get("reward"), Form.class, this).setAlias(AbForm.AbFormJson.class).decode());
     }
 }

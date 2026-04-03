@@ -9,7 +9,7 @@ import common.io.json.JsonClass.JCIdentifier;
 import common.io.json.JsonClass.NoTag;
 import common.io.json.JsonDecoder;
 import common.io.json.JsonField;
-import common.io.json.localDecoder;
+import common.io.json.LocalDecoder;
 import common.pack.Identifier;
 import common.pack.IndexContainer.IndexCont;
 import common.pack.IndexContainer.Indexable;
@@ -216,7 +216,7 @@ public class LvRestrict extends Data implements Indexable<PackData, LvRestrict> 
 			int n = jarr.size();
 			for (int i = 0; i < n; i++) {
 				JsonObject job = jarr.get(i).getAsJsonObject();
-				CharaGroup ch = new localDecoder(job.get("key"), CharaGroup.class, this).setAlias(Identifier.class).decode();
+				CharaGroup ch = new LocalDecoder(job.get("key"), CharaGroup.class, this).setAlias(Identifier.class).decode();
 				cgl.put(ch, toNewFormat(JsonDecoder.decode(job.get("val"), int[].class)));
 			}
 		}

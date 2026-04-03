@@ -1,7 +1,7 @@
 package common.battle;
 
 import common.CommonStatic;
-import common.battle.data.Orb;
+import common.battle.data.OrbInfo;
 import common.io.json.JsonClass;
 import common.io.json.JsonClass.RType;
 import common.io.json.JsonField;
@@ -311,9 +311,9 @@ public class Treasure extends Data {
 		return ini;
 	}
 
-	public float getDEF(double mult, SortedPackSet<Trait> eTraits, SortedPackSet<Trait> traits, Orb orb, Level level, int comboInc) {
+	public float getDEF(double mult, SortedPackSet<Trait> eTraits, SortedPackSet<Trait> traits, OrbInfo orb, Level level, int comboInc) {
 		final byte ORB_LV = mult < 600 && mult > 100 ? mult < 400 ? ORB_STRONG : ORB_RESISTANT : -1;
-		final Map<Byte,int[]> ORB_MULTIS = ORB_LV == -1 ? null : Orb.EFFECT.get(ORB_LV);
+		final Map<Byte,int[]> ORB_MULTIS = ORB_LV == -1 ? null : OrbInfo.EFFECT.get(ORB_LV);
 
 		float ini = 1;
 		if (!traits.isEmpty()) {

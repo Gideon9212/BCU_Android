@@ -4,6 +4,7 @@ import common.io.json.JsonClass;
 import common.io.json.JsonField;
 import common.util.Data;
 import common.util.pack.Background;
+import common.util.pack.bgeffect.BackgroundEffect;
 import common.util.stage.CastleImg;
 import common.util.stage.Stage;
 import common.util.unit.*;
@@ -92,7 +93,7 @@ public class Identifier<T extends IndexContainer.Indexable<?, T>> implements Com
 		IndexContainer.IndexCont cont = null;
 		Queue<Class<?>> q = new ArrayDeque<>();
 		q.add(cls);
-		while (q.size() > 0) {
+		while (!q.isEmpty()) {
 			Class<?> ci = q.poll();
 			if ((cont = ci.getAnnotation(IndexContainer.IndexCont.class)) != null)
 				break;
@@ -162,7 +163,8 @@ public class Identifier<T extends IndexContainer.Indexable<?, T>> implements Com
 		IndexContainer cont = getCont();
 		if (cont == null)
 			return null;
-
+		if (pack.equals(DEF) && cls == BackgroundEffect.class)
+			return (T) cont.getList(cls, (r, l) -> r == null ? l.getFromID(id) : r, null);
 		return (T) cont.getList(cls, (r, l) -> r == null ? l.getRaw(id) : r, null);
 	}
 

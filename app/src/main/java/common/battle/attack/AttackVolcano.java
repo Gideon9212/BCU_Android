@@ -24,6 +24,7 @@ public class AttackVolcano extends AttackAb {
 			raw = (int)(raw * model.b.b.t().getDecorationMagnification(model.b.canon.deco));
 	}
 
+	@Override
 	public void capture() {
 		List<AbEntity> le = model.b.inRange(touch, attacker.status.rage > 0 ? 2 : dire, sta, end, excludeRightEdge);
 		if (attacker.status.rage > 0 || attacker.status.hypno > 0)
@@ -35,6 +36,7 @@ public class AttackVolcano extends AttackAb {
 				capt.add(e);
 	}
 
+	@Override
 	public void excuse() {
 		if (volcTime <= 0) {
 			volcTime = VOLC_ITV;

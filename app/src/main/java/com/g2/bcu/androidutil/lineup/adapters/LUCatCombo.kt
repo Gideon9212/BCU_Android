@@ -132,7 +132,7 @@ class LUCatCombo : Fragment() {
 
             val c = StaticStore.combos[posit]
 
-            BasisSet.current().sele.lu.set(c.forms)
+            BasisSet.current().sele.lu.set(c)
 
             line.updateLineUp()
 

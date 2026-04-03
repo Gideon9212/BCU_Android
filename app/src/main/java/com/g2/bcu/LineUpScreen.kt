@@ -146,7 +146,7 @@ class LineUpScreen : AppCompatActivity() {
 
             //Load Data
             withContext(Dispatchers.IO) {
-                Definer.define(this@LineUpScreen, { _ -> }, { t -> runOnUiThread { st.text = t }})
+                Definer.define(this@LineUpScreen, { p -> runOnUiThread { progression.progress = (p * 10000).toInt() } }, { t -> runOnUiThread { st.text = t }})
 
                 if (StaticStore.ludata.isEmpty()) {
                     StaticStore.ludata.clear()

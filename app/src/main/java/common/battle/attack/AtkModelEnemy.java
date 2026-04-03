@@ -9,7 +9,7 @@ public class AtkModelEnemy extends AtkModelEntity {
 	 * Any proc whose index is before this number will not apply when entity is cursed.
 	 * See AtkModelEntity.par for proc indexes
 	 */
-	protected static final int cursedProcs = 18;
+	protected static final int cursedProcs = 17;
 
 	protected AtkModelEnemy(EEnemy ent, float d0) {
 		super(ent, d0, 1);

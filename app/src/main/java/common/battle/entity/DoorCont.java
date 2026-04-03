@@ -21,6 +21,10 @@ public class DoorCont extends EAnimCont {
 
         ent.getAnim().ent[0].b.EWarp = true;
         ent.getAnim().paraTo(getAnim(), 24);
+        if (ent.dire == -1) {
+            getAnim().getOrder()[1].alter(4, 49);
+            getAnim().getOrder()[23].alter(4, 49);
+        }
     }
 
     @Override

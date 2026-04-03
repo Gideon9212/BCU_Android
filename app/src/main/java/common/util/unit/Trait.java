@@ -1,9 +1,12 @@
 package common.util.unit;
 
-import common.battle.data.Orb;
-import common.battle.entity.Entity;
+import com.google.gson.JsonObject;
+import common.battle.data.CustomEntity;
+import common.battle.data.AtkDataModel;
+import common.battle.data.OrbInfo;
 import common.io.json.JsonClass;
 import common.io.json.JsonDecoder;
+import common.io.json.LocalDecoder;
 import common.io.json.JsonField;
 import common.pack.*;
 import common.pack.IndexContainer.Indexable;
@@ -12,67 +15,28 @@ import common.util.Data;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 @IndexContainer.IndexCont(PackData.class)
 @JsonClass.JCGeneric(Identifier.class)
 @JsonClass
 public class Trait extends Data implements Indexable<PackData, Trait>, Comparable<Trait> {
-    public static void addBCTraits() {
+
+    public static final SortedPackSet<Trait> AntiTraits = new SortedPackSet<>(Data.TRAIT_WHITE);//Used for targetType, more efficient than re-making the list every time
+    public static void read() {
         //Reads traits from BC and implements it into the main pack
         PackData.DefPack data = UserProfile.getBCData();
-        String[] traitNames = {"Red", "Floating", "Black", "Metal", "Angel", "Alien", "Zombie", "Aku", "Relic", "White", "EVA", "Witch", "Baron", "Beast", "Sage", "base", "cannon"};
+        String[] traitNames = {"Red", "Floating", "Black", "Metal", "Angel", "Alien", "Zombie", "Aku", "Relic", "White", "EVA", "Witch", "Baron", "Beast", "Sage", "Villain", "base", "cannon"};
         for (String name : traitNames) {
             Trait t = new Trait(data.getNextID(Trait.class));
             t.name = name;
             data.traits.add(t);
+            if (t.id.id != Data.TRAIT_METAL && t.id.id < Data.TRAIT_WHITE)
+                AntiTraits.add(t);
         }
     }
-
-    @JsonField(defval = "new trait")
-    public String name = "new trait";
-
-    @JsonClass.JCIdentifier
-    @JsonField
-    public Identifier<Trait> id;
-    public VImg icon = null;
-
-    @JsonField
-    public boolean targetType;
-    // Target type will be used to toggle whether Anti-Traited, Anti-Non Metal, or Anti-All units will target this trait or not
-
-    @JsonField(generic = Form.class, alias = AbForm.AbFormJson.class, defval = "isEmpty")
-    public final SortedPackSet<Form> others = new SortedPackSet<>();
-    // This is used to make custom traits targeted by units whose stats can't be modified otherwise, such as BC units or units from Parented Packs
-
-
-    @JsonClass.JCConstructor
-    public Trait() {
-        id = null;
-    }
-
-    public Trait(Identifier<Trait> id, Trait t) {
-        name = t.name;
-        targetType = t.targetType;
-        this.id = id;
-        icon = t.icon;
-        others.addAll(t.others);
-    }
-
-    public Trait(Identifier<Trait> id) {
-        this.id = id;
-    }
-
-    @Override
-    public Identifier<Trait> getID() { return id; }
-
-    @Override
-    public String toString() {
-        return id + " - " + name;
-    }
-
     // Convert Bitmask Type format to new format
-    public static SortedPackSet<Trait> convertType(int type, boolean talent) {
+    public static SortedPackSet<Trait> convertBitmask(int type, boolean talent) {
         SortedPackSet<Trait> traits = new SortedPackSet<>();
         PackData.DefPack data = UserProfile.getBCData();
         if ((type & TB_RED) != 0)
@@ -109,27 +73,109 @@ public class Trait extends Data implements Indexable<PackData, Trait>, Comparabl
         return traits;
     }
 
-    public static List<Trait> convertOrb(int mask) {
-        List<Trait> ans = new ArrayList<>();
+    public static ArrayList<Trait> convertOrb(int mask) {
+        ArrayList<Trait> ans = new ArrayList<>();
         PackData.DefPack data = UserProfile.getBCData();
 
-        for (int i = 0; i < Orb.orbTrait.length; i++) {
-            if ((mask & (1 << Orb.orbTrait[i])) > 0) {
-                ans.add(data.traits.get(Orb.orbTrait[i]));
-            }
-        }
+        for (int i = 0; i < OrbInfo.orbTrait.length; i++)
+            if ((mask & (1 << OrbInfo.orbTrait[i])) > 0)
+                ans.add(data.traits.get(OrbInfo.orbTrait[i]));
 
         return ans;
     }
 
-    @JsonDecoder.OnInjected
-    public void onInjected() {
-        icon = UserProfile.getUserPack(id.pack).source.readImage(Source.BasePath.TRAIT.toString(), id.id);
-        others.removeIf(f -> f == null || f.uid.pack.equals(id.pack) || f.maxu().getTraits().isEmpty() || (targetType && Entity.targetTraited(f.maxu().getTraits())));
+    /**
+     * Check if the unit can be considered an anti-traited
+     * @param targets The list of traits the unit targets
+     * @return true if the unit is anti-traited
+     */
+    public static boolean targetTraited(SortedPackSet<Trait> targets) {
+        return targets.containsAll(AntiTraits);
     }
 
-    @JsonClass.JCGetter
-    public static Trait getter(Identifier<?> id) { return (Trait) Identifier.get(id); }
+    @JsonField(defval = "new trait")
+    public String name = "new trait";
+
+    @JsonClass.JCIdentifier
+    @JsonField
+    public Identifier<Trait> id;
+    public VImg icon = null;
+
+    @JsonField
+    public boolean targetType;
+    // Target type will be used to toggle whether Anti-Traited, Anti-Non Metal, or Anti-All units will target this trait or not
+
+    @JsonField(generic = Form.class, alias = AbForm.AbFormJson.class, defval = "isEmpty")
+    public final SortedPackSet<Form> targetForms = new SortedPackSet<>();
+    // This is used to make custom traits targeted by units whose stats can't be modified otherwise, such as BC units or units from Parented Packs
+
+
+    @JsonClass.JCConstructor
+    public Trait() {
+        id = null;
+    }
+
+    public Trait(Identifier<Trait> id, Trait t) {
+        name = t.name;
+        targetType = t.targetType;
+        this.id = id;
+        icon = t.icon;
+        targetForms.addAll(t.targetForms);
+    }
+
+    public Trait(Identifier<Trait> id) {
+        this.id = id;
+    }
+
+    @Override
+    public Identifier<Trait> getID() { return id; }
+
+    @Override
+    public String toString() {
+        return id + " - " + name;
+    }
+
+    public boolean isUsed() {
+        if (BCTrait())
+            return true;
+        PackData.UserPack pack = (PackData.UserPack) getCont();
+        Collection<PackData.UserPack> pacs = UserProfile.getUserPacks();
+        for (PackData.UserPack pacc : pacs)
+            if (pacc.desc.dependency.contains(pack.desc.id) || pacc == pack) {
+                for (Enemy en : pacc.enemies.getList()) {
+                    if (en.de.getTraits(true).contains(this))
+                        return true;
+                    for (AtkDataModel[] atks : ((CustomEntity)en.de).hits) {
+                        if (atks == null)
+                            continue;
+                        for (AtkDataModel atk : atks)
+                            if (atk.getATKTraits().contains(this))
+                                return true;
+                    }
+                }
+                for (Unit un : pacc.units.getList())
+                    for (Form uf : un.forms) {
+                        if (uf.du.getTraits(true).contains(this))
+                            return true;
+                        for (AtkDataModel[] atks : ((CustomEntity)uf.du).hits) {
+                            if (atks == null)
+                                continue;
+                            for (AtkDataModel atk : atks)
+                                if (atk.getATKTraits().contains(this))
+                                    return true;
+                        }
+                    }
+            }
+        return false;
+    }
+
+    @JsonDecoder.OnInjected
+    public void onInjected(JsonObject jobj) {
+        icon = UserProfile.getUserPack(id.pack).source.readImage(Source.BasePath.TRAIT.toString(), id.id);
+        if (jobj.has("others"))
+            targetForms.addAll(new LocalDecoder(jobj.get("others"), SortedPackSet.class, this).setGeneric(Form.class).setAlias(AbForm.AbFormJson.class).decode());
+        targetForms.removeIf(f -> f == null || f.uid.pack.equals(id.pack) || f.maxu().getTraits(true).isEmpty() || (targetType && targetTraited(f.maxu().getTraits(true))));
+    }
 
     @Override
     public int compareTo(@NotNull Trait t) {

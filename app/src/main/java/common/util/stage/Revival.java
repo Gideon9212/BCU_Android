@@ -9,13 +9,13 @@ import common.io.json.JsonClass;
 import common.io.json.JsonDecoder;
 import common.io.json.JsonField;
 import common.pack.Identifier;
-import common.util.Data;
+import common.util.BattleObj;
 import common.util.pack.EffAnim;
 import common.util.pack.Soul;
 import common.util.unit.AbEnemy;
 
 @JsonClass(noTag = JsonClass.NoTag.LOAD)
-public class Revival extends Data {
+public class Revival extends BattleObj {
     public Identifier<AbEnemy> enemy;
     public Identifier<Music> bgm;
     public Identifier<Soul> soul;
@@ -65,7 +65,7 @@ public class Revival extends Data {
         }
 
         float multi = (mhp == 0 ? 100 : mhp) * mul * 0.01f;
-        float mulatk = (mhp == 0 ? 100 : matk) * mul * 0.01f;
+        float mulatk = (matk == 0 ? 100 : matk) * mul * 0.01f;
         AbEnemy e = Identifier.getOr(enemy, AbEnemy.class);
 
         EEnemy ee = e.getEntity(b, this, multi, mulatk, layer, layer, boss);
@@ -78,5 +78,17 @@ public class Revival extends Data {
             b.mus = bgm;
             b.themeTime = -1;
         }
+    }
+
+    public Revival copy() {
+        Revival nr = new Revival(enemy);
+        nr.mhp = mhp;
+        nr.matk = matk;
+        nr.boss = boss;
+        nr.bgm = bgm;
+        nr.soul = soul;
+        if (rev != null)
+            nr.rev = rev.copy();
+        return nr;
     }
 }

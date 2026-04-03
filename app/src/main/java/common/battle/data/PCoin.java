@@ -21,10 +21,14 @@ import java.util.Queue;
 
 @JsonClass(read = JsonClass.RType.FILL)
 public class PCoin extends Data {
+	public static int PCOIN_MIN = 1;
+	public static int PCOIN_MAX;
 	public static void read() {
 		Queue<String> qs = VFile.readLine("./org/data/SkillAcquisition.csv");
 
-		qs.poll();
+        if (qs == null)
+            return;
+        qs.poll();
 
 		for (String str : qs) {
 			String[] strs = str.trim().split(",");
@@ -39,6 +43,7 @@ public class PCoin extends Data {
 					if (u.getForms().length > 3)
 						new PCoin(data, u.getForms()[3].du);
 				}
+				PCOIN_MAX = Math.max(PCOIN_MAX, data[2]);
 			}
 		}
 	}
@@ -71,7 +76,7 @@ public class PCoin extends Data {
 
 	private PCoin(int[] strs, MaskUnit du) {
 		this.du = du;
-		trait = Trait.convertType(strs[1], true);
+		trait = Trait.convertBitmask(strs[1], true);
 
 		for (int i = 0; i < 8; i++) {
 			if (2 + i * 14 >= strs.length)
@@ -163,69 +168,6 @@ public class PCoin extends Data {
 			info.removeIf(ii -> ii[0] == PC_CORRES.length);
 			onInjected();
 		}
-		/*Proc proc = du.getAllProc();
-		for (int[] data : info) {
-			data[1] = Math.max(data[1], 1);
-			int type = Data.PC_CORRES[data[0]][1];
-			ProcItem pi = proc.getArr(type);
-
-			for (int i = 0; i < pi.getDeclaredFields().length - 1; i += 2) {
-				int effPos = 2 + i * 2;
-				switch (pi.getFieldName(type)) {
-					case "prob":
-						data[effPos] = MathUtil.clip(data[i], 0, 100 - pi.get(0));
-						data[effPos] = MathUtil.clip(data[i + 1], data[i], 100 - pi.get(0));
-						break;
-				}
-			}
-			if (Data.PC_CORRES[data[0]][3] != -1) {
-				data[1] = Data.PC_CORRES[Data.PC_CORRES[data[0]][3]][1];
-				data[2] = data[3] = 100 - proc.getArr(type).get(0);
-				return;
-			}
-
-			switch (data[0]) {
-				case 0:
-					break;
-				case 56: case 65:
-					data[2] = MathUtil.clip(data[2], 0, 100 - proc.getArr(type).get(0));
-					data[3] = MathUtil.clip(data[3], data[2], 100 - proc.getArr(type).get(0));
-					data[8] = Math.max(1, data[8] / Data.VOLC_ITV) * Data.VOLC_ITV;
-					data[9] = Math.max(Math.max(1, data[9] / Data.VOLC_ITV) * Data.VOLC_ITV, data[8]);
-					break;
-				case 10:
-					data[2] = MathUtil.clip(data[2], 0, 100 - proc.getArr(type).get(0));
-					data[3] = MathUtil.clip(data[3], data[2], 100 - proc.getArr(type).get(0));
-					data[4] = Math.max(data[4], 0);
-					data[5] = Math.max(data[5], data[4]);
-					break;
-				case 61:
-					data[2] = MathUtil.clip(data[2], 0, 100);
-					data[3] = MathUtil.clip(data[3], data[2], 100);
-                    break;
-				case 25: case 26: case 31: case 32:
-					data[2] = Math.max(data[2], 0);
-					data[3] = Math.max(data[3], data[2]);
-					break;
-				case 64:
-					data[2] = MathUtil.clip(data[2], 0, 100 - proc.getArr(type).get(1));
-					data[3] = MathUtil.clip(data[3], data[2], 100 - proc.getArr(type).get(1));
-					data[4] = Math.max(data[4], 0);
-					data[5] = Math.max(data[5], data[4]);
-					break;
-				case 62: case 1:
-					data[6] = Math.max(data[6], 0);
-					data[7] = Math.max(data[7], data[6]);
-				case 2: case 3: case 9: case 17: case 50: case 51: case 60:
-					data[4] = Math.max(data[4], 0);
-					data[5] = Math.max(data[5], data[4]);
-				case 8: case 11: case 13: case 15: case 18: case 19: case 20: case 21: case 22: case 24: case 30:
-				case 52: case 54: case 58:
-					data[2] = MathUtil.clip(data[2], 0, 100 - proc.getArr(type).get(0));
-					data[3] = MathUtil.clip(data[3], data[2], 100 - proc.getArr(type).get(0));
-					break;
-			}/
-		}*/
 	}
 
 	@SuppressWarnings("deprecation")
@@ -249,7 +191,7 @@ public class PCoin extends Data {
 			int[] type = get_CORRES(info.get(i)[0]);
 			//Targettings that come with a talent, such as Hyper Mr's
 			if (!this.trait.isEmpty())
-				ans.getTraits().addAll(this.trait);
+				ans.getTraits(true).addAll(this.trait);
 
 			int offset = type.length >= 3 && type[0] == PC_P ? type[2] : 0;
 			int fieldTOT = -offset;
@@ -282,8 +224,9 @@ public class PCoin extends Data {
 						tar.set(1, modifs[2] / 4);
 						tar.set(2, (modifs[2] + modifs[3]) / 4);
 						tar.set(3, modifs[1] * 20);
+						tar.set(4, modifs[1] * 20);
 						if (type[1] == P_MINIVOLC && tar.get(5) == 0)
-							tar.set(4, 20);
+							tar.set(5, 20);
 					} else {
 						tar.set(0, tar.get(0) + modifs[0]);
 						tar.set(1, tar.get(1) + Math.min(modifs[1], modifs[2]));
@@ -319,6 +262,8 @@ public class PCoin extends Data {
 						tar.set(0, 100);
 					else if (type[1] == P_ATKBASE)
 						tar.set(0, 300);
+					else if (type[1] == P_WAVE || type[1] == P_MINIWAVE)
+						tar.set(2, modifs[1]);
 				} else if (!((CustomEntity)du).common && !procSharable[type[1]]) {
 					AtkDataModel[] d = getAtks(ans, atki++);
 					if (d.length != 0)
@@ -335,7 +280,7 @@ public class PCoin extends Data {
 			else if (type[0] == PC_IMU)
 				ans.getProc().getArr(type[1]).set(0, 100);
 			else if (type[0] == PC_TRAIT)
-				ans.getTraits().add(UserProfile.getBCData().traits.get(type[1]));
+				ans.getTraits(true).add(UserProfile.getBCData().traits.get(type[1]));
 			else if (type[0] == 5) { //special cases
 				if (type[1] == P_IMUWAVE)
 					ans.getProc().getArr(type[1]).set(1, 100);

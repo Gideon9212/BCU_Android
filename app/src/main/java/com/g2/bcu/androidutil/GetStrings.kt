@@ -435,10 +435,10 @@ class GetStrings(private val c: Context) {
     fun getTrait(ef: Form?, talent: Boolean, lvs: Level): Array<Bitmap> {
         if (ef == null) return arrayOf()
         val du: MaskUnit = if (ef.du.pCoin != null && talent) ef.du.pCoin.improve(lvs.talents) else ef.du
-        return traitIcons(du.traits)
+        return traitIcons(du.getTraits(false))
     }
     fun getTrait(em: Enemy): Array<Bitmap> {
-        return traitIcons(em.de.traits)
+        return traitIcons(em.de.getTraits(false))
     }
     fun traitIcons(traits : SortedPackSet<Trait>) : Array<Bitmap> {
         return Array(traits.size) { i ->
@@ -756,6 +756,18 @@ class GetStrings(private val c: Context) {
                         if (l.stageLimit.deployDuplicationTimes[i] != 0)
                             str.append(c.getString(rid[i])).append(": ").append(l.stageLimit.deployDuplicationTimes[i]).append(" / ").append(l.stageLimit.deployDuplicationDelay[i]).append("f, ")
                     limits[c.getString(R.string.limit_dpspwn)] = str.substring(0, str.length - 2) + "]"
+                }
+                if (l.stageLimit.cannonMultiplier != 100) {
+                    val str = StringBuilder(c.getString(R.string.limit_cannon)).append(": ").append(l.stageLimit.cannonMultiplier).append("%")
+                    limits[c.getString(R.string.limit_cannon)] = str.toString()
+                }
+                if (l.stageLimit.unitSpeedOverride != 100) {
+                    val str = StringBuilder(c.getString(R.string.limit_uspd)).append(": ").append(l.stageLimit.unitSpeedOverride)
+                    limits[c.getString(R.string.limit_uspd)] = str.toString()
+                }
+                if (l.stageLimit.enemySpeedOverride != 100) {
+                    val str = StringBuilder(c.getString(R.string.limit_espd)).append(": ").append(l.stageLimit.enemySpeedOverride)
+                    limits[c.getString(R.string.limit_espd)] = str.toString()
                 }
             }
         }

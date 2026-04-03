@@ -343,11 +343,15 @@ public class EPart extends ImgCore implements Comparable<EPart> {
 			siz = fa.getSize().times(sizer);
 		}
 
-		if (b.ent[0] != this) {
-			P tpos = P.newP(pos).times(siz);
-			g.translate(tpos.x, tpos.y);
+		if (b.ent[0] != this) { // check if not part 0
+			P scaledPosition;
+
+			if (fa != null) {
+				scaledPosition = fa.getSize().times(sizer).times(pos);
+			} else
+				scaledPosition = P.newP(sizer).times(pos);
+			g.translate(scaledPosition.x, scaledPosition.y);
 			g.scale(hf, vf);
-			P.delete(tpos);
 		} else if (fa != null && b.model.ints[2] == 255 && b.EWarp) {
 			int[] fir = fa.b.model.parts[0];
 			int[] data = b.model.confs[0];
@@ -360,7 +364,6 @@ public class EPart extends ImgCore implements Comparable<EPart> {
 			g.scale(hf, vf);
 			P.delete(tpos);
 		} else {
-			g.scale(hf, vf);
 			if (b.model.confs.length > 0) {
 				int[] data = b.model.confs[0];
 				P p0 = getBaseSize(false);
@@ -374,6 +377,7 @@ public class EPart extends ImgCore implements Comparable<EPart> {
 			}
 			P p0 = getSize();
 			P p = P.newP(piv).times(p0).times(sizer);
+			g.scale(hf, vf);
 			P.delete(p0);
 			g.translate(p.x, p.y);
 

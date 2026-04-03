@@ -70,8 +70,9 @@ public class CommonStatic {
 		public final Map<Byte, Integer> DATA = new HashMap<>();
 		public final SortedPackSet<DemonSoul> demonSouls = new SortedPackSet<>();
 
-		public FakeImage[] TYPES;
-		public FakeImage[] TRAITS;
+		// 0 = big size, 1 = small size
+		public FakeImage[][] TYPES = new FakeImage[2][];
+		public FakeImage[][] TRAITS = new FakeImage[2][];;
 		public FakeImage[] GRADES;
 
 		// NyCastle
@@ -80,8 +81,11 @@ public class CommonStatic {
 
 		// EffAnim
 		public final EffAnimStore effas = new EffAnimStore();
-		public final int[][] values = new int[Data.C_TOT][5];
+		public final int[][] values = new int[Data.C_TOT][6];
 		public int[][] filter;
+
+		public final VImg[] rarity = new VImg[6];
+		public final VImg[] maxcat = new VImg[12];
 
 		// Form cuts
 		public ImgCut unicut, udicut;
@@ -113,6 +117,7 @@ public class CommonStatic {
 		public int[] ints = new int[] { 1, 1, 1, 2 };
 		@JsonField(defval = "true")
 		public boolean ref = true, twoRow = true;
+		@JsonField(block = true)
 		public boolean battle = false, icon = false;
 		/**
 		 * Use this variable to unlock plus level for aku outbreak

@@ -2,6 +2,7 @@ package common.util.unit;
 
 import common.CommonStatic;
 import common.battle.data.CustomUnit;
+import common.battle.data.OrbInfo;
 import common.battle.data.PCoin;
 import common.io.json.FieldOrder.Order;
 import common.io.json.JsonClass;
@@ -95,12 +96,14 @@ public class Unit extends Data implements AbUnit {
 	@JsonField(alias = Identifier.class)
 	@Order(3)
 	public UnitLevel lv;
+	public OrbInfo orbs = null;
 
 	public final UnitInfo info = new UnitInfo();
 
 	@JsonClass.JCConstructor
 	public Unit() {
 		id = null;
+		orbs = new OrbInfo(-1);
 	}
 
 	public Unit(Identifier<AbUnit> identifier) {
@@ -118,6 +121,7 @@ public class Unit extends Data implements AbUnit {
 		forms = new Form[] { new Form(this, 0, "new unit", ce, cu) };
 		lv = CommonStatic.getBCAssets().defLv;
 		lv.units.add(this);
+		orbs = new OrbInfo(-1);
 	}
 
 	public Unit(VFile p, int[] m) {
@@ -157,6 +161,7 @@ public class Unit extends Data implements AbUnit {
 			cu.importData(u.forms[i].du);
 			forms[i] = new Form(this, i, str, ac, cu);
 		}
+		orbs = new OrbInfo(-1);
 	}
 
 	@Override
@@ -257,6 +262,10 @@ public class Unit extends Data implements AbUnit {
 		return Math.min(CommonStatic.getPrefLvs().rare[rarity].getPlusLv(), maxp);
 	}
 
+	public final int getTotalPreferredLevel() {
+		return getPreferredLevel() + getPreferredPlusLevel();
+	}
+
 	public boolean unused() {
 		for (Form f : forms)
 			if (!f.unused())
@@ -267,10 +276,10 @@ public class Unit extends Data implements AbUnit {
 	@Override
 	public String toString() {
 		String desp = MultiLangCont.get(forms == null ? null : forms[0]);
-		if (desp != null && desp.length() > 0)
+		if (desp != null && !desp.isEmpty())
 			return Data.trio(id.id) + " " + desp;
 		String name = forms[0].names.toString();
-		if (name.length() > 0)
+		if (!name.isEmpty())
 			return Data.trio(id.id) + " " + name;
 		return Data.trio(id.id);
 	}

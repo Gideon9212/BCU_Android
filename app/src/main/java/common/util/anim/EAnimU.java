@@ -58,18 +58,9 @@ public class EAnimU extends EAnimD<AnimU.UType> {
 		set(g);
 		FakeTransform at = g.getTransform();
 		g.translate(ori.x, ori.y);
-		if (CommonStatic.getConfig().ref && !CommonStatic.getConfig().battle) {
-			P p0 = P.newP(-200, 0).times(siz);
-			P p1 = P.newP(400, 100).times(siz);
-			P p2 = P.newP(0, -300).times(siz);
-			g.drawRect((int) p0.x, (int) p0.y, (int) p1.x, (int) p1.y);
-			g.setColor(FakeGraphics.RED);
-			g.drawLine(0, 0, (int) p2.x, (int) p2.y);
-
-			P.delete(p0);
-			P.delete(p1);
-			P.delete(p2);
-		}
+		if (CommonStatic.getConfig().ref && !CommonStatic.getConfig().battle)
+			drawAxis(g, siz);
+		visualizeRange(g, siz);
 		for (EPart e : order) {
 			P p = P.newP(siz, siz);
 			e.drawPart(g, p);

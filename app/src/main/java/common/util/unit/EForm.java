@@ -57,7 +57,12 @@ public class EForm extends Data implements IForm {
 		spirit.anim.partial();
 		if (spirit.anim.getAtkCount() == 0)
 			return new ESpirit(b, spirit.du, spirit.getEAnim(AnimU.SOUL[0]), d, du.getFront(), du.getBack(), level, index); //For BC-Accurate Spirits
-		EUnit esp = new EUnit(b, spirit.du, spirit.getEAnim(AnimU.SOUL[0]), d, du.getFront(), du.getBack(), level, spirit.du.getPCoin(), index, false);
+
+		EAnimU anim = spirit.getEAnim(AnimU.TYPEDEF[AnimU.ENTRY]);
+		if (anim.unusable())
+			anim = spirit.getEAnim(AnimU.TYPEDEF[AnimU.WALK]);
+		anim.setTime(0);
+		EUnit esp = new EUnit(b, spirit.du, anim, d, du.getFront(), du.getBack(), level, spirit.du.getPCoin(), index, false);
 		if (du.getProc().SPIRIT.inv)
 			esp.status.inv[0] = -1;
 		return esp; //For Custom Units with spirits
@@ -99,5 +104,9 @@ public class EForm extends Data implements IForm {
 			return;
 		level.setLevel(Math.min(level.getLv(), CommonStatic.getConfig().levelLimit));
 		level.setPlusLevel(CommonStatic.getConfig().plus ? level.getPlusLv() : 0);
+	}
+
+	public Level getLevel() {
+		return level;
 	}
 }

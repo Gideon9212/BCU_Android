@@ -2,7 +2,9 @@ package common.battle.data;
 
 import common.CommonStatic;
 import common.pack.Identifier;
+import common.pack.PackData;
 import common.pack.SortedPackSet;
+import common.pack.UserProfile;
 import common.util.pack.Soul;
 import common.util.unit.Form;
 import common.util.unit.Trait;
@@ -76,11 +78,10 @@ public class DataUnit extends DefaultData implements MaskUnit, Cloneable {
 			proc.ATKBASE.mult = 300;
 		if(ints.length < 95 || ints[94] != 1) {
 			proc.WAVE.prob = ints[35];
-			proc.WAVE.lv = ints[36];
+			proc.WAVE.lv = proc.WAVE.maxlv = ints[36];
 		} else {
 			proc.MINIWAVE.prob = ints[35];
-			proc.MINIWAVE.lv = ints[36];
-			proc.MINIWAVE.multi = 20;
+			proc.MINIWAVE.lv = proc.MINIWAVE.maxlv = ints[36];
 		}
 		proc.WEAK.prob = ints[37];
 		proc.WEAK.time = ints[38];
@@ -152,13 +153,12 @@ public class DataUnit extends DefaultData implements MaskUnit, Cloneable {
 				proc.MINIVOLC.prob = ints[86];
 				proc.MINIVOLC.dis_0 = ints[87] / 4;
 				proc.MINIVOLC.dis_1 = ints[88] / 4 + proc.MINIVOLC.dis_0;
-				proc.MINIVOLC.time = ints[89] * VOLC_ITV;
-				proc.MINIVOLC.mult = 20;
+				proc.MINIVOLC.time = proc.MINIVOLC.maxtime = ints[89] * VOLC_ITV;
 			} else {
 				proc.VOLC.prob = ints[86];
 				proc.VOLC.dis_0 = ints[87] / 4;
 				proc.VOLC.dis_1 = ints[88] / 4 + proc.VOLC.dis_0;
-				proc.VOLC.time = ints[89] * VOLC_ITV;
+				proc.VOLC.time = proc.VOLC.maxtime = ints[89] * VOLC_ITV;
 			}
 			if (ints[90] == 1)
 				proc.IMUPOIATK.mult = 100;
@@ -226,7 +226,7 @@ public class DataUnit extends DefaultData implements MaskUnit, Cloneable {
 		} catch (IndexOutOfBoundsException ignored) {
 		}
 
-		traits = new SortedPackSet<>(Trait.convertType(t, false));
+		traits = new SortedPackSet<>(Trait.convertBitmask(t, false));
 		abi = a;
 
 		datks = new DataAtk[getAtkCount(0)];
@@ -247,8 +247,8 @@ public class DataUnit extends DefaultData implements MaskUnit, Cloneable {
 	}
 
 	@Override
-	public Orb getOrb() {
-		return form.orbs;
+	public OrbInfo getOrb() {
+		return form.unit.orbs;
 	}
 
 	@Override
@@ -273,6 +273,19 @@ public class DataUnit extends DefaultData implements MaskUnit, Cloneable {
 
 	@Override
 	public PCoin getPCoin() { return pcoin; }
+
+	@Override
+	public SortedPackSet<Trait> getTraits(boolean raw) {
+		if (raw)
+			return traits;
+		SortedPackSet<Trait> ts = new SortedPackSet<>(traits);
+		boolean antiTraited = Trait.targetTraited(ts);
+		for (PackData.UserPack pk : UserProfile.getUserPacks())
+			for (Trait t : pk.traits)
+				if ((antiTraited && t.targetType) || t.targetForms.contains(getPack()))
+					ts.add(t);
+		return ts;
+	}
 
 	@Override
 	public void improve(int[] type, int mod) {

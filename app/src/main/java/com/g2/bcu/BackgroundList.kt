@@ -84,7 +84,7 @@ class BackgroundList : AppCompatActivity() {
             StaticStore.setDisappear(tab, pager, bck)
 
             withContext(Dispatchers.IO) {
-                Definer.define(this@BackgroundList, { _ -> }, { t -> runOnUiThread { status.text = t }})
+                Definer.define(this@BackgroundList, { p -> runOnUiThread { progression.progress = (p * 10000.0).toInt() } }, { t -> runOnUiThread { status.text = t }})
             }
             val keys = getExistingPack()
             pager.adapter = BGListTab()

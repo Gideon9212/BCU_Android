@@ -83,7 +83,7 @@
         "abbr_name": "wave",
         "full_name": "Wave",
         "tooltip": null,
-        "format": "[(prob<100){(prob)% chance to create}(prob==100){Creates}] a Lv.(lv) [(inverted){inverted }]wave attack[(pid){ with (_toString(pid)) IDs}][(hitless){, even if this attack misses}]",
+        "format": "[(prob<100){(prob)% chance to create}(prob==100){Creates}] a Lv.(lv)[(lv!=maxlv){~(maxlv)}] [(inverted){inverted }]wave attack[(pid){ with (_toString(pid)) IDs}][(hitless){, even if this attack misses}]",
         "class": {
             "prob": {
                 "name": "chance",
@@ -91,6 +91,10 @@
             },
             "lv": {
                 "name": "level",
+                "tooltip": null
+            },
+            "maxlv": {
+                "name": "max level",
                 "tooltip": null
             },
             "hitless": {
@@ -626,7 +630,8 @@
         "full_name": "Summon",
         "tooltip": null,
         "format": [
-            "[(prob<100){(prob)% chance to summon}(prob==100){Summons}] (amount) (_summonMagnification(fix_buff,mult,id)) (_entity(id,form)) after (_dispTime(time)), ",
+            "[(prob<100){(prob)% chance to summon}(prob==100){Summons}] (amount) (_summonMagnification(fix_buff,mult,id)) (_entity(id,form))",
+            "[(interval>0){, with a (_dispTime(interval)) between each summoned entity,}] after (_dispTime(time)), ",
             "each summoned (dis)[(max_dis!=dis){ ~ (max_dis)}] range away from ",
             "[(on_kill|on_hit){each target}",
             "(!on_hit&!on_kill){the summoner}] ",
@@ -733,6 +738,10 @@
             "form": {
                 "name": "Form",
                 "tooltip": "Set which form of the unit you want to summon. Only applicable on Cat Units."
+            },
+            "interval": {
+                "name": "Interval",
+                "tooltip": "Interval of time between the first and subsequent summons, similar to respawn"
             }
         }
     },
@@ -743,8 +752,8 @@
         "format": [
             "[(prob<100){(prob)% chance to have}(prob==100){Has}] moving hitbox[(pid){ with (_toString(pid)) IDs}], ",
             "originated at a distance of (dis) from this entity ",
-            "with (width) widths, ",
-            " (speed) speed, and (_dispTime(itv)) interval for (_dispTime(time))"
+            "with (width) widths, (speed) speed, and (_dispTime(itv)) interval for (_dispTime(time))",
+            "[(hit_base){(_left)Can hit the enemy base(_right)}]"
         ],
         "class": {
             "prob": {
@@ -774,6 +783,10 @@
             "pid": {
                 "name": "ID",
                 "tooltip": "Sets the IDs of moving attack, allowing for type-based resistance discrimination"
+            },
+            "hit_base": {
+                "name": "Hit Base",
+                "tooltip": "Hits the enemy base if it's in attack range"
             }
         }
     },
@@ -988,7 +1001,7 @@
         "abbr_name": "surge",
         "full_name": "Surge",
         "tooltip": null,
-        "format": "[(prob<100){(prob)% chance to make}(prob==100){Makes}] a Lv (time/20) surge attack[(pid){ with (_toString(pid)) IDs}][(hitless){, even if this attack misses}] (_left)Lasts (_dispTime(time)), created within (dis_0) ~ (dis_1) range(_right)",
+        "format": "[(prob<100){(prob)% chance to make}(prob==100){Makes}] a Lv (time/20)[(time!=maxtime){~(maxtime/20)}] surge attack[(pid){ with (_toString(pid)) IDs}][(hitless){, even if this attack misses}] (_left)Lasts (_dispTime(time)), created within (dis_0) ~ (dis_1) range(_right)",
         "class": {
             "prob": {
                 "name": "chance",
@@ -1004,6 +1017,10 @@
             },
             "time": {
                 "name": "duration",
+                "tooltip": null
+            },
+            "maxtime": {
+                "name": "max duration",
                 "tooltip": null
             },
             "hitless": {
@@ -1177,7 +1194,7 @@
         "full_name": "Mini-Wave",
         "tooltip": "Creates small wave which moves twice faster than normal wave with dynamic damage multiplication parameter",
         "format": ["[(prob<100){(prob)% chance to create}(prob==100){Creates}] ",
-            "a lv.(lv) [(inverted){inverted }][(multi>100){mega}(multi<=100){mini}]-wave[(pid){ with (_toString(pid)) IDs}]",
+            "a lv.(lv)[(lv!=maxlv){~(maxlv)}] [(inverted){inverted }][(multi>100){mega}(multi<=100){mini}]-wave[(pid){ with (_toString(pid)) IDs}]",
             "[(hitless){, even if this attack misses}] [(multi!=20){(_left)Gives target (multi)% of activator's damage(_right)}]"],
         "class": {
             "prob": {
@@ -1186,6 +1203,10 @@
             },
             "lv": {
                 "name": "level",
+                "tooltip": null
+            },
+            "maxlv": {
+                "name": "max level",
                 "tooltip": null
             },
             "multi": {
@@ -1391,7 +1412,7 @@
         "full_name": "Death Surge",
         "tooltip": null,
         "format": ["[(spawns>1){Every (spawns)th deployed[(prob<100){ has}] }][(prob<100){(prob)% chance to make}(prob==100){Makes}] ",
-            "a surge attack[(pid){ with (_toString(pid)) IDs}] for (_dispTime(time)) when killed (_left)Created within (dis_0) ~ (dis_1) range(_right)"],
+            "a surge attack[(pid){ with (_toString(pid)) IDs}] for (_dispTime(time))[(time!=maxtime){~(_dispTime(maxtime))}] when killed (_left)Created within (dis_0) ~ (dis_1) range(_right)"],
         "class": {
             "prob": {
                 "name": "chance",
@@ -1407,6 +1428,10 @@
             },
             "time": {
                 "name": "duration",
+                "tooltip": null
+            },
+            "maxtime": {
+                "name": "max duration",
                 "tooltip": null
             },
             "pid": {
@@ -1424,8 +1449,8 @@
         "full_name": "Mini Death Surge",
         "tooltip": null,
         "format": ["[(spawns>1){Every (spawns)th deployed[(prob<100){ has}] }][(prob<100){(prob)% chance to make}(prob==100){Makes}] ",
-            "a mini-surge attack[(pid){ with (_toString(pid)) IDs}] for (_dispTime(time)) when killed (_left)Created within ",
-            "(dis_0) ~ (dis_1) range[(mult!=20){, deals (mult)% of attacker's damage}](_right)"],
+            "a mini-surge attack[(pid){ with (_toString(pid)) IDs}] for (_dispTime(time))[(time!=maxtime){~(_dispTime(maxtime))}] when ",
+            "killed (_left)Created within (dis_0) ~ (dis_1) range[(mult!=20){, deals (mult)% of attacker's damage}](_right)"],
         "class": {
             "prob": {
                 "name": "chance",
@@ -1441,6 +1466,10 @@
             },
             "time": {
                 "name": "duration",
+                "tooltip": null
+            },
+            "maxtime": {
+                "name": "max duration",
                 "tooltip": null
             },
             "mult": {
@@ -1716,7 +1745,8 @@
             "[(retreatDist>0|danger){ (_left)[(danger){When in danger[(retreatDist>0){ or }]}][(retreatDist>0)",
             "{enemies are (retreatDist) units away from this entity}],this unit will retreat at (retreatSpeed) speed(_right)}]",
             "[(calcblindspot){ (_left)Unit will not count entities on it's blindspot for attack detection or other effectiveness calculations(_right)}]",
-            "[(ignHypno){ (_left)Will not attack hypnotized enemies nor support hypnotized allies(_right)}]"
+            "[(ignHypno){ (_left)Will not attack hypnotized enemies nor support hypnotized allies(_right)}]",
+            "[(atkHypno!=0){ (_left)Will attack hypnotized units and lower their hypnosis duration by [(atkHypno>0){(atkHypno)%}(atkHypno<0){(_dispTime(_abs(atkHypno)))}](_right)}]"
         ],
         "class": {
             "calcstrongest": {
@@ -1742,6 +1772,10 @@
             "ignHypno": {
                 "name": "Ignore the Hypnotized",
                 "tooltip": "Will not attack hypnotized enemies nor support hypnotized allies"
+            },
+            "atkHypno": {
+                "name": "Dehypnotizer",
+                "tooltip": "Attacks hypnotized units, lowering their hypnosis by the given amount (% if positive, fixed if negative)"
             }
         }
     },
@@ -1823,7 +1857,7 @@
         "abbr_name": "M.Surge",
         "full_name": "Mini Surge",
         "tooltip": "Creates small surge that does exactly same behavior of normal surge, but with less damage",
-        "format": "[(prob<100){(prob)% chance to make}(prob==100){Makes}] a Lv(time/20) Mini Surge[(pid){ with (_toString(pid)) IDs}] within (dis_0) ~ (dis_1) range[(hitless){, even if this attack misses}] for (_dispTime(time))[(mult!=20){ (_left)Deals (mult)% of attacker's damage(_right)}]",
+        "format": "[(prob<100){(prob)% chance to make}(prob==100){Makes}] a Lv(time/20)[(time!=maxtime){~(maxtime/20)}] Mini Surge[(pid){ with (_toString(pid)) IDs}] within (dis_0) ~ (dis_1) range[(hitless){, even if this attack misses}] for (_dispTime(time))[(mult!=20){ (_left)Deals (mult)% of attacker's damage(_right)}]",
         "class": {
             "prob": {
                 "name": "chance",
@@ -1839,6 +1873,10 @@
             },
             "time": {
                 "name": "duration",
+                "tooltip": null
+            },
+            "maxtime": {
+                "name": "max duration",
                 "tooltip": null
             },
             "mult": {
@@ -1859,7 +1897,8 @@
         "abbr_name": "C.Surge",
         "full_name": "CounterSurge",
         "tooltip": "Creates a surge when hit by a surge with the hitting surge's level and duration",
-        "format": "[(prob<100){(prob)% chance to make}(prob==100){Makes}] a surge when hit by a surge[(mult!=100){, with (mult)% of the surge's damage}]",
+        "format": ["[(count>1){Every (count)th deployed[(prob<100){ has}] }][(prob<100){(prob)% chance to make}(prob==100){Makes}] ",
+            "a surge when hit by a surge[(max_times>0){ up to (max_times) times}][(mult!=100){, with (mult)% of the surge's damage}]"],
         "class": {
             "prob": {
                 "name": "chance",
@@ -1868,6 +1907,14 @@
             "mult": {
                 "name": "multiplier",
                 "tooltip": null
+            },
+            "count": {
+                "name": "Deploy count",
+                "tooltip": "Amount of deploys needed to trigger"
+            },
+            "max_times": {
+                "name": "Max Times",
+                "tooltip": "Caps the amount of surges to counter. default is 0 (infinite)"
             }
         }
     },
@@ -2044,7 +2091,7 @@
         "abbr_name": "absorb",
         "full_name": "Absorber",
         "tooltip": "Drains HP per enemy damaged",
-        "format": "[(prob<100){(prob)% chance to absorb}(prob==100){Absorbs}] (mult)% of the damage dealt as HP",
+        "format": "[(prob<100){(prob)% chance to absorb}(prob==100){Absorbs}] (mult)% of the damage dealt[(traits){to (_toString(traits)) enemies}] as HP",
         "class": {
             "prob": {
                 "name": "chance",
@@ -2053,6 +2100,10 @@
             "mult": {
                 "name": "multiplier",
                 "tooltip": "What percent of damage dealt will be recovered as HP"
+            },
+            "traits": {
+                "name": "Traits",
+                "tooltip": "Targets all traits by default"
             }
         }
     },
@@ -2092,11 +2143,11 @@
             }
         }
     },
-    "REFUND": {
+    "MONEYBACK": {
         "abbr_name": "Refund",
         "full_name": "Refund",
         "tooltip": null,
-        "format": "[(count>1){Every (count)th deployed[(prob<100){ has}] }] [(prob<100){(prob)% chance to refund}(prob==100){Refunds}] (mult)% of unit's cost when killed",
+        "format": "[(count>1){Every (count)th deployed[(prob<100){ has}] }][(prob<100){(prob)% chance to refund}(prob==100){Refunds}] (mult)% of unit's cost when killed",
         "class": {
             "prob": {
                 "name": "chance",
@@ -2109,6 +2160,135 @@
             "count": {
                 "name": "Deploy count",
                 "tooltip": "Amount of deploys needed for refund to trigger"
+            }
+        }
+    },
+    "CANONCHARGE": {
+        "abbr_name": "C. Charge",
+        "full_name": "Cannon Charge",
+        "tooltip": null,
+        "format": "[(count>1){Every (count)th deployed[(prob<100){ has}] }][(prob<100){(prob)% chance to charge}(prob==100){charges}] (mult)% of the cat cannon when killed",
+        "class": {
+            "prob": {
+                "name": "chance",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "multiplier",
+                "tooltip": "% of cannon to be recharged"
+            },
+            "count": {
+                "name": "Deploy count",
+                "tooltip": "Amount of deploys needed for cannon charge to trigger"
+            }
+        }
+    },
+    "HPREGEN": {
+        "abbr_name": "hp regen",
+        "full_name": "Regeneration",
+        "tooltip": "heal or harm the entity every so often. Note that this doesn't trigger hitbacks",
+        "format": "[(amount>0){Heals by (amount) HP}(amount<0){Hurts by (amount*-1) HP}(amount==0){No healing}] at a (prob)% chance every (interval)f[(scaleWithBuff){, affected by buff}][(onlyOnce){, only occurring once}][(resetWhenDamaged){, resetting when damaged}][(freezeEff){, affected by freeze}][(removeProcs){, clearing all procs}][(idleTrigger){, only while standing still}][(noHB){, ignoring hitbacks}]",
+        "class": {
+            "prob": {
+                "name": "chance",
+                "tooltip": null
+            },
+            "interval": {
+                "name": "interval",
+                "tooltip": null
+            },
+            "amount": {
+                "name": "amount",
+                "tooltip": "Can be negative"
+            },
+            "scaleWithBuff": {
+                "name": "scale with buff",
+                "tooltip": "Increases amount as buff/level increases"
+            },
+            "onlyOnce": {
+                "name": "only once",
+                "tooltip": "Regeneration only happens once then never again"
+            },
+            "resetWhenDamaged": {
+                "name": "reset on damage",
+                "tooltip": "Regeneration timer resets when the entity is damaged"
+            },
+            "freezeEff": {
+                "name": "affected by freeze",
+                "tooltip": "Freeze will stop the regeneration timer"
+            },
+            "removeProcs": {
+                "name": "remove procs",
+                "tooltip": "When hp regeneration fires, all procs are removed (even if amount is 0)"
+            },
+            "idleTrigger": {
+                "name": "static only",
+                "tooltip": "HP regeneration will only begin when the entity isn't moving (either idle or attacking)"
+            },
+            "noHB": {
+                "name": "ignore hitback",
+                "tooltip": "Does not play hitback animations (useful if you want a timed entity like Iron Wall Cat or an instant soul spawner)"
+            }
+        }
+    },
+    "IMUATKANY": {
+        "abbr_name": "ALL Invi.",
+        "full_name": "Full Invincibility",
+        "tooltip": "Like invincibility, but ignores traits and healing",
+        "format": "[(prob<100){(prob)% chance to dodge}(prob==100){Dodges}] attacks for (_dispTimeF(time))[(cd>0){, with a cooldown of (_dispTimeF(cd)) per dodge}]",
+        "class": {
+            "prob": {
+                "name": "chance",
+                "tooltip": null
+            },
+            "time": {
+                "name": "duration",
+                "tooltip": null
+            },
+            "cd": {
+                "name": "cooldown",
+                "tooltip": "Unit will not be able to dodge after the given amount of frames after proc ends"
+            }
+        }
+    },
+    "KILLSTRENGTHEN": {
+        "abbr_name": "Kill Strengthen",
+        "full_name": "Strengthen When Defeating",
+        "tooltip": null,
+        "format": ["[(mult>0){In}(mult<0){De}]creases damage by (_abs(mult))% after killing (kill_count) enemies",
+        "[(max_stacks!=1){, [(max_stacks==0){stacks indefinitely}(max_stacks>1){up to (max_stacks)x stacks}]}]"],
+        "class": {
+            "mult": {
+                "name": "Percentage",
+                "tooltip": null
+            },
+            "kill_count": {
+                "name": "Kill Count",
+                "tooltip": null
+            },
+            "max_stacks": {
+                "name": "Max Stack",
+                "tooltip": "Use 0 for infinite stacks"
+            }
+        }
+    },
+    "COMBOCOOLDOWN": {
+        "abbr_name": "CD Reduction",
+        "full_name": "Insta-Respawn",
+        "tooltip": null,
+        "format": "[(count>1){Every (count)th deployed[(prob<100){ has}] }][(prob<100){(prob)% chance to have }](mult)% less cooldown",
+        "class": {
+            "prob": {
+                "name": "chance",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "multiplier",
+                "tooltip": "% of CD reduced"
+            },
+            "count": {
+                "name": "Deploy count",
+                "tooltip": "Amount of deploys needed for CD Reduction to trigger"
             }
         }
     }

@@ -244,29 +244,45 @@ public class Data {
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
-		public static class REFUND extends PM {
+		public static class PMC extends PM {
 			@Order(2)
 			@JsonField(defval = "1")
 			public int count = 1;
+
+			@Override
+			public int[] setTalent(int[] nps) {
+				nps[6] = Math.max(nps[6], 1 - count);
+				nps[7] = Math.max(nps[7], 1 - count);
+				return super.setTalent(nps);
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class WAVE extends PROB {
 			@Order(1)
 			public int lv;
-			@Order(3)
-			public boolean hitless;
+			@Order(2)
+			@JsonField(defval = "this.sameLv")
+			public int maxlv;
 			@Order(4)
-			public boolean inverted;
+			public boolean hitless;
 			@Order(5)
+			public boolean inverted;
+			@Order(6)
 			@JsonField(defval = "isEmpty")
 			public ProcID pid = new ProcID();
+
+			public boolean sameLv() {
+				return lv == maxlv;
+			}
 
 			@Override
 			public int[] setTalent(int[] nps) {
 				int min = lv == 0 ? 1 : 0;
 				nps[4] = Math.max(min, nps[4]);
 				nps[5] = Math.max(min, nps[5]);
+				nps[6] = Math.max(nps[6], nps[4]);
+				nps[7] = Math.max(nps[7], nps[5]);
 				return super.setTalent(nps);
 			}
 
@@ -274,20 +290,32 @@ public class Data {
 			public void add(ProcItem proc) {
 				super.add(proc);
 				lv = Math.max(1, lv);
+				maxlv = Math.max(lv, maxlv);
 			}
 
 			@JsonDecoder.OnInjected
 			public void inject(JsonObject jobj) {
 				if (jobj.has("type"))
 					hitless = jobj.getAsJsonObject("type").get("hitless").getAsBoolean();
+				maxlv = Math.max(lv, maxlv);
+			}
+
+			@Override
+			public boolean def_exists() {
+				return prob != 0 || lv != 0 || !sameLv() || hitless || !pid.isEmpty();
 			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class MINIWAVE extends WAVE {
-			@Order(2)
+			@Order(3)
 			@JsonField(defval = "20")
 			public int multi = 20;
+
+			@Override
+			public boolean def_exists() {
+				return super.def_exists() || multi != 20;
+			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
@@ -305,12 +333,15 @@ public class Data {
 			public int dis_1;
 			@Order(3)
 			public int time;
-			@Order(5)
-			public boolean hitless;
+			@Order(4)
+			@JsonField(defval = "this.sameTime")
+			public int maxtime;
 			@Order(6)
+			public boolean hitless;
+			@Order(7)
 			@JsonField(defval = "isEmpty")
 			public ProcID pid = new ProcID();
-			@Order(7)
+			@Order(8)
 			@JsonField(defval = "1")
 			public int spawns = 1;//Only for deathsurges
 
@@ -319,6 +350,8 @@ public class Data {
 				int min = time == 0 ? 1 : 0;
 				nps[8] = Math.max(min, nps[8] / VOLC_ITV) * VOLC_ITV;
 				nps[9] = Math.max(min, nps[9] / VOLC_ITV) * VOLC_ITV;
+				nps[10] = Math.max(nps[8] / VOLC_ITV, nps[10] / VOLC_ITV) * VOLC_ITV;
+				nps[11] = Math.max(nps[9] / VOLC_ITV, nps[11] / VOLC_ITV) * VOLC_ITV;
 				int d0 = nps[4], d1 = nps[5];
 				nps[4] = Math.min(d0, nps[6]);
 				nps[5] = Math.min(d1, nps[7]);
@@ -327,24 +360,46 @@ public class Data {
 				return super.setTalent(nps);
 			}
 
+			public boolean sameTime() {
+				return maxtime == time;
+			}
+
 			@Override
 			public void add(ProcItem proc) {
 				super.add(proc);
 				time = Math.max(VOLC_ITV, time);
+				maxtime = Math.max(time, maxtime);
 			}
 
 			@JsonDecoder.OnInjected
 			public void inject(JsonObject jobj) {
 				if (jobj.has("type"))
 					hitless = jobj.getAsJsonObject("type").get("hitless").getAsBoolean();
+				maxtime = Math.max(time, maxtime);
+			}
+
+			@Override
+			public boolean def_exists() {
+				return prob != 0 || dis_0 != 0 || dis_1 != 0 || time != 0 || !sameTime() || hitless || !pid.isEmpty() || spawns != 1;
 			}
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
 		public static class MINIVOLC extends VOLC {
-			@Order(4)
+			@Order(5)
 			@JsonField(defval = "20")
 			public int mult = 20;
+
+			@Override
+			public boolean def_exists() {
+				return super.def_exists() || mult != 20;
+			}
+		}
+
+		@JsonClass(noTag = NoTag.LOAD)
+		public static class COUNTERSURGE extends PMC {
+			@Order(3)
+			public int max_times = 0;
 		}
 
 		@JsonClass(noTag = NoTag.LOAD)
@@ -374,8 +429,8 @@ public class Data {
 				int min = lv == 0 ? 1 : 0;
 				nps[8] = Math.max(min, nps[8]);
 				nps[9] = Math.max(min, nps[9]);
-				nps[10] = (int)Math.min(reduction + nps[10], 100f / (lv + nps[8]));
-				nps[11] = (int)Math.min(reduction + nps[11], 100f / (lv + nps[9]));
+				nps[10] = (int)Math.min(nps[10], (100f - reduction) / (lv + nps[8]));
+				nps[11] = (int)Math.min(nps[11], (100f - reduction) / (lv + nps[9]));
 
 				return super.setTalent(nps);
 			}
@@ -584,6 +639,11 @@ public class Data {
 			public boolean exists() {
 				return active || prob > 0;
 			}
+			@Override
+			public boolean def_exists() {
+				return active || prob != 0 || time != 0;
+			}
+
 			@Override
 			public boolean perform(CopRand r) {
 				return time > 0 && prob > 0 && (prob >= 100 || r.nextInt(100) < prob);
@@ -1038,8 +1098,10 @@ public class Data {
 			@Order(4)
 			public boolean danger;
 			@Order(5)
-			public boolean ignHypno;
-			//@Order(6)
+			public boolean ignHypno;//Ignores hypnotized enemies when attacking
+			@Order(6)
+			public int atkHypno;//If at any number that isn't 0, unit will see hypnotized units as enemies and its attacks will lower hypnotization duration by the specified amount (fixed if negative, % if positive)
+			//@Order(7)
 			//public boolean manualcontrol; //The player controls the unit manually; Arrow keys to move, spacebar to attack
 
 			@JsonDecoder.OnInjected
@@ -1155,6 +1217,70 @@ public class Data {
 				if (mult + m == 0)
 					m -= m > 0 ? 0.01 : -0.01; //Negligible difference but doesn't reset the markiplier
 				mult += m;
+			}
+		}
+
+		@JsonClass(noTag = NoTag.LOAD)
+		public static class HPREGEN extends PROB {
+			@Order(1)
+			@JsonField(defval = "1")
+			public int interval = 1;
+			@Order(2)
+			public int amount;
+			@Order(3)
+			public boolean scaleWithBuff;
+			@Order(4)
+			public boolean onlyOnce;
+			@Order(5)
+			public boolean resetWhenDamaged;
+			@Order(6)
+			@JsonField(defval = "true")
+			public boolean freezeEff = true;
+			@Order(7)
+			public boolean removeProcs;
+			@Order(8)
+			public boolean idleTrigger;
+			@Order(9)
+			public boolean noHB;
+		}
+
+		@JsonClass(noTag = NoTag.LOAD)
+		public static class DRAIN extends PM {
+			@Order(2)
+			@JsonField(generic = Trait.class, alias = Identifier.class, defval = "isEmpty")
+			public SortedPackSet<Trait> traits = new SortedPackSet<>();
+		}
+
+		@JsonClass(noTag = NoTag.LOAD)
+		public static class KILLSTRENGTHEN extends MULT {
+			@Order(1)
+			@JsonField(defval = "10")
+			public int kill_count = 10;
+			@Order(2)
+			@JsonField(defval = "1")
+			public int max_stacks = 1;//0 for infinite
+
+			@Override
+			public boolean exists() {
+				return mult > 0;
+			}
+
+			@Override
+			public int[] setTalent(int[] nps) {
+				nps[4] = Math.max(1-kill_count, nps[4]);
+				nps[5] = Math.max(nps[4], nps[5]);
+				nps[6] = Math.max(-max_stacks, nps[6]);
+				nps[7] = Math.max(nps[6], nps[7]);
+				return super.setTalent(nps);
+			}
+			@Override
+			public void add(ProcItem pi) {
+				super.add(pi);
+				KILLSTRENGTHEN m = (KILLSTRENGTHEN)pi;
+				if (m.mult == 0)
+					return;
+				kill_count = Math.max(1, kill_count+m.kill_count);
+				max_stacks = Math.max(0, max_stacks+m.max_stacks);
 			}
 		}
 
@@ -1276,13 +1402,13 @@ public class Data {
 							if (f.get(this) != null)
 								return true;
 						} else if (f.getType() == boolean.class) {
-							if (f.getBoolean(this))
+							if (f.getBoolean(this) == (f.getAnnotation(JsonField.class) == null || !Boolean.parseBoolean(f.getAnnotation(JsonField.class).defval())))
 								return true;
 						} else if (f.getType() == ProcID.class) {
 							if (!((ProcID)f.get(this)).isEmpty())
 								return true;
 						} else if (Enum.class.isAssignableFrom(f.getType()))
-							if (!f.get(this).toString().equals(f.getAnnotation(JsonField.class).defval()))
+							if (!f.getAnnotation(JsonField.class).defval().contains(f.get(this).toString()))
 								return true;
 				} catch (Exception e) {
 					CommonStatic.ctx.noticeErr(e, ErrType.DEBUG, "Error checking if Proc of type " + getClass().getName() + " exists");
@@ -1456,7 +1582,6 @@ public class Data {
 			public String toString() {
 				return JsonEncoder.encode(this).toString();
 			}
-
 		}
 
 		public static Proc blank() {
@@ -1608,7 +1733,7 @@ public class Data {
 		@Order(67)
 		public final MINIVOLC MINIVOLC = new MINIVOLC();
 		@Order(68)
-		public final PM DEMONVOLC = new PM();
+		public final COUNTERSURGE DEMONVOLC = new COUNTERSURGE();
 		@Order(69)
 		public final STATINC DMGINC = new STATINC(); //Merges Strong against, Massive Damage, and Insane Damage
 		@Order(70)
@@ -1624,7 +1749,7 @@ public class Data {
 		@Order(75)
 		public final IMUI IMUBLAST = new IMUI();
 		@Order(76)
-		public final PM DRAIN = new PM();
+		public final DRAIN DRAIN = new DRAIN();
 		@Order(77)
 		public final BLESSING BLESSING = new BLESSING();
 		@Order(78)
@@ -1632,7 +1757,17 @@ public class Data {
 		@Order(79)
 		public final MINIVOLC MINIDEATHSURGE = new MINIVOLC();
 		@Order(80)
-		public final REFUND REFUND = new REFUND();
+		public final PMC MONEYBACK = new PMC();
+		@Order(81)
+		public final HPREGEN HPREGEN = new HPREGEN();
+		@Order(82)
+		public final PMC CANONCHARGE = new PMC();
+		@Order(83)
+		public final IMUATK IMUATKANY = new IMUATK();//This is just Dodge, but ignores traits. Not a toggle coz orbs
+		@Order(84)
+		public final KILLSTRENGTHEN KILLSTRENGTHEN = new KILLSTRENGTHEN(); //Kills,Mult
+		@Order(85)
+		public final PMC COMBOCOOLDOWN = new PMC(); //CD,Count
 
 		@Override
 		public Proc clone() {
@@ -1822,8 +1957,9 @@ public class Data {
 	public static final byte TRAIT_BARON = 12;
 	public static final byte TRAIT_BEAST = 13;
 	public static final byte TRAIT_SAGE = 14;
-	public static final byte TRAIT_INFH = 15;
-	public static final byte TRAIT_TOT = 16;
+	public static final byte TRAIT_VILLAIN = 15;
+	public static final byte TRAIT_INFH = 16;
+	public static final byte TRAIT_TOT = 17;
 
 	// treasure
 	public static final byte T_RED = 0;
@@ -2008,7 +2144,12 @@ public class Data {
 	public static final byte P_SPEEDUP = 78;
 	public static final byte P_MINIDEATHSURGE = 79;
 	public static final byte P_REFUND = 80;
-	public static final byte PROC_TOT = 81;
+	public static final byte P_HPREGEN = 81;
+	public static final byte P_CANONCHARGE = 82;
+	public static final byte P_IMUALL = 83;
+	public static final byte P_KILLSTRENGTHEN = 84;
+	public static final byte P_COMBOCOOLDOWN = 85;
+	public static final byte PROC_TOT = 86;
 
 	public static final boolean[] procSharable = {
 			false, //kb
@@ -2091,7 +2232,12 @@ public class Data {
 			false, //Bless
 			true,  //adrenaline
 			true,  //Mini Death Surge
-			true   //Refund
+			true,  //Refund
+			true,  //hp regen
+			true,  //cannon charge
+			true,  //Dodge all
+			true,  //Strengthen When Defeating
+			true   //ComboCooldown
 	};
 
 	/**
@@ -2113,6 +2259,7 @@ public class Data {
 	public static final byte WT_MIVC = 16;
 	public static final byte WT_MEGA = 64;
 	public static final byte WT_BLST = 32;
+	public static final byte WT_SOUL = 64; // for death surge check
 	public static final byte PC_P = 0, PC_AB = 1, PC_BASE = 2, PC_IMU = 3, PC_TRAIT = 4;
 	public static final byte PC2_HP = 0;
 	public static final byte PC2_ATK = 1;
@@ -2198,9 +2345,9 @@ public class Data {
 			{ PC_P, P_BSTHUNT, 1 }, //64 : behemoth slayer
 			{ PC_P, P_MINIVOLC }, //65 : MiniSurge
 			{ PC_AB, AB_SKILL }, //66 : super sage hunter
-			{ PC_P, P_BLAST } //67 : Blast but labeled 74 above. Unsure which one is correct.
+			{ PC_P, P_BLAST } //67 : Baja Blast
 	};
-	public static final int[][] PC_CUSTOM = new int[][] { //Use negative ints to handle
+	public static final int[][] PC_CUSTOM = new int[][] { //Use negative ints to handle (it would be so awesome, it would be so cool)
 			{ -1, 0 }, // 0:
 			{ PC_P, P_BURROW}, // 1: Burrow
 			{ PC_P, P_REVIVE}, //2: Revive
@@ -2246,7 +2393,8 @@ public class Data {
 			{ PC_P, P_DRAIN}, //42: Drain
 			{ PC_P, P_SPEEDUP}, //43: Adrenaline
 			{ PC_P, P_REFUND}, //44: Refund
-			{ PC_P, P_MINIDEATHSURGE} //45: Mini-Deathsurge
+			{ PC_P, P_MINIDEATHSURGE}, //45: Mini-Deathsurge
+			{ PC_P, P_CANONCHARGE} //46: Cannon Charge
 	};
 
 	public static int[] get_CORRES(int ind) {
@@ -2305,7 +2453,11 @@ public class Data {
 	public static final byte C_M_MAX = 9;
 	public static final byte C_RESP = 11;
 	public static final byte C_MEAR = 12;
-	public static final byte C_TOT = 25;
+	public static final byte C_XP = 13;
+	public static final byte C_VKILL = 25;
+	public static final byte C_IMUWAVE = 26;
+	public static final byte C_DISCOUNT = 27;
+	public static final byte C_TOT = 28;
 
 	// Effects Anim index
 	public static final byte A_DOWN = 0;
@@ -2455,7 +2607,21 @@ public class Data {
 	public static final byte ORB_RESKB = 8;
 	public static final byte ORB_SOLBUFF = 9;
 	public static final byte ORB_BAKILL = 10;
-	public static final byte ORB_TYPE_TOTAL = 11;
+	public static final byte ORB_CANNON_CHARGE = 11;
+	public static final byte ORB_RESTOXIC = 12;
+	public static final byte ORB_DODGE = 13;
+	public static final byte ORB_RESSLOW = 14;
+	public static final byte ORB_RESCURSE = 15;
+	public static final byte ORB_ULBUFF = 16;
+	public static final byte ORB_COUNTERSURGE = 17;
+	public static final byte ORB_KILLSTRENGTHEN = 18;
+	public static final byte ORB_LESSCD = 19;
+	public static final byte ORB_RESFREEZE = 20;
+	public static final byte ORB_RESWEAKEN = 21;
+	public static final byte ORB_LOWERCOST = 22;
+	public static final byte ORB_RESSURGE = 23;
+	public static final byte ORB_BOUNTY = 24;
+	public static final byte ORB_TYPE_TOTAL = 25;
 	public static final byte ORB_TYPE = 0, ORB_TRAIT = 1, ORB_GRADE = 2, ORB_TOT = 3;
 
 	public static final short[] GATYA = { 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 160, 161, 164, 167,

@@ -65,10 +65,10 @@ public class DataEnemy extends DefaultData implements MaskEnemy {
 			proc.ATKBASE.mult = 300;
 		if(ints.length < 87 || ints[86] != 1) {
 			proc.WAVE.prob = ints[27];
-			proc.WAVE.lv = ints[28];
+			proc.WAVE.lv = proc.WAVE.maxlv = ints[28];
 		} else {
 			proc.MINIWAVE.prob = ints[27];
-			proc.MINIWAVE.lv = ints[28];
+			proc.MINIWAVE.lv = proc.MINIWAVE.maxlv = ints[28];
 		}
 		proc.WEAK.prob = ints[29];
 		proc.WEAK.time = ints[30];
@@ -146,12 +146,12 @@ public class DataEnemy extends DefaultData implements MaskEnemy {
 			proc.MINIVOLC.prob = ints[81];
 			proc.MINIVOLC.dis_0 = ints[82] / 4;
 			proc.MINIVOLC.dis_1 = ints[83] / 4 + proc.VOLC.dis_0;
-			proc.MINIVOLC.time = ints[84] * VOLC_ITV;
+			proc.MINIVOLC.time = proc.MINIVOLC.maxtime = ints[84] * VOLC_ITV;
 		} else {
 			proc.VOLC.prob = ints[81];
 			proc.VOLC.dis_0 = ints[82] / 4;
 			proc.VOLC.dis_1 = ints[83] / 4 + proc.VOLC.dis_0;
-			proc.VOLC.time = ints[84] * VOLC_ITV;
+			proc.VOLC.time = proc.VOLC.maxtime = ints[84] * VOLC_ITV;
 		}
 		if (ints[85] == 1)
 			proc.IMUVOLC.mult = 100;
@@ -160,7 +160,7 @@ public class DataEnemy extends DefaultData implements MaskEnemy {
 		proc.DEATHSURGE.prob = ints[89];
 		proc.DEATHSURGE.dis_0 = ints[90] / 4;
 		proc.DEATHSURGE.dis_1 = ints[91] / 4 + proc.DEATHSURGE.dis_0;
-		proc.DEATHSURGE.time = ints[92] * VOLC_ITV;
+		proc.DEATHSURGE.time = proc.DEATHSURGE.maxtime = ints[92] * VOLC_ITV;
 
 		if(ints[93] == 1)
 			traits.add(BCTraits.get(TRAIT_DEMON));
@@ -203,6 +203,8 @@ public class DataEnemy extends DefaultData implements MaskEnemy {
 			}
 			if (ints[109] != 0)
 				proc.IMUBLAST.mult = 100;
+			if (ints[110] != 0)
+				traits.add(BCTraits.get(TRAIT_VILLAIN));
 		} catch (IndexOutOfBoundsException ignored) {
 
 		}

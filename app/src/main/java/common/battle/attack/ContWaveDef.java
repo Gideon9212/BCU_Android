@@ -11,16 +11,18 @@ import java.util.Set;
 public class ContWaveDef extends ContWaveAb {
 
 	private boolean hit = false, nw = false, secall = true;
+	private final int lv;
 
-	protected ContWaveDef(AttackWave a, float p, int layer, float delay) {
-		this(a, p, layer, delay, new HashSet<>());
+	protected ContWaveDef(AttackWave a, float p, int layer, float delay, int level) {
+		this(a, p, layer, delay, level, new HashSet<>());
 	}
 
-	private ContWaveDef(AttackWave a, float p, int layer, float delay, Set<ContWaveAb> waves) {
+	private ContWaveDef(AttackWave a, float p, int layer, float delay, int level, Set<ContWaveAb> waves) {
 		super(a, p, (a.dire == 1 ? a.waveType == WT_MEGA ? effas().A_E_MEGAWAVE : a.waveType == WT_MINI ? effas().A_E_MINIWAVE : effas().A_E_WAVE
 				: a.waveType == WT_MEGA ? effas().A_MEGAWAVE : a.waveType == WT_MINI ? effas().A_MINIWAVE : effas().A_WAVE).getEAnim(DefEff.DEF), layer, delay);
 		soundEffect = SE_WAVE;
 
+		lv = level;
 		maxt -= 1;
 		anim.setTime(1);
 		this.waves = waves;
@@ -60,9 +62,7 @@ public class ContWaveDef extends ContWaveAb {
 			return;
 		int wtime = isMega ? W_MEGA_TIME : isMini ? W_MINI_TIME : W_TIME;
 		if (!nw && t >= wtime) {
-			if ((isMini || isMega) && atk.proc.MINIWAVE.lv > this.waves.size())
-				nextWave(wtime);
-			else if (!(isMini || isMega) && atk.proc.WAVE.lv > this.waves.size())
+			if (lv > this.waves.size())
 				nextWave(wtime);
 			nw = true;
 		}
@@ -91,7 +91,7 @@ public class ContWaveDef extends ContWaveAb {
 			np = pos - W_PROG * dire;
 
 		int wid = dire == 1 ? W_E_WID : W_U_WID;
-		new ContWaveDef(new AttackWave(atk.attacker, atk, np, wid), np, layer, t - wtime, waves);
+		new ContWaveDef(new AttackWave(atk.attacker, atk, np, wid), np, layer, t - wtime, lv, waves);
 	}
 
 	@Override

@@ -356,8 +356,7 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
+                android:layout_height="wrap_content">
 
                 <TableRow
                     android:layout_width="0dp"
@@ -367,7 +366,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
+                        android:layout_weight="0.7"
                         android:background="@drawable/cell_shape"
                         android:gravity="center"
                         android:minHeight="48dp"
@@ -395,7 +394,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.7"
+                        android:layout_weight="0.6"
                         android:background="@drawable/cell_shape"
                         android:gravity="center"
                         android:minHeight="48dp"
@@ -405,6 +404,99 @@
 
                     <EditText
                         android:id="@+id/pklimmaxdeploy"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/cell_shape"
+                        android:ems="10"
+                        android:inputType="number"
+                        android:minHeight="36dp"
+                        android:textColor="?attr/TextPrimary" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.9"
+                        android:background="@drawable/cell_shape"
+                        android:gravity="center"
+                        android:minHeight="48dp"
+                        android:paddingTop="8dp"
+                        android:text="@string/limit_cannon"
+                        android:textColor="?attr/TextPrimary" />
+
+                    <EditText
+                        android:id="@+id/pklimcannon"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/cell_shape"
+                        android:ems="10"
+                        android:inputType="number"
+                        android:minHeight="36dp"
+                        android:textColor="?attr/TextPrimary" />
+
+                </TableRow>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="12dp">
+
+                <TableRow
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:background="@drawable/cell_shape"
+                        android:gravity="center"
+                        android:minHeight="48dp"
+                        android:paddingTop="8dp"
+                        android:text="@string/limit_uspd"
+                        android:textColor="?attr/TextPrimary" />
+
+                    <EditText
+                        android:id="@+id/pklimuspd"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/cell_shape"
+                        android:ems="10"
+                        android:inputType="number"
+                        android:minHeight="36dp"
+                        android:textColor="?attr/TextPrimary" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:background="@drawable/cell_shape"
+                        android:gravity="center"
+                        android:minHeight="48dp"
+                        android:paddingTop="8dp"
+                        android:text="@string/limit_espd"
+                        android:textColor="?attr/TextPrimary" />
+
+                    <EditText
+                        android:id="@+id/pklimespd"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"

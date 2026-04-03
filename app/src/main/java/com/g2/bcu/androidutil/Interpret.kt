@@ -83,7 +83,7 @@ object Interpret : Data() {
         val common = du.isCommon
 
         val l: MutableList<String> = ArrayList()
-        val c = Formatter.Context(isEnemy, useSecond, magnif, du.traits)
+        val c = Formatter.Context(isEnemy, useSecond, magnif, du.getTraits(false))
 
         for (i in PROCIND.indices) {
             if (isValidProc(i, du.proc) && (common || Proc.sharable(P_INDEX[i].toInt()))) {

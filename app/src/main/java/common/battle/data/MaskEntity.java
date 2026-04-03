@@ -62,7 +62,7 @@ public interface MaskEntity extends BattleStatic {
 
 	Identifier<Soul> getDeathAnim();
 
-	SortedPackSet<Trait> getTraits();
+	SortedPackSet<Trait> getTraits(boolean raw);
 
 	int getHb();
 
@@ -122,6 +122,7 @@ public interface MaskEntity extends BattleStatic {
 	 * get waiting time
 	 */
 	int getTBA();
+	int getRealTBA();
 
 	default int getTouch() {
 		return Data.TCH_N;

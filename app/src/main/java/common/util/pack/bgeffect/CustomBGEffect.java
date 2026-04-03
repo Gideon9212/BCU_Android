@@ -55,34 +55,38 @@ public class CustomBGEffect extends BackgroundEffect {
     }
     @Override
     public void preDraw(FakeGraphics g, P rect, float siz, float midH) {
+        if (!loaded)
+            return;
         int spaced = 0;
+        FakeTransform at = g.getTransform();
         while (spaced <= sw) {
-            FakeTransform at = g.getTransform();
-            g.translate(convertP(1024 + spaced * 2, siz) + rect.x, convertP(4500 - midH, siz) - rect.y);
+            g.translate(convertP(spaced, siz) + rect.x, convertP(4280, siz) - rect.y);
             ebg[0].drawBGEffect(g, origin, siz * 0.8f, 255, 1, 1);
             g.setTransform(at);
-            g.delete(at);
 
             if (spacer == 0)
                 break;
             spaced += spacer;
         }
+        g.delete(at);
     }
 
     @Override
     public void postDraw(FakeGraphics g, P rect, float siz, float midH) {
+        if (!loaded)
+            return;
         int spaced = 0;
+        FakeTransform at = g.getTransform();
         while (spaced <= sw) {
-            FakeTransform at = g.getTransform();
-            g.translate(convertP(1024 + spaced * 2, siz) + rect.x, convertP(4500 - midH, siz) - rect.y);
+            g.translate(convertP(spaced, siz) + rect.x, convertP(4280, siz) -rect.y);
             ebg[1].drawBGEffect(g, origin, siz * 0.8f, 255, 1, 1);
             g.setTransform(at);
-            g.delete(at);
 
             if (fspacer == 0)
                 break;
             spaced += fspacer;
         }
+        g.delete(at);
     }
 
     @Override
@@ -103,7 +107,7 @@ public class CustomBGEffect extends BackgroundEffect {
     @Override
     public void initialize(int w, float h, float midH, Background bg) {
         check();
-        sw = w;
+        sw = (int)(w / 0.8);
         ebg[0].setTime(0);
         ebg[1].setTime(0);
     }
@@ -120,7 +124,7 @@ public class CustomBGEffect extends BackgroundEffect {
 
     @Override
     public String toString() {
-        if (getName().length() == 0)
+        if (getName().isEmpty())
             return id.toString();
         return Data.trio(id.id) + " - " + getName();
     }

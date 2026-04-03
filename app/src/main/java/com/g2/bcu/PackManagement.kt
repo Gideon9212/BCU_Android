@@ -180,7 +180,7 @@ class PackManagement : AppCompatActivity() {
 
             //Load Data
             withContext(Dispatchers.IO) {
-                Definer.define(this@PackManagement, { _ -> }, { t -> runOnUiThread { st.text = t }})
+                Definer.define(this@PackManagement, { p -> runOnUiThread { prog.progress = (p * 10000.0).toInt() } }, { t -> runOnUiThread { st.text = t }})
             }
 
             //Load UI
@@ -197,6 +197,9 @@ class PackManagement : AppCompatActivity() {
 
             val packList = ArrayList<PackData.UserPack>()
             for(pack in UserProfile.getUserPacks())
+                if (!pack.editable)
+                    packList.add(pack)
+            for(pack in UserProfile.profile().skipped.values)
                 if (!pack.editable)
                     packList.add(pack)
 
@@ -260,19 +263,10 @@ class PackManagement : AppCompatActivity() {
                     handlingPacks = false
 
                     withContext(Dispatchers.Main) {
-                        if(PackConflict.conflicts.isNotEmpty()) {
-                            val intent = Intent(this@PackManagement, PackConflictSolve::class.java)
-
-                            startActivity(intent)
-
-                            finish()
-                        } else {
-                            val intent = Intent(this@PackManagement, MainActivity::class.java)
-
-                            startActivity(intent)
-
-                            finish()
-                        }
+                        val intent = Intent(this@PackManagement,
+                            if (PackConflict.conflicts.isNotEmpty()) PackConflictSolve::class.java else MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
                     }
 
                     needReload = false
@@ -379,6 +373,9 @@ class PackManagement : AppCompatActivity() {
                 for(p in UserProfile.getUserPacks())
                     if (!p.editable)
                         packList.add(p)
+                for(p in UserProfile.profile().skipped.values)
+                    if (!p.editable)
+                        packList.add(p)
                 withContext(Dispatchers.Main) {
                     list.adapter = PackManagementAdapter(this@PackManagement, packList)
                 }
@@ -433,6 +430,9 @@ class PackManagement : AppCompatActivity() {
 
             val packList = ArrayList<PackData.UserPack>()
             for(pack in UserProfile.getUserPacks())
+                if (!pack.editable)
+                    packList.add(pack)
+            for(pack in UserProfile.profile().skipped.values)
                 if (!pack.editable)
                     packList.add(pack)
 

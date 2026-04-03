@@ -479,6 +479,10 @@ class ImgCutEditor : AppCompatActivity() {
         unSave(a, "imgcut remove part")
         voo.invalidate()
         adp.notifyDataSetChanged()
+        if (voo.sele == pos)
+            voo.sele = -1
+        else if (voo.sele == a.imgcut.n)
+            voo.sele--
     }
 
     override fun attachBaseContext(newBase: Context) {

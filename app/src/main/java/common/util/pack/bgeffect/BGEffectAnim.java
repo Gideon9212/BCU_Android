@@ -41,7 +41,11 @@ public class BGEffectAnim extends AnimD<BGEffectAnim, BGEffectAnim.BGEffType> {
     public void load() {
         imgcut = ImgCut.newIns(imgcutName);
         mamodel = MaModel.newIns(mamodelName);
-        anims = new MaAnim[] { MaAnim.newIns(maanimName) };
+        try {
+            anims = new MaAnim[]{MaAnim.newIns(maanimName)};
+        } catch (Exception ignored) {
+            anims = new MaAnim[]{new MaAnim()};
+        }
         types = BGEffType.values();
         img = new VImg(str);
         parts = imgcut.cut(img.getImg());

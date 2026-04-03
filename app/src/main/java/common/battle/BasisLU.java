@@ -82,7 +82,7 @@ public class BasisLU extends Basis implements Copable<BasisLU>, BattleStatic {
 
 	@Override
 	public int getInc(int type) {
-		return lu.inc[type];
+		return lu.incs.getFirst().inc[type];
 	}
 
 	public BasisLU randomize(int n) {
@@ -124,21 +124,22 @@ public class BasisLU extends Basis implements Copable<BasisLU>, BattleStatic {
 
 				fs[i] = f.unit.forms[Math.min(maxForm, f.fid)];
 				f = (Form)fs[i];
-				if (f.fid >= 2 && f.du.getPCoin() != null) {
-						int[] talents = lv.getTalents();
-						PCoin pc = f.du.getPCoin();
-						for(int j = 0; j < Math.min(pc.info.size(), talents.length); j++)
-							if(pc.getReqLv(j) > 0 && lv.getTotalLv() < pc.getReqLv(j))
-								talents[j] = 0;
+				if (f.du.getPCoin() != null) {
+					int[] talents = lv.getTalents();
+					PCoin pc = f.du.getPCoin();
+					for(int j = 0; j < Math.min(pc.info.size(), talents.length); j++)
+						if(pc.getReqLv(j) > 0 && lv.getTotalLv() < pc.getReqLv(j))
+							talents[j] = 0;
 
-						int[][] orbs = lv.getOrbs();
-						if(orbs != null && f.orbs != null && f.orbs.getSlots() != -1) {
-							int[] limits = f.orbs.getLimits();
-							for(int j = 0; j < orbs.length; j++)
-								if(limits[j] == 1 && lv.getTotalLv() < 60)
-									orbs[j] = new int[0];
-						}
+					int[][] orbs = lv.getOrbs();
+					Unit u = f.unit;
+					if(orbs != null && u.orbs != null && u.orbs.getSlots() != -1) {
+						int[] limits = u.orbs.getLimits();
+						for(int j = 0; j < orbs.length; j++)
+							if(lv.getTotalLv() < limits[j])
+								orbs[j] = new int[0];
 					}
+				}
 			}
 		lu.renew();
 	}

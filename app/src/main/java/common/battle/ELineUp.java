@@ -1,13 +1,15 @@
 package common.battle;
 
 import common.CommonStatic;
+import common.battle.entity.DoorCont;
 import common.battle.entity.ESpirit;
 import common.battle.entity.EUnit;
 import common.pack.SortedPackSet;
 import common.util.BattleObj;
+import common.util.stage.Limit;
+import common.util.unit.AbForm;
 import common.util.unit.Combo;
 import common.util.unit.EForm;
-import common.util.stage.Limit;
 import common.util.unit.Form;
 
 public class ELineUp extends BattleObj {
@@ -19,13 +21,18 @@ public class ELineUp extends BattleObj {
 	public final int[][] scount = new int[2][5], sGlow = new int[2][5];
 	public final boolean[][] smnd = new boolean[2][5];
 
-	public final int[] inc;
+	private final LineUp.ComboBuff[] inc;
 
 	protected ELineUp(LineUp lu, StageBasis sb, byte saveMode) {
-		inc = lu.inc.clone();
-		for (byte i = 0; i < inc.length; i++)
-			if (sb.isBanned(i))
-				inc[i] = 0;
+		inc = new LineUp.ComboBuff[lu.incs.size()];
+		int q = 0;
+		for (LineUp.ComboBuff buff : lu.incs) {
+			inc[q] = new LineUp.ComboBuff(buff.cg);
+			for (byte i = 0; i < C_TOT; i++)
+				if (!sb.isBanned(i))
+					inc[q].inc[i] = buff.inc[i];
+			q++;
+		}
 		Limit lim = sb.est.lim;
 		SortedPackSet<Combo> coms = new SortedPackSet<>(lu.coms);
         for (byte i = 0; i < 2; i++)
@@ -39,16 +46,24 @@ public class ELineUp extends BattleObj {
 					price[i][j] = -1;
 				if (price[i][j] != 0) {
 					if (price[i][j] == -2)
-						for (int k = 0; k < coms.size(); k++)
-							if (inc[i] > 0 && coms.get(k).containsForm((Form)lu.fs[i][j])) {
-								Combo c = coms.get(k); //1st check to not have negative due to banned combo
+						for (int k = 0; k < coms.size(); k++) {
+							LineUp.ComboBuff bf = inc[0];
+							Combo c = coms.get(k); //1st check to not have negative due to banned combo
+							if (coms.get(k).group != null)
+								for (int l = 1; l < inc.length; l++)
+									if (inc[l].cg == c.group) {
+										bf = inc[l];
+										break;
+									}
+							if (bf.inc[i] > 0 && coms.get(k).containsForm((Form) lu.fs[i][j])) {
 								coms.remove(k--);
-								inc[c.type] -= CommonStatic.getBCAssets().values[c.type][c.lv];
+								bf.inc[c.type] -= CommonStatic.getBCAssets().values[c.type][c.lv];
 							}
+						}
 					continue;
 				}
-				price[i][j] = sb.globalPrice() > 0 ? sb.globalPrice() : (int) (lu.efs[i][j].getPrice(sb.st.getCont().price) * 100);
-				maxC[i][j] = sb.globalCdLimit() > 0 ? sb.b.t().getFinResGlobal(sb.globalCdLimit(), getInc(C_RESP)) : sb.b.t().getFinRes(lu.efs[i][j].getRespawn(), getInc(C_RESP));
+				price[i][j] = sb.globalPrice() > 0 ? sb.globalPrice() : (int) (lu.efs[i][j].getPrice(sb.st.getCont().price) * (100 - getInc(C_DISCOUNT, lu.fs[i][j])));
+				maxC[i][j] = sb.globalCdLimit() > 0 ? sb.b.t().getFinResGlobal(sb.globalCdLimit(), getInc(C_RESP, lu.fs[i][j])) : sb.b.t().getFinRes(lu.efs[i][j].getRespawn(), getInc(C_RESP, lu.fs[i][j]));
 				if (lim != null && lim.stageLimit != null && lu.fs[i][j] instanceof Form) {
 					int r = ((Form)lu.fs[i][j]).unit.rarity;
 					price[i][j] = price[i][j] * lim.stageLimit.costMultiplier[r] / 100;
@@ -79,9 +94,12 @@ public class ELineUp extends BattleObj {
 			EUnit rit = firstDeploy ? spi : ((EForm)sb.b.lu.efs[i][j]).invokeSpirit(sb, spi.index);
 			rit.added(-1, Math.min(Math.max(sb.ebase.pos + rit.data.getRange(), u.lastPosition + SPIRIT_SUMMON_RANGE), sb.ubase.pos));
 			rit.group = -1;//for the getAllOf function
-			sb.le.add(rit);
 			if (!(rit instanceof ESpirit))
 				rit.setSummon(spData[i][j].animType, null);
+			if (spData[i][j].animType == Proc.SUMMON_ANIM.EVERYWHERE_DOOR)
+				sb.doors.add(new DoorCont(sb, rit));
+			else
+				sb.le.add(rit);
 			firstDeploy = false;
 		}
 
@@ -125,6 +143,23 @@ public class ELineUp extends BattleObj {
 	 * @return buff of the specificed combo (0 if banned)
 	 */
 	public int getInc(int id) {
-		return inc[id];
+		return inc[0].inc[id];
+	}
+
+	/**
+	 * This is used for units specifically, takes restrictions and bans into account
+	 */
+	public int getInc(int id, AbForm f) {
+		int def = getInc(id);
+		if (!(f instanceof Form))
+			return def;
+		for (int i = 1; i < inc.length; i++)
+			if (inc[i].cg.fset.contains(f))
+				def += inc[i].inc[id];
+		return def;
+	}
+
+	public int getInc(int id, EUnit u) {
+		return getInc(id, (Form)u.data.getPack());
 	}
 }

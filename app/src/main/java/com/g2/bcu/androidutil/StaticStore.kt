@@ -69,7 +69,7 @@ import kotlin.math.ln
 object StaticStore {
     //System & IO variables
     /**Version of Application */
-    const val VER = "0.20.15"
+    const val VER = "0.20.19"
 
     /**Locale codes list */
     val lang = arrayOf("", "en", "zh", "ko", "ja", "ru", "de", "fr", "es", "it", "th")
@@ -504,7 +504,7 @@ object StaticStore {
         var ind : Int
         if (lan == 0) {
             val language: String = Resources.getSystem().configuration.locales[0].language
-            ind = listOf(*lang).indexOf(language) - 1
+            ind = (listOf(*lang).indexOf(language) - 1).coerceAtLeast(0)
             CommonStatic.getConfig().langs[0] = CommonStatic.Lang.Locale.values()[ind]
         } else {
             ind = lan - 1

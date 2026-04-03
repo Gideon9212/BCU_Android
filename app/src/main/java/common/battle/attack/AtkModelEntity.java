@@ -15,8 +15,8 @@ import java.util.List;
 public abstract class AtkModelEntity extends AtkModelAb {
 
 	public static final String[] par = { "SUMMON", "KB", "STOP", "SLOW", "WEAK", "WARP", "CURSE", "SNIPER", "SEAL", "POISON", "BOSS", "RAGE", "HYPNO", "POIATK",
-			"ARMOR", "SPEED", "LETHARGY", "DRAIN", "BLESSING",//post-cursedProcs
-			"ATKBASE", "CRIT", "WAVE", "BREAK", "SATK", "VOLC", "MINIVOLC", "MINIWAVE", "MOVEWAVE", "SHIELDBREAK", "WORKERLV", "CDSETTER", "METALKILL", "BLAST"};
+			"ARMOR", "SPEED", "LETHARGY", "BLESSING",//post-cursedProcs
+			"DRAIN", "ATKBASE", "CRIT", "WAVE", "BREAK", "SATK", "VOLC", "MINIVOLC", "MINIWAVE", "MOVEWAVE", "SHIELDBREAK", "WORKERLV", "CDSETTER", "METALKILL", "BLAST"};
 	/**
 	 * Gets Attack Model for enemies
 	 * @param e The entity
@@ -62,7 +62,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 	 */
 	protected final int[][] act;
 
-	protected AtkModelEntity(Entity ent, float d0, float d1) {
+	protected AtkModelEntity(Entity ent, float d0, float d1) { // enemy
 		super(ent.basis);
 		e = ent;
 		data = e.data;
@@ -75,7 +75,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 		setAtks(matks, satks);
 	}
 
-	protected AtkModelEntity(Entity ent, float d0, float d1, PCoin pc, Level lv) {
+	protected AtkModelEntity(Entity ent, float d0, float d1, PCoin pc, Level lv) { // cat
 		super(ent.basis);
 		e = ent;
 		data = e.data;
@@ -83,7 +83,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 			this.d0 = d0 * pc.getStatMultiplication(PC2_ATK, lv.getTalents());
 		else
 			this.d0 = d0;
-		this.d1 = d1 * (1 + ent.basis.elu.getInc(Data.C_ATK) * 0.01);
+		this.d1 = d1 * (1 + ent.basis.elu.getInc(Data.C_ATK, (EUnit)ent) * 0.01);
 
 		MaskAtk[][] matks = data.getAllAtks();
 		MaskAtk[][] satks = data.getSpAtks(false);
@@ -120,7 +120,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 		int ans = 0, temp = 0, c = 1;
 		MaskAtk[] atks = data.getAtks(atkType);
 		for (int i = 0; i < atks.length; i++)
-			if (atks[i].getPre() > 0 || atks[i].getName().toLowerCase().startsWith("combo")) {
+			if (atks[i].getPre() > 0 || atks[i].getName().startsWith("combo")) {
 				ans += temp / c;
 				temp = atks[i].getDire() > 0 ? getEffAtk(i) : 0;
 				c = 1;
@@ -155,6 +155,7 @@ public abstract class AtkModelEntity extends AtkModelAb {
 			dmg = (int) (dmg * e.status.getWeaken());
 		if (e.status.strengthen != 0)
 			dmg += dmg * e.status.strengthen / 100;
+		dmg += (int)(dmg * e.getKillStrengthen());
 		dmg *= e.auras.getAtkAura();
 		return dmg;
 	}
@@ -178,6 +179,8 @@ public abstract class AtkModelEntity extends AtkModelAb {
 	}
 
 	public boolean isUsable(int ind) {
+		if (act[ind] == null)
+			return false;
 		for (int act : act[ind])
 			if (act != 0)
 				return true;
@@ -231,8 +234,9 @@ public abstract class AtkModelEntity extends AtkModelAb {
 			float p0 = getPos() + getDire() * addp;
 			float sta = p0 + (getDire() == 1 ? W_VOLC_PIERCE : W_VOLC_INNER);
 			float end = p0 - (getDire() == 1 ? W_VOLC_INNER : W_VOLC_PIERCE);
+			int time = ds.sameTime() ? ds.time : ds.time + Math.round((float)b.r.nextInt(ds.maxtime - ds.time) / Data.VOLC_ITV) * Data.VOLC_ITV;
 
-			e.summoned.add(new ContVolcano(new AttackVolcano(e, as, sta, end, i == 1 ? WT_VOLC : WT_MIVC, ds.pid), p0, e.layer, ds.time));
+			e.summoned.add(new ContVolcano(new AttackVolcano(e, as, sta, end, i == 1 ? WT_VOLC : WT_MIVC, ds.pid), p0, e.layer, time));
 		}
 	}
 
@@ -254,8 +258,9 @@ public abstract class AtkModelEntity extends AtkModelAb {
 		float p0 = pos + getDire() * addp;
 		float sta = p0 + (getDire() == 1 ? W_VOLC_PIERCE : W_VOLC_INNER);
 		float end = p0 - (getDire() == 1 ? W_VOLC_INNER : W_VOLC_PIERCE);
+		int time = itm.sameTime() ? itm.time : itm.time + Math.round((float)b.r.nextInt(itm.maxtime - itm.time) / Data.VOLC_ITV) * Data.VOLC_ITV;
 
-		e.summoned.add(new ContVolcano(new AttackVolcano(e, as, sta, end, mult >= 100 ? WT_VOLC : WT_MIVC, itm.pid), p0, e.layer, itm.time, true));
+		e.summoned.add(new ContVolcano(new AttackVolcano(e, as, sta, end, mult >= 100 ? WT_VOLC : WT_MIVC, itm.pid), p0, e.layer, time, true));
 	}
 
 	@Override
@@ -437,9 +442,11 @@ public abstract class AtkModelEntity extends AtkModelAb {
 						Form f = u.getForms()[Math.max(proc.form - 1, 0)];
 						IForm ef = IForm.newIns(u instanceof Unit ? f : (AbForm)u, lvl);
 						EUnit eu = ef.invokeEntity(b, lvl, minlayer, maxlayer);
-						if (proc.same_health)
+						if (proc.same_health) {
 							eu.health = e.health;
-
+							eu.strengthen();
+							eu.adrenaline();
+						}
 						eu.added(-1, (int) up);
 						eu.setSummon(proc.anim_type, proc.bond_hp ? e : null);
 						if (proc.anim_type == Proc.SUMMON_ANIM.EVERYWHERE_DOOR)
@@ -482,8 +489,11 @@ public abstract class AtkModelEntity extends AtkModelAb {
 							up = b.st.len - 800;
 
 						ee.added(1, (int) up);
-						if (proc.same_health)
+						if (proc.same_health) {
 							ee.health = e.health;
+							ee.strengthen();
+							ee.adrenaline();
+						}
 						ee.setSummon(proc.anim_type, proc.bond_hp ? e : null);
 						if (proc.anim_type == Proc.SUMMON_ANIM.EVERYWHERE_DOOR)
 							b.tempe.add(new EntCont(new DoorCont(b, ee), time + (proc.interval * i)));

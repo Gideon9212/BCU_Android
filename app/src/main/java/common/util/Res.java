@@ -66,6 +66,12 @@ public class Res extends ImgCore {
 		return coor.draw(input);
 	}
 
+	public static void getRarity(int r, SymCoord coor) {
+		BCAuxAssets aux = CommonStatic.getBCAssets();
+		FakeImage rarity = aux.rarity[r].getImg();
+		coor.draw(rarity);
+	}
+
 	public static P getMoney(int mon, int max, SymCoord sym) {
 		BCAuxAssets aux = CommonStatic.getBCAssets();
 		int[] val0 = getLab(mon);
@@ -227,9 +233,13 @@ public class Res extends ImgCore {
 		aux.icon[1][P_SPEED] = new VImg("./org/page/icons/Speed.png");
 		aux.icon[1][P_BLAST] = new VImg(parts[335]);
 		aux.icon[1][P_IMUBLAST] = new VImg(parts[337]);
-		aux.icon[1][P_MINIDEATHSURGE] = new VImg(parts[332]);//TODO
-		aux.icon[1][P_REFUND] = new VImg(parts[205]);
+		aux.icon[1][P_MINIDEATHSURGE] = new VImg("./org/page/icons/minideathsurge.png");
+		aux.icon[1][P_REFUND] = new VImg("./org/page/icons/refund.png");
+		aux.icon[1][P_CANONCHARGE] = new VImg("./org/page/icons/cannoncharge.png");
+		aux.icon[1][P_IMUALL] = new VImg(parts[231]);
+		aux.icon[1][P_COMBOCOOLDOWN] = new VImg(parts[94]);
 
+		aux.icon[1][P_KILLSTRENGTHEN] = new VImg("./org/page/icons/strongkill.png");
 		aux.icon[1][P_IMUSUMMON] = new VImg("./org/page/icons/SummonX.png");
 		aux.icon[1][P_DMGCUT] = new VImg("./org/page/icons/DmgCut.png");
 		aux.icon[1][P_DMGCAP] = new VImg("./org/page/icons/DmgCap.png");
@@ -268,6 +278,7 @@ public class Res extends ImgCore {
 		aux.icon[1][P_DRAIN] = new VImg("./org/page/icons/Drain.png");
 		aux.icon[1][P_BLESS] = new VImg("./org/page/icons/Blessing.png");
 		aux.icon[1][P_SPEEDUP] = new VImg("./org/page/icons/Speed.png");
+		aux.icon[1][P_HPREGEN] = new VImg("./org/page/icons/Barrier.png");
 
 		langIcons();
 		//Trait icons that remain the same regardless of language
@@ -278,6 +289,7 @@ public class Res extends ImgCore {
 		aux.icon[3][TRAIT_BEAST] = new VImg("./org/page/icons/Beast.png");
 		aux.icon[3][TRAIT_SAGE] = new VImg("./org/page/icons/SuperSage.png");
 		aux.icon[3][TRAIT_INFH] = new VImg("./org/page/icons/Base.png");
+		aux.icon[3][TRAIT_VILLAIN] = new VImg(parts[384]);
 
 		//These are used for talent edit page icons
 		aux.icon[4][PC2_HP] = new VImg(parts[120]);
@@ -323,7 +335,7 @@ public class Res extends ImgCore {
 	private static void readBattle() {
 		BCAuxAssets aux = CommonStatic.getBCAssets();
 		aux.battle[0] = new VImg[4];
-		aux.battle[1] = new VImg[22];
+		aux.battle[1] = new VImg[23];
 		aux.battle[2] = new VImg[12];
 		ImgCut ic001 = ImgCut.newIns("./org/page/img001.imgcut");
 		VImg img001 = new VImg("./org/page/img001.png");
@@ -348,6 +360,10 @@ public class Res extends ImgCore {
 
 		for(int i = 0; i < aux.timer.length; i++)
 			aux.timer[i] = new VImg(parts[i + 83]);
+		for (int i = 0; i < aux.rarity.length; i++)
+			aux.rarity[i] = new VImg(parts[i + 135]);
+		for (int i = 0; i < aux.maxcat.length; i++)
+			aux.maxcat[i] = new VImg(parts[i + 141]);
 
 		ImgCut moneyCut = ImgCut.newIns("./org/page/moneySign.imgcut");
 		VImg moneyImg = new VImg("./org/page/moneySign.png");
@@ -369,6 +385,7 @@ public class Res extends ImgCore {
 		aux.battle[1][1] = new VImg(parts[7]);
 		for (int i = 0; i < 10; i++)
 			aux.battle[1][2 + i] = new VImg(parts[11 + i]);
+		aux.battle[1][22] = new VImg(parts[54]);
 
 		//jp fire
 		aux.battle[1][12] = new VImg(parts[9]);

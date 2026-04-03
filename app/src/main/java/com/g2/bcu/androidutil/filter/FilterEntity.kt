@@ -15,7 +15,6 @@ import common.util.unit.AbEnemy
 import common.util.unit.AbUnit
 import common.util.unit.Character
 import common.util.unit.Trait
-import common.util.unit.Unit
 import java.util.Locale
 
 object FilterEntity {
@@ -25,7 +24,7 @@ object FilterEntity {
 
         val result = ArrayList<Identifier<AbUnit>>()
         for (u in p.units.list) {
-            if ((StaticStore.rare.isNotEmpty() && !StaticStore.rare.contains(u.rarity.toString())))
+            if (u.forms == null || (StaticStore.rare.isNotEmpty() && !StaticStore.rare.contains(u.rarity.toString())))
                 continue
             if (StaticStore.entityname.isNotEmpty()) {
                 var named = false
@@ -94,7 +93,7 @@ object FilterEntity {
     }
 
     fun validate(de: MaskEntity) : Boolean {
-        val t = de.traits
+        val t = de.getTraits(false)
         val a = de.abi
 
         var check = StaticStore.empty

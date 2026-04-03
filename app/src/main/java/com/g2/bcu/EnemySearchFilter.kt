@@ -49,21 +49,20 @@ open class EnemySearchFilter : AppCompatActivity() {
         intArrayOf(R.string.sch_abi_expl, 1, Data.P_BLAST.toInt()), intArrayOf(R.string.sch_abi_iw, 1, Data.P_IMUWEAK.toInt()), intArrayOf(R.string.sch_abi_if, 1, Data.P_IMUSTOP.toInt()), intArrayOf(R.string.sch_abi_is, 1, Data.P_IMUSLOW.toInt()),
         intArrayOf(R.string.sch_abi_ik, 1, Data.P_IMUKB.toInt()), intArrayOf(R.string.sch_abi_iwv, 1, Data.P_IMUWAVE.toInt(), 1, -1, 100), intArrayOf(R.string.sch_abi_imsu, 1, Data.P_IMUVOLC.toInt()), intArrayOf(R.string.sch_abi_iexp, 1, Data.P_IMUBLAST.toInt()),
         intArrayOf(R.string.sch_abi_ws, 1, Data.P_IMUWAVE.toInt(), 1), intArrayOf(R.string.sch_abi_impoi, 1, Data.P_IMUPOIATK.toInt()),intArrayOf(R.string.abi_bu, 1, Data.P_BURROW.toInt()), intArrayOf(R.string.abi_rev, 1, Data.P_REVIVE.toInt()),
-        intArrayOf(R.string.sch_abi_sb, 1, Data.P_SATK.toInt()), intArrayOf(R.string.sch_abi_poi, 1, Data.P_POIATK.toInt()), intArrayOf(R.string.enem_info_barrier, 1, Data.P_BARRIER.toInt()),
-        intArrayOf(R.string.sch_abi_ds, 1, Data.P_DEMONSHIELD.toInt()), intArrayOf(R.string.sch_abi_sd, 1, Data.P_DEATHSURGE.toInt()), intArrayOf(R.string.sch_abi_msd, 1, Data.P_MINIDEATHSURGE.toInt()),
-        intArrayOf(R.string.sch_abi_rfn, 1, Data.P_REFUND.toInt()), intArrayOf(R.string.abi_sui, 0, Data.AB_GLASS.toInt()), intArrayOf(R.string.abi_gh, 0, Data.AB_GHOST.toInt()), intArrayOf(R.string.abi_snk, 1, Data.P_SNIPER.toInt()),
-        intArrayOf(R.string.abi_seal, 1, Data.P_SEAL.toInt()), intArrayOf(R.string.abi_bles, 1, Data.P_BLESS.toInt()), intArrayOf(R.string.abi_stt, 1, Data.P_TIME.toInt()), intArrayOf(R.string.abi_sum, 1, Data.P_SUMMON.toInt()),
-        intArrayOf(R.string.abi_mvatk, 1, Data.P_MOVEWAVE.toInt()), intArrayOf(R.string.abi_thch, 1, Data.P_THEME.toInt()), intArrayOf(R.string.abi_poi, 1, Data.P_POISON.toInt()), intArrayOf(R.string.abi_boswv, 1, Data.P_BOSS.toInt()),
-        intArrayOf(R.string.abi_armbr, 1, Data.P_ARMOR.toInt()), intArrayOf(R.string.abi_hast, 1, Data.P_SPEED.toInt()), intArrayOf(R.string.sch_abi_ltg, 1, Data.P_LETHARGY.toInt()),
-        intArrayOf(R.string.abi_drn, 1, Data.P_DRAIN.toInt()), intArrayOf(R.string.sch_abi_rg, 1, Data.P_RAGE.toInt()), intArrayOf(R.string.sch_abi_hy, 1, Data.P_HYPNO.toInt()), intArrayOf(R.string.sch_abi_cou, 1, Data.P_COUNTER.toInt()),
-        intArrayOf(R.string.sch_abi_cap, 1, Data.P_DMGCAP.toInt()), intArrayOf(R.string.sch_abi_cut, 1, Data.P_DMGCUT.toInt()), intArrayOf(R.string.abi_imvatk, 1, Data.P_IMUMOVING.toInt()),
+        intArrayOf(R.string.sch_abi_sb, 1, Data.P_SATK.toInt()), intArrayOf(R.string.sch_abi_poi, 1, Data.P_POIATK.toInt()), intArrayOf(R.string.enem_info_barrier, 1, Data.P_BARRIER.toInt()), intArrayOf(R.string.sch_abi_ds, 1, Data.P_DEMONSHIELD.toInt()),
+        intArrayOf(R.string.sch_abi_sd, 1, Data.P_DEATHSURGE.toInt()), intArrayOf(R.string.sch_abi_msd, 1, Data.P_MINIDEATHSURGE.toInt()), intArrayOf(R.string.abi_sui, 0, Data.AB_GLASS.toInt()),
+        intArrayOf(R.string.abi_gh, 0, Data.AB_GHOST.toInt()), intArrayOf(R.string.abi_snk, 1, Data.P_SNIPER.toInt()), intArrayOf(R.string.abi_seal, 1, Data.P_SEAL.toInt()), intArrayOf(R.string.abi_bles, 1, Data.P_BLESS.toInt()),
+        intArrayOf(R.string.abi_stt, 1, Data.P_TIME.toInt()), intArrayOf(R.string.abi_sum, 1, Data.P_SUMMON.toInt()), intArrayOf(R.string.abi_mvatk, 1, Data.P_MOVEWAVE.toInt()), intArrayOf(R.string.abi_thch, 1, Data.P_THEME.toInt()),
+        intArrayOf(R.string.abi_poi, 1, Data.P_POISON.toInt()), intArrayOf(R.string.abi_boswv, 1, Data.P_BOSS.toInt()), intArrayOf(R.string.abi_armbr, 1, Data.P_ARMOR.toInt()), intArrayOf(R.string.abi_hast, 1, Data.P_SPEED.toInt()),
+        intArrayOf(R.string.sch_abi_ltg, 1, Data.P_LETHARGY.toInt()), intArrayOf(R.string.abi_drn, 1, Data.P_DRAIN.toInt()), intArrayOf(R.string.sch_abi_rg, 1, Data.P_RAGE.toInt()), intArrayOf(R.string.sch_abi_hy, 1, Data.P_HYPNO.toInt()),
+        intArrayOf(R.string.sch_abi_cou, 1, Data.P_COUNTER.toInt()), intArrayOf(R.string.sch_abi_cap, 1, Data.P_DMGCAP.toInt()), intArrayOf(R.string.sch_abi_cut, 1, Data.P_DMGCUT.toInt()), intArrayOf(R.string.abi_imvatk, 1, Data.P_IMUMOVING.toInt()),
         intArrayOf(R.string.abi_isnk, 0, Data.AB_SNIPERI.toInt()), intArrayOf(R.string.abi_istt, 0, Data.AB_TIMEI.toInt()), intArrayOf(R.string.abi_ipoi, 1, Data.P_IMUPOI.toInt()),
         intArrayOf(R.string.abi_ithch, 0, Data.AB_THEMEI.toInt()), intArrayOf(R.string.abi_iseal, 1, Data.P_IMUSEAL.toInt()), intArrayOf(R.string.abi_iboswv, 0, Data.AB_IMUSW.toInt()),
         intArrayOf(R.string.abi_imcri, 1, Data.P_CRITI.toInt()), intArrayOf(R.string.sch_abi_imusm, 1, Data.P_IMUSUMMON.toInt()), intArrayOf(R.string.sch_abi_imar, 1, Data.P_IMUARMOR.toInt()),
         intArrayOf(R.string.sch_abi_imlt, 1, Data.P_IMULETHARGY.toInt()), intArrayOf(R.string.sch_abi_imr, 1, Data.P_IMURAGE.toInt()), intArrayOf(R.string.sch_abi_imh, 1, Data.P_IMUHYPNO.toInt()),
         intArrayOf(R.string.sch_abi_imsp, 1, Data.P_IMUSPEED.toInt()), intArrayOf(R.string.sch_abi_wlv, 1, Data.P_WORKERLV.toInt()), intArrayOf(R.string.sch_abi_cdc, 1, Data.P_CDSETTER.toInt()),
         intArrayOf(R.string.sch_abi_waur, 1, Data.P_WEAKAURA.toInt()), intArrayOf(R.string.sch_abi_saur, 1, Data.P_STRONGAURA.toInt()), intArrayOf(R.string.sch_abi_imcn, 1, Data.P_IMUCANNON.toInt()),
-        intArrayOf(R.string.sch_abi_st, 1, Data.P_DMGINC.toInt()), intArrayOf(R.string.sch_abi_re,1, Data.P_DEFINC.toInt()), intArrayOf(R.string.sch_abi_stt, 1, Data.P_AI.toInt()))
+        intArrayOf(R.string.sch_abi_st, 1, Data.P_DMGINC.toInt()), intArrayOf(R.string.sch_abi_re,1, Data.P_DEFINC.toInt()), intArrayOf(R.string.sch_abi_rgn, 1, Data.P_HPREGEN.toInt()), intArrayOf(R.string.sch_abi_stt, 1, Data.P_AI.toInt()))
 
     private val atkdraw = intArrayOf(212, 112)
 

@@ -251,8 +251,7 @@ public class UserProfile {
 		return pack;
 	}
 	public static void loadPacks(List<UserPack> packs) {
-		if (profile.pending == null)
-			profile.pending = new HashMap<>();
+		profile.pending = new HashMap<>();
 		for (UserPack p : packs)
 			profile.pending.put(p.desc.id, p);
 		Set<UserPack> queue = new HashSet<>(profile.pending.values());

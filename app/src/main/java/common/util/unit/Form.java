@@ -33,21 +33,18 @@ public class Form extends Character implements BasedCopable<AbForm, AbUnit>, AbF
 	public final Identifier<AbUnit> uid;
 	@JsonField
 	public int fid;
-	public Orb orbs = null;
 
 	@JCConstructor
 	public Form(Unit u) {
 		du = null;
 		unit = u;
 		uid = unit.id;
-		orbs = new Orb(-1);
 	}
 	//Used solely to make placeholders
 	public Form(Unit u, MaskUnit d) {
 		du = d;
 		unit = u;
 		uid = unit.id;
-		orbs = new Orb(0);
 		anim = new AnimUD("./org/unit/000/f/", "000_f", "edi000_f.png", "uni000_f00.png");
 		anim.getUni().setCut(CommonStatic.getBCAssets().unicut);
 	}
@@ -60,7 +57,6 @@ public class Form extends Character implements BasedCopable<AbForm, AbUnit>, AbF
 		anim = ac;
 		du = cu;
 		cu.pack = this;
-		orbs = new Orb(-1);
 	}
 
 	//Used for BC units
@@ -117,6 +113,23 @@ public class Form extends Character implements BasedCopable<AbForm, AbUnit>, AbF
 		if (pc != null)
 			return pc.full;
 		return du;
+	}
+
+	public int[] simulateBCTalents(int lvl) {
+		if (du.getPCoin() == null)
+			return null;
+		int[] max = du.getPCoin().max.clone();
+		simulateBCTalents(du.getPCoin().max.clone(), lvl);
+		return max;
+	}
+
+	public void simulateBCTalents(int[] talents, int lvl) {
+		PCoin pc = du.getPCoin();
+		if (pc == null || !CommonStatic.getConfig().realLevel)
+			return;
+		for (int i = 0; i < talents.length; i++)
+			if (pc.getReqLv(i) > lvl)
+				talents[i] = 0;
 	}
 
 	@Override
@@ -188,6 +201,10 @@ public class Form extends Character implements BasedCopable<AbForm, AbUnit>, AbF
 			return;
 		Unit u = unit == null ? (Unit) uid.get() : unit;
 		PackData.UserPack pack = (PackData.UserPack) u.getCont();
+		if (UserProfile.isOlderPack(pack, "0.7.12.2") && du.getPCoin() != null) {
+			du.getPCoin().info.removeIf(d -> d[0] == 68);
+			du.getPCoin().update();
+		}
 		if (pack.desc.FORK_VERSION >= 13)
 			return;
 		inject(pack, jobj.getAsJsonObject("du"), form);
@@ -363,5 +380,27 @@ public class Form extends Character implements BasedCopable<AbForm, AbUnit>, AbF
 		else if (hasZeroForm())
 			return unit.info.zeroEvo;
 		return null;
+	}
+
+	public OrbInfo getOrbs() {
+		if (uid.pack.equals(Identifier.DEF) && fid < 2)
+			return null;
+		return unit.orbs;
+	}
+
+	public boolean checkOrb(int level) {
+		for (int lim : unit.orbs.getLimits())
+			if (lim == 0 && fid >= 2 || lim <= level)
+				return true;
+		return false;
+	}
+	public boolean checkOrb(int level, int index) {
+		if (index >= unit.orbs.getLimits().length)
+			return false;
+
+		int limit = unit.orbs.getLimits()[index];
+		if (limit == 0 && fid >= 2)
+			return true;
+		else return limit <= level;
 	}
 }

@@ -253,28 +253,30 @@ public class JsonEncoder {
 			return str.isEmpty() || str.equals("null");
 		if (str.equals("null"))
 			return false;
-		if (val instanceof Byte)
-			return (byte)val == (str.isEmpty() ? 0 : Byte.parseByte(str));
-		if (val instanceof Integer)
-			return (int)val == (str.isEmpty() ? 0 : Integer.parseInt(str));
-		if (val instanceof Long)
-			return (long)val == (str.isEmpty() ? 0 : Long.parseLong(str));
-		if (val instanceof Float)
-			return (float)val == (str.isEmpty() ? 0 : Float.parseFloat(str));
-		if (val instanceof Double)
-			return (double)val == (str.isEmpty() ? 0 : Double.parseDouble(str));
-		if (val instanceof Boolean)
-			return (boolean)val == (!str.isEmpty() && Boolean.parseBoolean(str));
-		if (val instanceof String)
-			return val.equals(str);
-		if (val instanceof Enum)
-			return val.toString().equals(str);
-		if (val instanceof Object[] && str.equals("isEmpty"))
-			return ((Object[])val).length == 0;
-
-		if (str.isEmpty())
-			return false;
 		try {
+			if (str.isEmpty() || CommonStatic.isDouble(str)) {
+				if (val instanceof Byte)
+					return (byte) val == (str.isEmpty() ? 0 : Byte.parseByte(str));
+				if (val instanceof Integer)
+					return (int) val == (str.isEmpty() ? 0 : Integer.parseInt(str));
+				if (val instanceof Long)
+					return (long) val == (str.isEmpty() ? 0 : Long.parseLong(str));
+				if (val instanceof Float)
+					return (float) val == (str.isEmpty() ? 0 : Float.parseFloat(str));
+				if (val instanceof Double)
+					return (double) val == (str.isEmpty() ? 0 : Double.parseDouble(str));
+			}
+			if (val instanceof Boolean)
+				return (boolean)val == (!str.isEmpty() && Boolean.parseBoolean(str));
+			if (val instanceof String)
+				return val.equals(str);
+			if (val instanceof Enum)
+				return val.toString().equals(str);
+			if (val instanceof Object[] && str.equals("isEmpty"))
+				return ((Object[])val).length == 0;
+
+			if (str.isEmpty())
+				return false;
 			if (str.startsWith("this."))
 				return defVal(obj, str.substring(5));
 			if (str.contains(" ")) {

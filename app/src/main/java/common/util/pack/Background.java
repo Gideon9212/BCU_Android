@@ -43,7 +43,7 @@ public class Background extends AnimI<Background, Background.BGWvType> implement
 		String path = "./org/battle/bg/";
 		for (VFile vf : VFile.get("./org/battle/bg").list()) {
 			String name = vf.getName();
-			if (name.length() != 11 || !name.endsWith(".imgcut"))
+			if (!name.matches("bg\\d+\\.imgcut"))
 				continue;
 			aux.iclist.add(ImgCut.newIns(path + name));
 		}
@@ -244,14 +244,12 @@ public class Background extends AnimI<Background, Background.BGWvType> implement
 
 		VImg image;
 
-		if(ints.length >= 16 && ints[15] != -1) {
-			reference = new Identifier<>(Identifier.DEF, Background.class, ints[15]);
-
-			if(id == 185) {
-				reference = null;
-
+		if(ints.length >= 16 && ints[15] != -1 && ints[15] != id) {
+			if(id == 185)
 				image = new VImg(VFile.get("./org/img/bg/bg"+Data.trio(id)+".png"));
-			} else {
+			else {
+				if (ints[15] != 255)
+					reference = new Identifier<>(Identifier.DEF, Background.class, ints[15]);
 				image = new VImg(VFile.get("./org/img/bg/bg"+Data.trio(ints[15])+".png"));
 			}
 		} else {
@@ -259,9 +257,8 @@ public class Background extends AnimI<Background, Background.BGWvType> implement
 		}
 
 		img = image;
-
-		top = ints[14] == 1 || ints[13] == 8;
-		ic = ints[13] == 8 ? 1 : ints[13];
+		top = id == 110 || ints[14] == 1;
+		ic = id == 110 ? 1 : ints[13];
 
 		for (int i = 0; i < 4; i++)
 			cs[i] = new int[] { ints[i * 3 + 1], ints[i * 3 + 2], ints[i * 3 + 3] };
@@ -388,6 +385,12 @@ public class Background extends AnimI<Background, Background.BGWvType> implement
 	@Override
 	public Identifier<Background> getID() {
 		return id;
+	}
+
+	public BackgroundEffect getEffect() {
+		if (bgEffect == null)
+			return null;
+		return UserProfile.getPack(bgEffect.pack).bgEffects.getFromID(bgEffect.id);
 	}
 
 	@Override

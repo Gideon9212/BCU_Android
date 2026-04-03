@@ -27,12 +27,18 @@ public class JsonDecoder {
 
 	}
 
+	/**
+	 * After the class finishes decoding, code on a function with this annotation runs. Can carry the JsonObject as parameter to decode old variables
+	 */
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface OnInjected {
 	}
 
+	/**
+	 * After the pack finishes decoding, code on a function with this annotation runs. Can carry the JsonObject as parameter to decode old variables
+	 */
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)

@@ -196,6 +196,30 @@ class LimitEditor : AppCompatActivity() {
                     return@doAfterTextChanged
                 lim.stageLimit.maxUnitSpawn = num
             }
+            val lcannonp : EditText = findViewById(R.id.pklimcannon)
+            lcannonp.text = SpannableStringBuilder(lim.stageLimit.cannonMultiplier.toString())
+            lcannonp.doAfterTextChanged {
+                val num = CommonStatic.parseIntN(lcannonp.text.toString())
+                if (!lcannonp.hasFocus() || num == lim.stageLimit.cannonMultiplier)
+                    return@doAfterTextChanged
+                lim.stageLimit.cannonMultiplier = num
+            }
+            val lmaxuspd : EditText = findViewById(R.id.pklimuspd)
+            lmaxuspd.text = SpannableStringBuilder(lim.stageLimit.unitSpeedOverride.toString())
+            lmaxuspd.doAfterTextChanged {
+                val num = CommonStatic.parseIntN(lmaxuspd.text.toString())
+                if (!lmaxuspd.hasFocus() || num == lim.stageLimit.unitSpeedOverride)
+                    return@doAfterTextChanged
+                lim.stageLimit.unitSpeedOverride = num
+            }
+            val lmaxespd : EditText = findViewById(R.id.pklimespd)
+            lmaxespd.text = SpannableStringBuilder(lim.stageLimit.enemySpeedOverride.toString())
+            lmaxespd.doAfterTextChanged {
+                val num = CommonStatic.parseIntN(lmaxespd.text.toString())
+                if (!lmaxespd.hasFocus() || num == lim.stageLimit.enemySpeedOverride)
+                    return@doAfterTextChanged
+                lim.stageLimit.enemySpeedOverride = num
+            }
             val lscd : CheckBox = findViewById(R.id.pklimscd)
             lscd.isChecked = lim.stageLimit.coolStart
             lscd.setOnClickListener { lim.stageLimit.coolStart = lscd.isChecked }

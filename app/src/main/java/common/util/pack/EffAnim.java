@@ -605,10 +605,13 @@ public class EffAnim<T extends Enum<T> & EffAnim.EffType<T>> extends AnimD<EffAn
 		effas.A_E_METAL_KILLER.rev = true;
 		VImg vbs = new VImg("./org/battle/s21/skill021.png");
 		ImgCut icbs = ImgCut.newIns("./org/battle/s21/skill021.imgcut");
-		effas.A_BLAST = new EffAnim<>("./org/battle/s21/skill_explosion", vbs, icbs, BlastEff.values());
+		MaModel mmus = MaModel.newIns("./org/battle/s21/skill_explosion.mamodel");
+		mmus.parts[0][6] = 103;
+		effas.A_BLAST = new EffAnim<>("./org/battle/s21/skill_explosion", vbs, icbs, mmus, BlastEff.values());
 		vbs = new VImg("./org/battle/s22/skill022.png");
 		icbs = ImgCut.newIns("./org/battle/s22/skill022.imgcut");
 		MaModel mmbs = MaModel.newIns("./org/battle/s22/skill_explosion_e.mamodel");
+		mmbs.parts[0][6] = -30;
 		effas.A_E_BLAST = new EffAnim<>("./org/battle/s22/skill_explosion", vbs, icbs, mmbs, BlastEff.values());
 	}
 
@@ -815,11 +818,8 @@ public class EffAnim<T extends Enum<T> & EffAnim.EffType<T>> extends AnimD<EffAn
 	}
 
 	public EffAnim(String st, VImg vi, ImgCut ic, MaModel model, T[] anims) {
-		super(st);
-		vimg = vi;
-		imgcut = ic;
+		this(st, vi, ic, anims);
 		mamodel = model;
-		types = anims;
 	}
 
 	@Override

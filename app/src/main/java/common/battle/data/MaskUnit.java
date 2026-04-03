@@ -7,7 +7,7 @@ public interface MaskUnit extends MaskEntity {
 
 	int getFront();
 
-	Orb getOrb();
+	OrbInfo getOrb();
 
 	@Override
 	Form getPack();

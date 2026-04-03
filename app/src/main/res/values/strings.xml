@@ -1049,7 +1049,7 @@
     <string name="info_next_hit" translatable="false">Next Atk</string>
     <string name="info_current_hit" translatable="false">Attack Pattern #_</string>
     <string name="limit_bank" translatable="false">Total Bank</string>
-    <string name="limit_spawn" translatable="false">Maximum Deploy Count</string>
+    <string name="limit_spawn" translatable="false">Deploy Cap</string>
     <string name="limit_uvcd" translatable="false">Cat Cooldown</string>
     <string name="limit_inicd" translatable="false">Start on Cooldown</string>
     <string name="limit_banco" translatable="false">Banned CatCombos</string>
@@ -1146,4 +1146,9 @@
     <string name="pack_parenting" translatable="false">Parenting Pack _</string>
     <string name="pack_parent_password" translatable="false">Enter Pack\'s Parenting Password</string>
     <string name="def_opa" translatable="false">Opacity</string>
+    <string name="limit_cannon" translatable="false">Cannon Power%</string>
+    <string name="limit_uspd" translatable="false">SPD Override(Unit)</string>
+    <string name="limit_espd" translatable="false">SPD Override(Enemy)</string>
+    <string name="sch_abi_cnc" translatable="false">Cannon Charge</string>
+    <string name="sch_abi_rgn" translatable="false">Regeneration</string>
 </resources>
